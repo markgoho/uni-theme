@@ -25,6 +25,8 @@ public. Consumers may read and override these:
 - Shadow: `--shadow-card`, `--shadow-raised`
 - Spacing (`assets/css/spacing.css`): `--space-3xs` … `--space-3xl`,
   `--border-width-sm`/`-md`, `--border-radius-sm`/`-md`/`-lg`/`-pill`
+- Type scale (`assets/css/typography.css`): `--step--2` … `--step-6`,
+  `--font-weight-light`/`-regular`/`-semibold`/`-bold`/`-boldest`
 
 **Not public**: raw color ramps in `assets/css/colors.css` (`--brown-*`,
 `--olive-*`, `--teal-*`, `--v2-*`, etc). These back the semantic tokens
@@ -56,7 +58,9 @@ site's own critical-CSS pipeline) rather than shadowing the theme's path.
 ## Versioning
 
 No semver. `mbu` (and later `scouting-university`) pin `uni-theme` to a
-commit via Go's pseudo-version. Every push to `uni-theme` trunk opens a PR
-in each consumer bumping the pin, with the range of new `uni-theme`
-commits as the PR body — that changelog, not a version number, is what a
-reviewer should read before merging.
+commit via Go's pseudo-version. Every push to `uni-theme`'s `master`
+branch opens a PR in each consumer bumping the pin, with the range of new
+`uni-theme` commits as the PR body — that changelog, not a version
+number, is what a reviewer should read before merging. A bump PR must
+re-run `hugo mod vendor`, not just bump `go.mod`/`go.sum` — a stale
+`hugo/_vendor` silently builds the old CSS with no error.
