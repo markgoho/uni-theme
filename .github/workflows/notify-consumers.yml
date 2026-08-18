@@ -3,6 +3,11 @@ name: Notify consumers of new commits
 on:
   push:
     branches: [master]
+    paths:
+      - "assets/**"
+      - "layouts/**"
+      - "hugo.toml"
+      - "go.mod"
 
 # Requires the CONSUMER_DISPATCH_TOKEN secret: a fine-grained PAT with
 # Contents: Read and write on each consumer repo, since GITHUB_TOKEN
