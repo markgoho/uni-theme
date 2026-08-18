@@ -34,10 +34,11 @@ above and can be re-mixed or renamed freely.
 
 ## Dark mode
 
-Dark mode is the `.dark` class on `<html>`, set before first paint and
-toggled at runtime by the consuming site. `.theme-v2` / `.theme-v2.dark`
-carry the v2 palette; today's default (`:root`) is the v1 look. A
-consumer's own CSS may key off `.dark` the same way.
+Dark mode is the `.dark` class on `<html>`, set before first paint by
+`partials/head/theme-init.html` (theme-owned) and toggled at runtime by
+`assets/ts/theme-toggle.ts`. `.theme-v2` / `.theme-v2.dark` carry the v2
+palette; today's default (`:root`) is the v1 look. A consumer's own CSS
+may key off `.dark` the same way.
 
 ## Public button classes
 
@@ -125,6 +126,61 @@ caller-supplied — the partials hold no image-path or transform-preset
 assumptions of their own. See the doc comment atop `img.html` for the
 full param list (`v`, `maxWidth`, `tr`, `class`, `loading`,
 `fetchpriority`, `decoding`, `attrs`).
+
+## Base template and head partials
+
+`layouts/_default/baseof.html` is the site's HTML skeleton. It wires in
+the `head/*` partials below, then exposes these blocks for pages to
+override:
+
+- `html-class` — class list on `<html>`.
+- `hero` — full-bleed content before `<header>`.
+- `header` — defaults to `partial "header.html"`.
+- `main` / `main-class` — page body / extra class on `<main>`.
+- `footer` — defaults to `partial "footer.html"`.
+- `head-styles` / `head-scripts` — inserted mid-`<head>`, after critical
+  CSS / before non-critical CSS and analytics respectively.
+- `footer-scripts` — end of `<body>`.
+
+`layouts/partials/head/`:
+
+- `site.html`, `theme-init.html` (sets `.dark` pre-paint, see
+  `## Dark mode`), `resource-hints.html`, `meta.html` — head boilerplate.
+  `resource-hints.html` hardcodes `filestore.scouting.org` and
+  `/pagefind/pagefind-ui.js` as prefetch targets — mbu-specific, a
+  consumer without pagefind or that domain gets a harmless dead hint, not
+  a build error.
+- `analytics.html`, `clarity.html` — embed mbu's Pirsch site code and
+  Clarity project ID directly. A second consumer reports into mbu's
+  analytics properties until these are parameterized; treat as an
+  override point (replace the file locally), not as configurable today.
+- `critical-css.html`, `non-critical-css.html` — concatenate a **fixed,
+  mbu-specific manifest** of asset paths (e.g. `css/pages/home.css`,
+  `css/components/badge-hero.css`, `css/button-eagle.css`,
+  `css/search.css`, `css/view-transitions.css`, and others under
+  `css/pages/`). These are a hard requirement: a consumer must provide
+  every path in the list (even as an empty file) or `resources.Concat`
+  fails on a nil resource. This is the one theme-owned file that most
+  clearly encodes mbu's specific asset layout rather than a generic one.
+
+## JSON-LD partials
+
+`partials/json-ld/organization.html` hardcodes mbu's name, description,
+and GitHub URL, and reads `data/badge-images.json` (`.site["og-default"].v`)
+plus `partials/imagekit/url.html`. `partials/json-ld/breadcrumb-auto.html`
+is generic except for the same `guide`→"Digital Resource Guide" label
+mapping as `partials/breadcrumb.html` below. Both are override points
+(replace the file locally per the `theme/logo.html` precedent), not
+parameterized.
+
+## Breadcrumb
+
+`partials/breadcrumb.html` renders the ancestor-to-current trail via
+`.Parent` walking. It hardcodes two label overrides: pages with
+`.Layout "guide"` on an `.IsSection` render "Digital Resource Guide", and
+pages with `.Layout "requirements"` render "Requirements"; everything
+else uses `.Title`. A consumer without those layouts gets plain
+`.Title` crumbs — harmless, not an error.
 
 ## Asset path collisions
 
