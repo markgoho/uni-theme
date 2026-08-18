@@ -153,6 +153,12 @@ assumptions of their own. See the doc comment atop `img.html` for the
 full param list (`v`, `maxWidth`, `tr`, `class`, `loading`,
 `fetchpriority`, `decoding`, `attrs`).
 
+Image quality and output format are **not** URL params here — they're
+account-level settings in the ImageKit dashboard. A new consumer's
+ImageKit account must have its dashboard configured to match (or
+intentionally differ from) `mbu`'s before images will render at the
+expected quality/format; there is no build-time check for this.
+
 ## Base template and head partials
 
 `layouts/_default/baseof.html` is the site's HTML skeleton. It wires in
