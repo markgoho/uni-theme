@@ -99,6 +99,33 @@ override with its own `layouts/partials/theme/logo.html` (e.g. an image
 mark) — this is a plain Hugo layout override, not a new param. The
 default renders `siteTitle`/`siteTitleShort` as text.
 
+## Image CDN (ImageKit)
+
+`partials/imagekit/img.html` renders every ImageKit-backed `<img>`;
+`partials/imagekit/url.html` builds a single ImageKit URL. Both read the
+consumer's account/CDN settings from `[params.imagekit]` in `hugo.toml`:
+
+- `endpoint` (required) — e.g. `https://ik.imagekit.io/<account>`. There
+  is no default; `url.html` fails the build via `errorf` if unset.
+- `widths` — the responsive srcset ladder, e.g. `[400, 600, 800, 1200,
+  1600]`. If unset (or empty), `img.html` falls back to a single-source
+  `<img>` at the requested `maxWidth`/`width` with no `srcset`.
+
+```
+partial "imagekit/img.html" (dict
+  "path"   "/merit-badges/camping/guide/tick-removal"
+  "alt"    "…"
+  "width"  800
+  "height" 450
+  "sizes"  "(max-width: 800px) 100vw, 800px")
+```
+
+`path`, `alt`, `width`, `height`, and `sizes` are always required and
+caller-supplied — the partials hold no image-path or transform-preset
+assumptions of their own. See the doc comment atop `img.html` for the
+full param list (`v`, `maxWidth`, `tr`, `class`, `loading`,
+`fetchpriority`, `decoding`, `attrs`).
+
 ## Asset path collisions
 
 When a theme-owned asset path (e.g. `assets/css/button.css`) and a
