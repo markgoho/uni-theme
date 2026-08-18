@@ -46,6 +46,32 @@ consumer's own CSS may key off `.dark` the same way.
 `## Asset path collisions`) — don't add new modifiers directly to
 `button.css` from a consuming repo.
 
+## Header/footer parameters
+
+`partials/header.html` and `partials/footer.html` render site chrome from
+`[params.theme]` in the consumer's `hugo.toml`:
+
+- `siteTitle`, `siteTitleShort` — text logo (see below) and footer/copyright
+  branding. Copyright reuses `siteTitle`; there is no separate param.
+- `tagline` — shown under the footer brand title.
+- `cta.label` / `cta.href` — optional. Omit the `[params.theme.cta]` table
+  entirely to suppress the navbar CTA button.
+- `footerColumns` — list of `{title, links: [{label, href}]}` tables,
+  rendered as the footer nav columns.
+
+Nav links (`.Site.Menus.main`), the `/search/` link, and the theme toggle
+are fixed chrome — not parameterized.
+
+There is no `errorf` validation on these params; a consumer that omits a
+required one (e.g. `siteTitle`) gets an empty render, not a build error.
+
+### Logo override
+
+The logo renders via `partials/theme/logo.html`, which a consumer can
+override with its own `layouts/partials/theme/logo.html` (e.g. an image
+mark) — this is a plain Hugo layout override, not a new param. The
+default renders `siteTitle`/`siteTitleShort` as text.
+
 ## Asset path collisions
 
 When a theme-owned asset path (e.g. `assets/css/button.css`) and a
@@ -54,6 +80,10 @@ silently** — there is no override mechanism. A consumer that needs
 badge/site-specific variants must use a **different filename**
 (e.g. `button-eagle.css` in `mbu`, concatenated after `button.css` in the
 site's own critical-CSS pipeline) rather than shadowing the theme's path.
+
+This is the opposite of `layouts/`: for templates and partials, the
+**site wins over the theme** (standard Hugo precedence), which is what
+makes the `theme/logo.html` override above possible.
 
 ## Versioning
 
