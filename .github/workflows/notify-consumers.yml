@@ -6,15 +6,15 @@ on:
 
 # Requires the CONSUMER_DISPATCH_TOKEN secret: a fine-grained PAT with
 # Contents: Read and write on each consumer repo, since GITHUB_TOKEN
-# can't reach across repos. See mbu#134.
+# can't reach across repos. See mbu#134. The PAT's repo scope must
+# include markgoho/scouting-u before this matrix entry will work there.
 
 jobs:
   dispatch:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        # scouting-u joins this list once it consumes uni-theme (mbu#135)
-        consumer: [markgoho/mbu]
+        consumer: [markgoho/mbu, markgoho/scouting-u]
     steps:
       - name: Dispatch bump event to ${{ matrix.consumer }}
         env:
