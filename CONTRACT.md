@@ -52,11 +52,58 @@ pulls both in. `assets/css/components/` holds classed, opt-in UI pieces:
 - `forms.css` — `.form-container`, `.form`, `.search-form`, `.date-grid`,
   `.form__label`/`__input`/`__error-message`/`__confirmation`, plus bare
   `fieldset`/`legend` styling.
+- `drg-blocks.css` — the guide page's content blocks, all under the
+  `req-` prefix despite the filename (see `## Page CSS`): `.req-callout`
+  (`--safety`/`--fact`/`--tip`), `.req-be-prepared`, `.req-checklist`
+  (`--print` for the print variant), `.req-requirement` (`--lead`/`--sub`),
+  `.req-rail__inner` (the sticky in-page echo of the current requirement,
+  paired with `.req-rail` in `drg.css` and behavior in `req-rail.ts`),
+  `.req-external-link`/`.req-download`, `.req-video`, `.req-next-page`,
+  `.req-experience-card`, `.req-org-card`, `.req-tabs`.
 
 `callout.css`, `nav-card.css`, and `forms.css` currently have no markup
 in `mbu` using their classes — they came from mbu unused, not vetted
 against a live consumer. Treat them as available but unverified rather
 than confirmed-working.
+
+## Page CSS
+
+`assets/css/pages/` also holds two requirement-rendering shells extracted
+from mbu's `drg-` (Digital Resource Guide) pages, per #150. The `drg-`
+class prefix was renamed to the generic `req-` during extraction — no
+class name here is merit-badge-specific, even though the filenames still
+say `drg`/`merit-badge` (renaming the files themselves would break
+`critical-css.html`'s fixed manifest for no behavioral gain):
+
+- `drg.css` — the guide page shell: `.req-page-main`/`.req-page`/
+  `.req-page-body`/`.req-body-grid`/`.req-content`, the desktop
+  `.req-sidebar`(`-wrap`)/`.req-nav` and mobile `.req-mobile-nav` navs,
+  `.req-rail` (paired with `.req-rail__inner` in `drg-blocks.css` and
+  `req-rail.ts`), `.req-header`, `.req-footer-nav`, `.req-illustration`,
+  `.req-table-scroll`.
+- `drg-print.css` — the guide's print stylesheet: `.req-worksheet` and its
+  parts, `.req-print-header`/`.req-print-btn`/`.req-print-divider`/
+  `.req-print-section`, plus `@media print` rules hiding `drg.css`'s and
+  `drg-blocks.css`'s interactive chrome.
+- `merit-badge-requirements.css` — the plain requirements-page shell:
+  `.req-page`/`.req-main`/`.req-sidebar`, the requirement-tree card family
+  `.req-card`/`.req-child`(`-item`)/`.req-children` (`--chips`/`--options`/
+  `--rail` variants), `.req-dock`, `.req-pill`, `.req-timeline`,
+  `.req-toast`, `.req-guide-lookup`. `.badge-identity`/`.badge-description`
+  are a deliberate exception to the `req-` rename: Scouting rank badges are
+  themselves badges, so "badge" reads as generic vocabulary here, unlike
+  "drg" which is merit-badge-specific by definition.
+
+## Requirement-rendering behavior
+
+`assets/ts/deep-link.ts` and `assets/ts/req-rail.ts` (paired with `.req-rail`
+above) are the interactive layer for both requirement-card families
+(`merit-badge-requirements.css`'s `.req-card`/`.req-child` and
+`drg.css`'s `.req-requirement`). `deep-link.ts` reads a `data-content-name`
+attribute (set by the consumer's template, e.g. on `.req-card`/
+`.req-child-item`) to label its `pirsch("requirement-copy-text", ...)`
+analytics call — both names are generic; a consumer without Pirsch loaded
+just skips the call (`typeof pirsch !== "undefined"` guard).
 
 ## Dark mode
 
@@ -227,6 +274,13 @@ site's own critical-CSS pipeline) rather than shadowing the theme's path.
 This is the opposite of `layouts/`: for templates and partials, the
 **site wins over the theme** (standard Hugo precedence), which is what
 makes the `theme/logo.html` override above possible.
+
+`view-transitions.css` follows the same pattern: the theme's copy carries
+the shared `@view-transition` opt-in and the requirement-preview↔guide
+pairing (`req-num`/`req-eyebrow`/`req-title`/`req-text` transition
+classes); `mbu`'s own badge-card↔badge-hero pairing lives in its local
+`badge-view-transitions.css`, concatenated after the theme's file in
+`critical-css.html`.
 
 ## Versioning
 
