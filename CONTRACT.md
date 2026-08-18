@@ -52,6 +52,14 @@ pulls both in. `assets/css/components/` holds classed, opt-in UI pieces:
 - `forms.css` — `.form-container`, `.form`, `.search-form`, `.date-grid`,
   `.form__label`/`__input`/`__error-message`/`__confirmation`, plus bare
   `fieldset`/`legend` styling.
+- `search.css` — the base Pagefind UI layer: `.pagefind-ui` custom-property
+  mapping, `.pagefind-ui__form`/`__search-input`/`__search-clear`/
+  `__filter-panel`/`__message`/`__loading`/`__button`, plus
+  `.search-header`/`.search-description`. Paired with
+  `partials/search/page.html` and `partials/search/scripts.html` — see
+  `## Search page`. Result-card presentation (thumbnails, excerpt
+  line-clamp, meta tag pills) is consumer-specific and stays out of this
+  file; `mbu` keeps its own `search.css` for that.
 - `drg-blocks.css` — the guide page's content blocks, all under the
   `req-` prefix despite the filename (see `## Page CSS`): `.req-callout`
   (`--safety`/`--fact`/`--tip`), `.req-be-prepared`, `.req-checklist`
@@ -307,6 +315,39 @@ parameterized.
 pages with `.Layout "requirements"` render "Requirements"; everything
 else uses `.Title`. A consumer without those layouts gets plain
 `.Title` crumbs — harmless, not an error.
+
+## Search page
+
+`partials/search/page.html` renders the search page shell (breadcrumb,
+`<h1>`/description header, and the `#search` mount point Pagefind's UI
+attaches to); `partials/search/scripts.html` is the paired
+`footer-scripts` partial that loads `/pagefind/pagefind-ui.js` and the
+built `assets/ts/search.ts`. A consumer's own build step must produce
+`/pagefind/` (e.g. `bunx pagefind --site public`) — that indexing step is
+not theme-owned.
+
+```
+{{ define "main" }}
+  {{ partial "search/page.html" (dict "page" . "description" "…") }}
+{{ end }}
+{{ define "footer-scripts" }}
+  {{ partial "search/scripts.html" . }}
+{{ end }}
+```
+
+`page.html` params: `page` and `description` are required (`errorf` on
+either missing). `placeholder` and `zeroResults` are optional UI copy,
+defaulting to `"Search..."` / `"No results found"`. `noResultsEvent` and
+`resultClickEvent` are optional Pirsch event names; each is only fired
+by `search.ts` when its param is supplied, so a consumer without Pirsch
+can omit both and get no analytics calls. All four surface as
+`data-search-*` attributes on `#search`. `mbu` passes its pre-extraction
+values (`merit-badge-search-no-results`, `merit-badge-search-result-click`)
+so the Pirsch event taxonomy didn't change when this moved.
+
+Result-card presentation (thumbnails, excerpt line-clamp, meta tag
+pills) is not part of this partial or `search.css` — see the `search.css`
+entry under `## Public component CSS classes`.
 
 ## Asset path collisions
 
