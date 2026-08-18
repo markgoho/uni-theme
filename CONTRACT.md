@@ -32,6 +32,32 @@ public. Consumers may read and override these:
 `--olive-*`, `--teal-*`, `--v2-*`, etc). These back the semantic tokens
 above and can be re-mixed or renamed freely.
 
+## Public component CSS classes
+
+`assets/css/layout.css` and `assets/css/base.css` are foundational
+(`.container`, `.main`, `.visually-hidden`, reset rules) — every consumer
+pulls both in. `assets/css/components/` holds classed, opt-in UI pieces:
+
+- `breadcrumb.css` — `.breadcrumb`, `.breadcrumb__list`,
+  `.breadcrumb__item`(`--current`), `.breadcrumb__link`,
+  `.breadcrumb__separator`. Paired with `partials/breadcrumb.html`.
+- `card-surface.css` — `.card-surface`, `.card-surface--wash`.
+- `tag.css` — `.tag`, `.tag-group`, `.top-tags`.
+- `timeline.css` — `.timeline`, `.timeline__item`, `.timeline__node`(`-text`),
+  `.timeline__panel`.
+- `icon.css` — `.icon--duotone`, styling the SVGs from `partials/icon.html`.
+- `callout.css` — `.callout`, `.callout__icon`, `.callout__text`.
+- `nav-card.css` — `.nav-cards-container`, `.nav-card-container`,
+  `.nav-cards`, `.nav-card`, `.nav-card__icon`/`__title`/`__description`.
+- `forms.css` — `.form-container`, `.form`, `.search-form`, `.date-grid`,
+  `.form__label`/`__input`/`__error-message`/`__confirmation`, plus bare
+  `fieldset`/`legend` styling.
+
+`callout.css`, `nav-card.css`, and `forms.css` currently have no markup
+in `mbu` using their classes — they came from mbu unused, not vetted
+against a live consumer. Treat them as available but unverified rather
+than confirmed-working.
+
 ## Dark mode
 
 Dark mode is the `.dark` class on `<html>`, set before first paint by
@@ -146,9 +172,10 @@ override:
 
 - `site.html`, `theme-init.html` (sets `.dark` pre-paint, see
   `## Dark mode`), `resource-hints.html`, `meta.html` — head boilerplate.
-  `resource-hints.html` hardcodes `filestore.scouting.org` and
-  `/pagefind/pagefind-ui.js` as prefetch targets — mbu-specific, a
-  consumer without pagefind or that domain gets a harmless dead hint, not
+  `resource-hints.html` hardcodes `dns-prefetch` hints for
+  `filestore.scouting.org`, `api.pirsch.io`, and `www.clarity.ms`, and a
+  `prefetch` for `/pagefind/pagefind-ui.js` — all mbu-specific; a
+  consumer without those domains/pagefind gets a harmless dead hint, not
   a build error.
 - `analytics.html`, `clarity.html` — embed mbu's Pirsch site code and
   Clarity project ID directly. A second consumer reports into mbu's
