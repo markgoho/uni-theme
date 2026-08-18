@@ -46,6 +46,26 @@ consumer's own CSS may key off `.dark` the same way.
 `## Asset path collisions`) — don't add new modifiers directly to
 `button.css` from a consuming repo.
 
+## Icons
+
+`partials/icon.html` resolves an icon name (and weight) to an SVG partial
+under `partials/icons/<name>.html` (regular) or
+`partials/icons/duotone/<name>.html`:
+
+```
+partial "icon.html" (dict "name" "tree-evergreen" "class" "req-card__icon")
+partial "icon.html" (dict "name" "tree-evergreen" "weight" "duotone")
+```
+
+Params: `name` (required), `weight` (`"regular"` default or `"duotone"`),
+`class`, `size`, `title` (accessible name; when present the icon gets
+`role="img"` and a `<title>`, otherwise `aria-hidden="true"`). An unknown
+`name` or a weight not vendored for that name fails the build loudly via
+`errorf`.
+
+The full icon set (Phosphor regular + duotone) is theme-owned; consumers
+do not maintain their own copies.
+
 ## Header/footer parameters
 
 `partials/header.html` and `partials/footer.html` render site chrome from
@@ -61,6 +81,13 @@ consumer's own CSS may key off `.dark` the same way.
 
 Nav links (`.Site.Menus.main`), the `/search/` link, and the theme toggle
 are fixed chrome — not parameterized.
+
+All chrome styling (`.navbar__*`/`.footer__*` in `assets/css/header.css`
+and `assets/css/footer.css`, including the `.visually-hidden` utility
+those partials rely on), and the theme-toggle behavior
+(`assets/ts/theme-toggle.ts`, pulled in via `resources.Get`), are
+theme-owned. A consumer needs no CSS/JS of its own for the chrome to
+render and function correctly.
 
 There is no `errorf` validation on these params; a consumer that omits a
 required one (e.g. `siteTitle`) gets an empty render, not a build error.
