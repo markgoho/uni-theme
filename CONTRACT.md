@@ -61,16 +61,53 @@ pulls both in. `assets/css/components/` holds classed, opt-in UI pieces:
   `.req-external-link`/`.req-download`, `.req-video`, `.req-next-page`,
   `.req-experience-card`, `.req-org-card`, `.req-tabs`.
 
+- `badge-hero.css` — `.badge-hero` and its `__bg`/`__inner`/`__content`/
+  `__eyebrow`/`__title`/`__lead`/`__meta`/`__actions`/`__image*` parts,
+  plus the `--hero-on`/`--hero-on-muted` pair it defines for its own
+  light/dark text split. "Badge" here is the hero's own name, not a
+  merit-badge dependency.
+
 `callout.css`, `nav-card.css`, and `forms.css` currently have no markup
 in `mbu` using their classes — they came from mbu unused, not vetted
 against a live consumer. Treat them as available but unverified rather
-than confirmed-working.
+than confirmed-working. Everything else in this section and in
+`## Page CSS` below is verified against live `mbu` markup.
 
 ## Page CSS
 
-`assets/css/pages/` also holds two requirement-rendering shells extracted
-from mbu's `drg-` (Digital Resource Guide) pages, per #150. The `drg-`
-class prefix was renamed to the generic `req-` during extraction — no
+`assets/css/pages/` holds whole-page shells. Unlike `components/`, each
+file assumes a page template shaped a particular way — a consumer either
+uses a matching template or gets unused rules, not a broken page.
+
+Content-page shells (#152):
+
+- `home.css` — homepage shell: `.home-main` (full-bleed `main-class`),
+  the shared section measure on `.home-steps`/`.home-categories`/
+  `.home-featured`, `.home-hero`, `.home-search*`, `.home-steps*`,
+  `.home-categories*`, `.category-tile*`, `.home-featured*`, and the
+  cinematic `.hero-d*` hero.
+- `merit-badges.css` — browse-grid shell: `.badge-count`, `.badges-grid`
+  (including its `content-visibility` deferral past the sixth card),
+  the `.badge-card` family (`__band`, `__category*`, `__eagle*`,
+  `__image`, `__content`, `--with-image`), and `.req-count`. Generic
+  card-grid CSS despite the filename; the Scouting reading of "badge"
+  lives in the markup, not here.
+- `merit-badge-landing.css` — landing-page bento shell:
+  `.badge-overview`, `.badge-preview*`, `.badge-glance*`,
+  `.badge-resources*`, `.badge-start-cta*`. The *template* that fills it
+  stays in `mbu` (it reads merit-badge front matter); only the CSS is
+  theme-owned.
+
+Sections a consumer keeps for itself, because they are Scouting-specific
+rather than shell: `mbu` styles `.home-eagle*` and `.eagle-group*` in its
+own `css/eagle-required.css`, re-declaring the shared section measure for
+`.home-eagle` since the theme's grouped selector no longer names it. The
+`.discontinued-notice` styling stays with mbu's merit-badge-specific
+partial of the same name, in `css/components/discontinued-notice.css`.
+
+Requirement-rendering shells, extracted from mbu's `drg-` (Digital
+Resource Guide) pages per #150. The `drg-` class prefix was renamed to
+the generic `req-` during extraction — no
 class name here is merit-badge-specific, even though the filenames still
 say `drg`/`merit-badge` (renaming the files themselves would break
 `critical-css.html`'s fixed manifest for no behavioral gain):
@@ -235,13 +272,22 @@ override:
   analytics properties until these are parameterized; treat as an
   override point (replace the file locally), not as configurable today.
 - `critical-css.html`, `non-critical-css.html` — concatenate a **fixed,
-  mbu-specific manifest** of asset paths (e.g. `css/pages/home.css`,
-  `css/components/badge-hero.css`, `css/button-eagle.css`,
-  `css/search.css`, `css/view-transitions.css`, and others under
-  `css/pages/`). These are a hard requirement: a consumer must provide
-  every path in the list (even as an empty file) or `resources.Concat`
-  fails on a nil resource. This is the one theme-owned file that most
-  clearly encodes mbu's specific asset layout rather than a generic one.
+  mbu-specific manifest** of asset paths, in that exact order. Many
+  entries resolve to theme-owned files (the `css/components/` and
+  `css/pages/` files documented above); every path the theme does *not*
+  own, the consumer must supply — even as an empty file — or
+  `resources.Concat` fails on a nil resource. Read the manifest itself
+  for the current split rather than trusting a list here.
+
+  Order matters as much as presence: where a theme file was split so the
+  consumer could keep the non-generic part (`css/eagle-required.css`
+  after `css/pages/merit-badges.css`, `css/badge-view-transitions.css`
+  after `css/view-transitions.css`), the consumer-owned file is
+  concatenated immediately after its parent, which is what keeps the
+  cascade identical to before the split.
+
+  This is the one theme-owned file that most clearly encodes mbu's
+  specific asset layout rather than a generic one.
 
 ## JSON-LD partials
 
