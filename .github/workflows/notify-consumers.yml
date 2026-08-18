@@ -4,6 +4,10 @@ on:
   push:
     branches: [master]
 
+# Requires the CONSUMER_DISPATCH_TOKEN secret: a fine-grained PAT with
+# Contents: Read and write on each consumer repo, since GITHUB_TOKEN
+# can't reach across repos. See mbu#134.
+
 jobs:
   dispatch:
     runs-on: ubuntu-latest
