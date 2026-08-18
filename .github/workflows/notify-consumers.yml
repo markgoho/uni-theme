@@ -1,0 +1,21 @@
+name: Notify consumers of new commits
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # scouting-u joins this list once it consumes uni-theme (mbu#135)
+        consumer: [markgoho/mbu]
+    steps:
+      - name: Dispatch bump event to ${{ matrix.consumer }}
+        env:
+          GH_TOKEN: ${{ secrets.CONSUMER_DISPATCH_TOKEN }}
+        run: |
+          gh api "repos/${{ matrix.consumer }}/dispatches" \
+            -f event_type=uni-theme-bump \
+            -F "client_payload[sha]=${{ github.sha }}"
