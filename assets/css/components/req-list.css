@@ -23,11 +23,14 @@
   grid-template-columns: 1.75rem minmax(0, 1fr);
   align-items: baseline;
   gap: var(--space-2xs);
-  scroll-margin-top: var(--space-m);
   border-radius: var(--radius-md);
 }
 
-.req-list__item:target,
+/* The id lives on .req-list__title (an h1-h6), not this item -- Pagefind's
+   sub-result mechanism requires the heading itself to carry it (a missing
+   or misplaced id pollutes the previous requirement's excerpt). :has()
+   bubbles the highlight up to the whole item regardless. */
+.req-list__item:has(:target),
 .req-list__item:focus-within {
   outline: 2px solid var(--accent);
   outline-offset: 4px;
@@ -49,6 +52,7 @@
   font-size: var(--step-0);
   font-weight: 700;
   color: var(--on-surface);
+  scroll-margin-top: var(--space-m);
 }
 
 .req-list__text {
