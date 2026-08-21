@@ -340,10 +340,15 @@ either missing). `placeholder` and `zeroResults` are optional UI copy,
 defaulting to `"Search..."` / `"No results found"`. `noResultsEvent` and
 `resultClickEvent` are optional Pirsch event names; each is only fired
 by `search.ts` when its param is supplied, so a consumer without Pirsch
-can omit both and get no analytics calls. All four surface as
-`data-search-*` attributes on `#search`. `mbu` passes its pre-extraction
-values (`merit-badge-search-no-results`, `merit-badge-search-result-click`)
-so the Pirsch event taxonomy didn't change when this moved.
+can omit both and get no analytics calls. `pageSize` is an optional int
+overriding Pagefind's own built-in top-level-result page size (5) —
+omit to keep that default; pass it when a consumer's corpus can
+plausibly match more than 5 distinct pages on one query, so a broad
+query doesn't hide real matches behind a "Load more" click (scouting-u
+passes 7, one per rank). All five surface as `data-search-*` attributes
+on `#search`. `mbu` passes its pre-extraction values
+(`merit-badge-search-no-results`, `merit-badge-search-result-click`) so
+the Pirsch event taxonomy didn't change when this moved.
 
 Result-card presentation (thumbnails, excerpt line-clamp, meta tag
 pills) is not part of this partial or `search.css` — see the `search.css`
