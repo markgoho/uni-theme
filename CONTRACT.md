@@ -354,6 +354,14 @@ Result-card presentation (thumbnails, excerpt line-clamp, meta tag
 pills) is not part of this partial or `search.css` — see the `search.css`
 entry under `## Public component CSS classes`.
 
+`search.ts` sets `ranking.termSimilarity: 10` (Pagefind's default is 1.0)
+on every consumer — not a per-consumer param. This demotes short
+fuzzy-match noise (e.g. a query like "knives" against a corpus that only
+has "knife" otherwise surfacing a 1-character "(k)" match) below genuine
+matches when both are present in a result set. It does not produce a
+"no results" state for a query whose only candidate is noise — Pagefind's
+ranking API re-scores results, it never drops one from the list.
+
 ## Asset path collisions
 
 When a theme-owned asset path (e.g. `assets/css/button.css`) and a
