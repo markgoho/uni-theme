@@ -1,0 +1,749 @@
+<!doctype html>
+<!--
+  THROWAWAY PROTOTYPE — uni-theme#12 (part of map #6).
+  Not production code. Lives on branch prototype/unified-search-display.
+
+  Question: what should the unified award search-results display look like?
+  Three structurally different variants of the SAME settled information
+  hierarchy (map #6, "Settled at charting"), switchable via ?variant=A|B|C
+  and the floating bar at the bottom.
+
+  Settled, and therefore identical in all three variants:
+    - Results group by Award. The award panel is NOT fully clickable.
+    - Award title + emblem link to the award page. Award excerpt is inert.
+    - Each matching Requirement is its own sub-panel, clickable as a whole,
+      targeting the requirement's anchor.
+    - Award title carries a render-time site suffix ("Merit Badge", "Rank").
+    - Requirement sub-panel reads "«path» «title»"; path derived at render
+      time from the sub-result anchor, never indexed.
+    - Emblem comes from Pagefind `image` meta, with a site placeholder.
+
+  Up for reaction: layout, density, where the emblem sits, how loud the
+  path is, whether the award excerpt earns its space at all.
+
+  Open in a browser directly:  open prototypes/unified-search-display.prototype.html
+-->
+<html lang="en" class="theme-v2">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PROTOTYPE — unified award search results (uni-theme#12)</title>
+
+    <!-- Real theme tokens, so density and colour are honest. Fonts fall
+         back to system faces (the woff2 files are served by Hugo). -->
+    <link rel="stylesheet" href="../assets/css/colors.css" />
+    <link rel="stylesheet" href="../assets/css/tokens-v2.css" />
+    <link rel="stylesheet" href="../assets/css/spacing.css" />
+    <link rel="stylesheet" href="../assets/css/base.css" />
+    <link rel="stylesheet" href="../assets/css/components/search.css" />
+
+    <style id="prototype-styles">
+      /* ---- prototype chrome (not part of the design under review) ---- */
+      body {
+        background: var(--surface);
+        color: var(--on-surface);
+        font-family: var(--font-body);
+        margin: 0;
+      }
+      .proto-page {
+        max-width: 60rem;
+        margin: 0 auto;
+        padding: var(--space-l) var(--space-m) 8rem;
+        container-type: inline-size;
+      }
+      .proto-switcher {
+        position: fixed;
+        inset-block-end: 1rem;
+        inset-inline-start: 50%;
+        translate: -50% 0;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.5rem 1rem;
+        border-radius: 999px;
+        background: #111;
+        color: #fff;
+        box-shadow: 0 6px 24px rgb(0 0 0 / 35%);
+        font: 600 0.875rem/1 ui-monospace, monospace;
+        z-index: 99;
+      }
+      .proto-switcher button {
+        background: #333;
+        color: #fff;
+        border: 0;
+        border-radius: 999px;
+        width: 1.75rem;
+        height: 1.75rem;
+        cursor: pointer;
+        font-size: 0.875rem;
+      }
+      #proto-label {
+        min-width: 18ch;
+        text-align: center;
+      }
+
+      /* ---- shared across variants: nothing but the emblem placeholder ---- */
+      .award-result__emblem {
+        text-decoration: none;
+      }
+      /* The site-configured placeholder: deliberately drab and ring-only, so
+         a missing emblem reads as "slot reserved", not as real art. This is
+         the common case on scouting-u until the rank art is backfilled. */
+      .emblem--placeholder {
+        display: block;
+        background: var(--surface-sunken);
+      }
+      mark {
+        background: var(--accent-container);
+        color: var(--on-accent-container);
+        padding: 0 0.2em;
+        border-radius: 0.2rem;
+        font-weight: 600;
+        box-decoration-break: clone;
+      }
+
+      /* =====================================================================
+         VARIANT A — "Emblem rail card"
+         mbu's card today, corrected: the whole card is NOT a link. Only the
+         emblem and the award title are. Requirements are bordered tiles.
+         ===================================================================== */
+      .v-a .award-result {
+        display: flex;
+        align-items: stretch;
+        background: var(--surface-raised);
+        border: 1px solid var(--outline-variant);
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-card);
+        overflow: hidden;
+        margin-block-end: var(--space-m);
+      }
+      .v-a .award-result__emblem {
+        flex: 0 0 26%;
+        max-width: 13rem;
+        position: relative;
+        background: var(--surface-sunken);
+      }
+      .v-a .award-result__emblem img,
+      .v-a .award-result__emblem .emblem--placeholder {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .v-a .award-result__body {
+        flex: 1;
+        min-width: 0;
+        padding: var(--space-m);
+      }
+      .v-a .award-result__title {
+        margin: 0 0 var(--space-2xs);
+        font-size: var(--step-1, 1.25rem);
+        line-height: 1.2;
+      }
+      .v-a .award-result__title a {
+        color: var(--accent);
+        font-weight: 700;
+        text-decoration: none;
+      }
+      .v-a .award-result__title a:hover {
+        text-decoration: underline;
+        text-underline-offset: 3px;
+      }
+      .v-a .award-result__excerpt {
+        margin: 0;
+        color: var(--on-surface-muted);
+        font-size: var(--step--1, 0.9rem);
+        line-height: 1.65;
+      }
+      .v-a .award-result__requirements {
+        list-style: none;
+        margin: var(--space-s) 0 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-2xs);
+      }
+      .v-a .requirement-result {
+        position: relative;
+        border: 1px solid var(--outline-variant);
+        border-radius: var(--radius-lg);
+        padding: var(--space-xs) var(--space-s);
+        background: var(--surface);
+        transition:
+          border-color 0.15s ease,
+          background 0.15s ease;
+      }
+      .v-a .requirement-result:hover {
+        border-color: var(--accent);
+        background: var(--accent-wash);
+      }
+      .v-a .requirement-result__title {
+        margin: 0 0 0.15rem;
+        font-size: var(--step-0, 1rem);
+        font-weight: 600;
+        line-height: 1.3;
+      }
+      /* Whole tile clickable — the overlay is sized to the tile, which is
+         the nearest positioned ancestor. */
+      .v-a .requirement-result__title a {
+        color: var(--on-surface);
+        text-decoration: none;
+      }
+      .v-a .requirement-result__title a::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+      }
+      .v-a .requirement-result__path {
+        color: var(--accent);
+        font-weight: 700;
+        margin-inline-end: 0.4em;
+      }
+      .v-a .requirement-result__excerpt {
+        margin: 0;
+        color: var(--on-surface-muted);
+        font-size: var(--step--1, 0.85rem);
+        line-height: 1.55;
+      }
+
+      /* =====================================================================
+         VARIANT B — "Requirement-first rows"
+         The award drops to a slim header band; the requirements are the
+         result. No award excerpt at all. Path is a leading badge.
+         ===================================================================== */
+      .v-b .award-result {
+        margin-block-end: var(--space-l);
+      }
+      .v-b .award-result__header {
+        display: flex;
+        align-items: center;
+        gap: var(--space-xs);
+        padding-block-end: var(--space-2xs);
+        border-block-end: 2px solid var(--outline-variant);
+      }
+      .v-b .award-result__emblem {
+        flex: none;
+        width: 2.75rem;
+        height: 2.75rem;
+        border-radius: 50%;
+        overflow: hidden;
+      }
+      .v-b .award-result__emblem img,
+      .v-b .award-result__emblem .emblem--placeholder {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .v-b .award-result__title {
+        margin: 0;
+        font-size: var(--step-1, 1.2rem);
+        line-height: 1.2;
+        flex: 1;
+        min-width: 0;
+      }
+      .v-b .award-result__title a {
+        color: var(--on-surface);
+        text-decoration: none;
+        font-weight: 700;
+      }
+      .v-b .award-result__title a:hover {
+        color: var(--accent);
+        text-decoration: underline;
+        text-underline-offset: 3px;
+      }
+      .v-b .award-result__count {
+        flex: none;
+        color: var(--on-surface-muted);
+        font-size: var(--step--1, 0.85rem);
+      }
+      .v-b .award-result__requirements {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      .v-b .requirement-result {
+        position: relative;
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 0 var(--space-xs);
+        padding: var(--space-xs) var(--space-2xs);
+        border-block-end: 1px solid var(--outline-variant);
+      }
+      .v-b .requirement-result:hover {
+        background: var(--accent-wash);
+      }
+      .v-b .requirement-result__path {
+        grid-row: 1 / span 2;
+        align-self: start;
+        display: inline-grid;
+        place-items: center;
+        min-width: 2.75rem;
+        padding: 0.15rem 0.5rem;
+        border-radius: var(--radius-full);
+        background: var(--accent-container);
+        color: var(--on-accent-container);
+        font: 700 var(--step--1, 0.8rem) / 1.4 ui-monospace, monospace;
+      }
+      .v-b .requirement-result__title {
+        margin: 0;
+        font-size: var(--step-0, 1rem);
+        font-weight: 600;
+        line-height: 1.35;
+      }
+      .v-b .requirement-result__title a {
+        color: var(--on-surface);
+        text-decoration: none;
+      }
+      .v-b .requirement-result__title a::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+      }
+      .v-b .requirement-result__excerpt {
+        margin: 0.15rem 0 0;
+        color: var(--on-surface-muted);
+        font-size: var(--step--1, 0.85rem);
+        line-height: 1.55;
+      }
+
+      /* =====================================================================
+         VARIANT C — "Split column"
+         Award identity parks in a sticky left column; the requirements get
+         the full right column with no card chrome at all.
+         ===================================================================== */
+      .v-c .award-result {
+        display: grid;
+        grid-template-columns: 12rem 1fr;
+        gap: var(--space-m);
+        padding-block: var(--space-m);
+        border-block-start: 2px solid var(--outline-variant);
+      }
+      .v-c .award-result__identity {
+        position: sticky;
+        top: var(--space-m);
+        align-self: start;
+        text-align: center;
+      }
+      .v-c .award-result__emblem {
+        display: block;
+        width: 100%;
+        aspect-ratio: 1;
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        margin-block-end: var(--space-2xs);
+      }
+      .v-c .award-result__emblem img,
+      .v-c .award-result__emblem .emblem--placeholder {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .v-c .award-result__title {
+        margin: 0 0 0.15rem;
+        font-size: var(--step-0, 1rem);
+        line-height: 1.25;
+      }
+      .v-c .award-result__title a {
+        color: var(--accent);
+        font-weight: 700;
+        text-decoration: none;
+      }
+      .v-c .award-result__title a:hover {
+        text-decoration: underline;
+        text-underline-offset: 3px;
+      }
+      .v-c .award-result__count {
+        color: var(--on-surface-muted);
+        font-size: var(--step--2, 0.78rem);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+      .v-c .award-result__excerpt {
+        margin: var(--space-2xs) 0 var(--space-s);
+        color: var(--on-surface-muted);
+        font-size: var(--step--1, 0.9rem);
+        line-height: 1.6;
+      }
+      .v-c .award-result__requirements {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-xs);
+      }
+      .v-c .requirement-result {
+        position: relative;
+        padding: var(--space-2xs) var(--space-xs);
+        border-inline-start: 3px solid var(--outline-variant);
+        border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      }
+      .v-c .requirement-result:hover {
+        border-inline-start-color: var(--accent);
+        background: var(--accent-wash);
+      }
+      .v-c .requirement-result__title {
+        margin: 0 0 0.15rem;
+        font-size: var(--step-0, 1rem);
+        font-weight: 600;
+        line-height: 1.3;
+        text-indent: -2.6rem;
+        padding-inline-start: 2.6rem;
+      }
+      .v-c .requirement-result__title a {
+        color: var(--on-surface);
+        text-decoration: none;
+      }
+      .v-c .requirement-result__title a::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+      }
+      .v-c .requirement-result__path {
+        display: inline-block;
+        width: 2.4rem;
+        color: var(--accent);
+        font-weight: 700;
+        text-indent: 0;
+      }
+      .v-c .requirement-result__excerpt {
+        margin: 0;
+        color: var(--on-surface-muted);
+        font-size: var(--step--1, 0.85rem);
+        line-height: 1.55;
+      }
+
+      @container (max-width: 40rem) {
+        .v-a .award-result {
+          flex-direction: column;
+        }
+        .v-a .award-result__emblem {
+          flex-basis: auto;
+          max-width: none;
+          aspect-ratio: 16 / 9;
+        }
+        .v-c .award-result {
+          grid-template-columns: 1fr;
+        }
+        .v-c .award-result__identity {
+          position: static;
+          display: flex;
+          align-items: center;
+          gap: var(--space-xs);
+          text-align: start;
+        }
+        .v-c .award-result__emblem {
+          width: 3.5rem;
+          flex: none;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <main class="proto-page">
+      <div class="search-header">
+        <h1>Search</h1>
+        <p class="search-description">
+          Search across 139 merit badges and 7 ranks.
+        </p>
+      </div>
+
+      <!-- Static stand-in for the Pagefind input; not wired to anything. -->
+      <div class="pagefind-ui">
+        <form class="pagefind-ui__form" onsubmit="return false">
+          <input
+            class="pagefind-ui__search-input"
+            value="hiking"
+            aria-label="Search (prototype, inert)"
+          />
+          <button class="pagefind-ui__search-clear" type="button">Clear</button>
+        </form>
+      </div>
+
+      <p class="pagefind-ui__message">3 awards match &ldquo;hiking&rdquo;</p>
+
+      <div id="results"></div>
+    </main>
+
+    <nav class="proto-switcher" aria-label="Prototype variant switcher">
+      <button type="button" data-step="-1" aria-label="Previous variant">
+        &larr;
+      </button>
+      <span id="proto-label">A</span>
+      <button type="button" data-step="1" aria-label="Next variant">
+        &rarr;
+      </button>
+      <button type="button" id="proto-theme" aria-label="Toggle dark mode">
+        &#9681;
+      </button>
+    </nav>
+
+    <!-- The real theme switches dark via html.theme-v2:has(#theme-toggle-checkbox:checked). -->
+    <input type="checkbox" id="theme-toggle-checkbox" hidden />
+
+    <script id="prototype-script">
+      // Stand-in emblem art. Deliberately not real badge art — this is a
+      // shape-and-size stand-in so the rail width can be judged.
+      const EMBLEM = (hue) =>
+        "data:image/svg+xml," +
+        encodeURIComponent(
+          `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+             <rect width="120" height="120" fill="hsl(${hue} 30% 88%)"/>
+             <circle cx="60" cy="60" r="44" fill="hsl(${hue} 35% 72%)"/>
+             <circle cx="60" cy="60" r="34" fill="none"
+                     stroke="hsl(${hue} 45% 35%)" stroke-width="4"/>
+             <path d="M42 70l14-26 10 18 8-10 8 18z"
+                   fill="hsl(${hue} 45% 35%)"/>
+           </svg>`,
+        );
+
+      // The awards below carry the cases that actually decide the design:
+      // a missing emblem (scouting-u ranks today), an 80-char-truncated
+      // lead-sentence fallback title (mbu's common case, not its edge),
+      // a bare "Requirement N" (scouting-u today), and a one-match award.
+      const AWARDS = [
+        {
+          name: "Hiking",
+          label: "Merit Badge",
+          url: "/merit-badges/hiking/",
+          emblem: EMBLEM(90),
+          excerpt:
+            "Show that you know first aid for injuries or illnesses that could occur while <mark>hiking</mark>, including hypothermia, heat reactions, frostbite, dehydration, sunburn, sprained ankle, blisters, insect stings, tick bites, and snakebite.",
+          requirements: [
+            {
+              path: "2.a",
+              title: "Hiking Practices",
+              excerpt:
+                "Explain and demonstrate the principles of <mark>hiking</mark> as they relate to other outdoor activities.",
+            },
+            {
+              path: "4",
+              // 80-char word-boundary cap with ellipsis — the fallback title
+              // partial moving into uni-theme in #13.
+              title:
+                "Take five hikes, each on a different day, and each of continuous miles…",
+              excerpt:
+                "Take five <mark>hikes</mark>, each on a different day, and each of continuous miles. Prepare a written <mark>hike</mark> plan before each hike.",
+            },
+            {
+              path: "7.b",
+              title: "Gear and Footwear",
+              excerpt:
+                "Describe proper clothing and other gear needed for both a warm-weather and a cold-weather <mark>hike</mark>.",
+            },
+          ],
+        },
+        {
+          name: "Tenderfoot",
+          label: "Rank",
+          url: "/ranks/tenderfoot/",
+          emblem: null, // scouting-u rank emblems are backfilled later
+          excerpt:
+            "Present yourself to your leader, prepared for an overnight camping trip. Show the personal and camping gear you will use.",
+          requirements: [
+            {
+              path: "3",
+              // scouting-u's current bare fallback, before #13 lands.
+              title: "Requirement 3",
+              excerpt:
+                "Explain the rules of safe <mark>hiking</mark>, both on the highway and cross-country, during the day and at night.",
+            },
+            {
+              path: "5.b",
+              title: "First Aid",
+              excerpt:
+                "Show first aid for blisters on the heel and palm, and for minor cuts sustained on a <mark>hike</mark>.",
+            },
+          ],
+        },
+        {
+          name: "Backpacking",
+          label: "Merit Badge",
+          url: "/merit-badges/backpacking/",
+          emblem: EMBLEM(200),
+          excerpt:
+            "Do the following: Write a plan for a patrol backpacking trip and share it with your counselor.",
+          requirements: [
+            {
+              path: "9.a",
+              title:
+                "Using Leave No Trace principles, participate in a backpacking…",
+              excerpt:
+                "Using Leave No Trace principles, participate in a backpacking trek of at least two nights and 15 miles, with at least one full day of <mark>hiking</mark>.",
+            },
+          ],
+        },
+      ];
+
+      // Stand-in for the site-configured placeholder emblem.
+      const PLACEHOLDER =
+        "data:image/svg+xml," +
+        encodeURIComponent(
+          `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+             <rect width="120" height="120" fill="hsl(35 12% 88%)"/>
+             <circle cx="60" cy="60" r="36" fill="none" stroke="hsl(35 8% 68%)"
+                     stroke-width="4" stroke-dasharray="7 7"/>
+           </svg>`,
+        );
+
+      const emblemMarkup = (award) =>
+        award.emblem
+          ? `<img src="${award.emblem}" alt="" />`
+          : `<img class="emblem--placeholder" src="${PLACEHOLDER}" alt="" />`;
+
+      const reqUrl = (award, req) => `${award.url}#${req.path}`;
+
+      /* --- Variant A: emblem rail card -------------------------------- */
+      function variantA() {
+        return AWARDS.map(
+          (a) => `
+          <article class="award-result">
+            <a class="award-result__emblem" href="${a.url}" aria-hidden="true" tabindex="-1">
+              ${emblemMarkup(a)}
+            </a>
+            <div class="award-result__body">
+              <h2 class="award-result__title">
+                <a href="${a.url}">${a.name} ${a.label}</a>
+              </h2>
+              <p class="award-result__excerpt">${a.excerpt}</p>
+              <ul class="award-result__requirements">
+                ${a.requirements
+                  .map(
+                    (r) => `
+                  <li class="requirement-result">
+                    <h3 class="requirement-result__title">
+                      <span class="requirement-result__path">${r.path}</span>
+                      <a href="${reqUrl(a, r)}">${r.title}</a>
+                    </h3>
+                    <p class="requirement-result__excerpt">${r.excerpt}</p>
+                  </li>`,
+                  )
+                  .join("")}
+              </ul>
+            </div>
+          </article>`,
+        ).join("");
+      }
+
+      /* --- Variant B: requirement-first rows --------------------------- */
+      function variantB() {
+        return AWARDS.map(
+          (a) => `
+          <section class="award-result">
+            <div class="award-result__header">
+              <a class="award-result__emblem" href="${a.url}" aria-hidden="true" tabindex="-1">
+                ${emblemMarkup(a)}
+              </a>
+              <h2 class="award-result__title">
+                <a href="${a.url}">${a.name} ${a.label}</a>
+              </h2>
+              <span class="award-result__count">${a.requirements.length} match${
+                a.requirements.length === 1 ? "" : "es"
+              }</span>
+            </div>
+            <ul class="award-result__requirements">
+              ${a.requirements
+                .map(
+                  (r) => `
+                <li class="requirement-result">
+                  <span class="requirement-result__path">${r.path}</span>
+                  <h3 class="requirement-result__title">
+                    <a href="${reqUrl(a, r)}">${r.title}</a>
+                  </h3>
+                  <p class="requirement-result__excerpt">${r.excerpt}</p>
+                </li>`,
+                )
+                .join("")}
+            </ul>
+          </section>`,
+        ).join("");
+      }
+
+      /* --- Variant C: split column ------------------------------------- */
+      function variantC() {
+        return AWARDS.map(
+          (a) => `
+          <section class="award-result">
+            <div class="award-result__identity">
+              <a class="award-result__emblem" href="${a.url}" aria-hidden="true" tabindex="-1">
+                ${emblemMarkup(a)}
+              </a>
+              <h2 class="award-result__title">
+                <a href="${a.url}">${a.name} ${a.label}</a>
+              </h2>
+              <p class="award-result__count">${a.requirements.length} match${
+                a.requirements.length === 1 ? "" : "es"
+              }</p>
+            </div>
+            <div>
+              <p class="award-result__excerpt">${a.excerpt}</p>
+              <ul class="award-result__requirements">
+                ${a.requirements
+                  .map(
+                    (r) => `
+                  <li class="requirement-result">
+                    <h3 class="requirement-result__title">
+                      <span class="requirement-result__path">${r.path}</span><a href="${reqUrl(
+                        a,
+                        r,
+                      )}">${r.title}</a>
+                    </h3>
+                    <p class="requirement-result__excerpt">${r.excerpt}</p>
+                  </li>`,
+                  )
+                  .join("")}
+              </ul>
+            </div>
+          </section>`,
+        ).join("");
+      }
+
+      const VARIANTS = {
+        A: ["Emblem rail card", variantA],
+        B: ["Requirement-first rows", variantB],
+        C: ["Split column", variantC],
+      };
+      const KEYS = Object.keys(VARIANTS);
+
+      function render() {
+        const key = new URLSearchParams(location.search).get("variant");
+        const current = VARIANTS[key] ? key : "A";
+        const [name, build] = VARIANTS[current];
+        const results = document.getElementById("results");
+        results.className = "v-" + current.toLowerCase();
+        results.innerHTML = build();
+        document.getElementById("proto-label").textContent =
+          `${current} — ${name}`;
+        return current;
+      }
+
+      function go(step) {
+        const i = KEYS.indexOf(render());
+        const next = KEYS[(i + step + KEYS.length) % KEYS.length];
+        history.replaceState(null, "", `?variant=${next}`);
+        render();
+      }
+
+      document
+        .querySelectorAll(".proto-switcher [data-step]")
+        .forEach((b) =>
+          b.addEventListener("click", () => go(Number(b.dataset.step))),
+        );
+
+      document.getElementById("proto-theme").addEventListener("click", () => {
+        const box = document.getElementById("theme-toggle-checkbox");
+        box.checked = !box.checked;
+      });
+
+      addEventListener("keydown", (e) => {
+        if (/^(INPUT|TEXTAREA)$/.test(e.target.tagName)) return;
+        if (e.key === "ArrowLeft") go(-1);
+        if (e.key === "ArrowRight") go(1);
+      });
+
+      render();
+    </script>
+  </body>
+</html>
