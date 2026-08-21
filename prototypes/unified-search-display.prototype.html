@@ -383,13 +383,17 @@
         border-inline-start-color: var(--accent);
         background: var(--accent-wash);
       }
+      /* The path sits in its own column so short paths still line up. It has
+         to be min-width, not width: a compound path like `4.option2` (see
+         CONTEXT.md) is 3x longer than `2.a` and overlapped the title when
+         this was a fixed-width hanging indent. */
       .v-c .requirement-result__title {
         margin: 0 0 0.15rem;
+        display: flex;
+        gap: 0.6rem;
         font-size: var(--step-0, 1rem);
         font-weight: 600;
         line-height: 1.3;
-        text-indent: -2.6rem;
-        padding-inline-start: 2.6rem;
       }
       .v-c .requirement-result__title a {
         color: var(--on-surface);
@@ -401,11 +405,10 @@
         inset: 0;
       }
       .v-c .requirement-result__path {
-        display: inline-block;
-        width: 2.4rem;
+        flex: none;
+        min-width: 2.4rem;
         color: var(--accent);
         font-weight: 700;
-        text-indent: 0;
       }
       .v-c .requirement-result__excerpt {
         margin: 0;
@@ -436,6 +439,20 @@
         .v-c .award-result__emblem {
           width: 3.5rem;
           flex: none;
+        }
+      }
+
+      /* B's path pill shares the row with the text. A compound path like
+         `4.option2` is wide enough to squeeze the text column on a phone,
+         so below 30rem the pill moves above the title instead. */
+      @container (max-width: 30rem) {
+        .v-b .requirement-result {
+          grid-template-columns: 1fr;
+        }
+        .v-b .requirement-result__path {
+          grid-row: auto;
+          justify-self: start;
+          margin-block-end: 0.25rem;
         }
       }
     </style>
@@ -526,6 +543,14 @@
                 "Take five hikes, each on a different day, and each of continuous miles…",
               excerpt:
                 "Take five <mark>hikes</mark>, each on a different day, and each of continuous miles. Prepare a written <mark>hike</mark> plan before each hike.",
+            },
+            {
+              // Compound path form named in CONTEXT.md — the longest a
+              // layout has to survive.
+              path: "4.option2",
+              title: "Alternate Trek Option",
+              excerpt:
+                "Instead of the five <mark>hikes</mark>, take one continuous trek of at least 20 miles.",
             },
             {
               path: "7.b",
