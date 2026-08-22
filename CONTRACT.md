@@ -151,6 +151,138 @@ attribute (set by the consumer's template, e.g. on `.req-card`/
 analytics call — both names are generic; a consumer without Pirsch loaded
 just skips the call (`typeof pirsch !== "undefined"` guard).
 
+### The `.req-card`/`.req-child` markup, theme-owned
+
+`layouts/partials/req-card.html` (depth-1), `req-child-item.html`
+(depth ≥2, recursive), `req-children.html` (dispatches a group of
+children to the `rail`/`chips`/`options` variant it's told to use),
+`req-text.html`, and `req-pill.html` render the full `.req-card`/
+`.req-child` markup `deep-link.ts` and `merit-badge-requirements.css`
+depend on. A consumer maps its own data into a **node dict** and calls
+`req-card.html` once per top-level requirement:
+
+```
+path          - dot-separated path, e.g. "3.a"                 (required)
+marker        - bubble/marker text (depth-1 number, or nested
+                marker "a."/"beef-cattle")                      (required)
+content_name  - badge/rank name, for data-content-name + Pirsch (required)
+title         - curated title, "" if none                       (optional)
+text          - markdown body text, "" if none/boilerplate      (optional)
+eyebrow       - group label shown above title, depth-1 only     (optional)
+pill          - {type: "select"|"all", count: N} or nil         (optional)
+guide_href    - resolved study-guide URL, "" if none             (optional)
+resources     - [{title, url}]                                  (optional)
+children      - [node, ...], same shape, recursive              (optional)
+variant       - "rail" | "chips" | "options", default "rail"    (optional)
+ring          - bool, options-variant marker-as-ring; default true (optional)
+transition_num       - bool, number bubble carries a view-transition-name (optional, default false)
+text_transition_key  - override the text block's transition key, default this node's own path-derived key (optional)
+```
+
+Every field is a pre-resolved scalar or slice — no Hugo `Page` object,
+no site-specific lookup, ever passed in or performed inside these
+partials. Content-bound resolution (a DRG guide-page lookup, `mbu`'s
+`req-guide-lookup.html`/`req-guide-fragment.html`; a group's curated-vs-
+derived title and whether every sibling in it resolved one;
+`subrequirement_mode` → `pill`/`variant`) is the calling site's own job,
+done before it builds the node dict — see `mbu`'s ADR 0002 and
+`scouting-university`'s ADR 0005/0006/0008 for why that split holds.
+**`variant` is never computed inside the theme.** A heuristic over
+group content (e.g. "children are all short leaves → chips") belongs to
+whichever consumer's data it was derived from; auto-applying one
+consumer's heuristic to another's data is exactly the kind of silent
+behavior change this split exists to prevent.
+
+**Empty-title-slot policy** (`layouts/partials/text/heading-for.html`):
+a heading always renders and always carries `id="{path}"` on an actual
+`h1`-`h6` — see the Pagefind invariant below — even with no curated
+`title`:
+
+- `title` set → shown normally, separate text block below.
+- `title` empty, `text` a single short sentence (`text/lead-
+  sentence.html` captures it whole) → the full text renders **visibly**
+  as the heading (`req-card__title--verbatim`/`req-child__title--
+  verbatim`), no separate text block. Nothing would be left to show
+  there, and rendering it hidden instead would double the one sentence
+  in `deep-link.ts`'s copy-text paste (title line + body line, same
+  sentence twice).
+- `title` empty, `text` longer/multi-sentence → a derived lead sentence
+  renders as a **visually-hidden** heading; the full text renders
+  visibly in a separate text block.
+- `title` and `text` both empty (a bare group stem) → `"Requirement
+  {path}"`, hidden.
+
+`req-card__title--verbatim`/`req-child__title--verbatim` are theme-owned
+(styled in `merit-badge-requirements.css`, next to the base title
+rules) — a consumer never supplies its own CSS for them.
+
+**Chips never promote.** A chip's marker and text sit directly under its
+`<li>` with no `.req-child__body`/`.req-card__panel` wrapper (see below)
+— `req-child-item.html`'s chips branch always renders the hidden-heading
+shape regardless of what `text/heading-for.html` returned, since a chip
+is already a short single-sentence label by construction (the exact
+condition that triggers promotion elsewhere) and has nowhere else for
+promoted text to go.
+
+`layouts/partials/text/transition-key.html` derives the `view-
+transition-name` key from a path (`"3.a"` → `"3-a"`); use it rather than
+reimplementing the dots-to-hyphens-plus-digit/letter-boundary pattern
+per call site — a consumer's own landing-page preview partial should
+call the same helper so its keys agree with the requirements page's.
+
+### The `deep-link.ts` markup contract
+
+`deep-link.ts` selects, dock-targets, and copies text for a requirement
+purely by reading this markup — nothing here is theme-internal, a
+consumer's own `req-card.html`/`req-child-item.html` output (whether
+rendered via the shared partials above or, historically, a local copy)
+must match it exactly:
+
+- **`[data-anchor="{path}"]`** on the whole node (`<li class="req-card">`
+  at depth 1, `<li class="req-child req-child--{variant}">` nested) is
+  the single thing that makes an element "a requirement" to this script.
+  `tabindex="-1"` is required on it (focus-driven scroll-into-view and
+  the no-JS `:focus-within` fallback both depend on it).
+- **`data-content-name`** (own or nearest ancestor) labels the
+  `requirement-copy-text` Pirsch event.
+- **`data-guide`** (optional) is the study-guide URL; omitted entirely
+  when there is none — the dock's guide button hides itself on
+  `href=""`.
+- **Body scope**: `:scope > .req-card__panel` (depth 1) or `:scope >
+  .req-child__body` (nested). **Chips have neither** — `deep-link.ts`
+  falls back to reading `:scope > .req-child__text` directly off the
+  `<li>` when no scope wrapper is found.
+- **Title**: `:scope > .req-card__header .req-card__title` (depth 1) /
+  `:scope > .req-child__title-row > .req-child__title` (nested).
+- **Text**: `:scope > .req-card__text` / `:scope > .req-child__text`.
+- **Resources**: `:scope > .resources li a`.
+- **Recursion**: `:scope > .req-children > [data-anchor]`.
+
+`deep-link.ts`'s copy-text paste (`requirementText()`) reads title then
+body: when title is present it emits `"{path}. {title}"` then the body
+on the next line; when title is empty it emits `"{path}. {body}"`.
+Because a `visually-hidden` title still has real `textContent`, a
+promoted node (title = full text, no body) pastes as one line; a hidden-
+derived-heading node (title = lead sentence, body = full text including
+that same sentence) relies on `req-text.html`'s title-echo stripping to
+avoid pasting the lead sentence twice — this is why the empty-title-slot
+policy above and `req-text.html`'s stripping logic have to agree with
+each other, not just with what's on screen.
+
+### The Pagefind non-blank-heading invariant
+
+**The id goes on the heading, never the wrapping `<li>`, and the heading
+is never blank.** Pagefind's Route A sub-result grouping needs the `id`
+on an actual `h1`-`h6` with real text to bound an excerpt region
+correctly; an `id` on the `<li>` instead yields no sub-results at all,
+and a blank heading yields an unusable sub-result title. Both `mbu` and
+`scouting-university` re-derived this independently, empirically,
+against a live `pagefind.search()` index rather than from Pagefind's own
+docs. `text/heading-for.html`'s fallback chain (derived lead sentence,
+then `"Requirement {path}"`) exists entirely to guarantee this — see
+indexing convention 1 below, which states the id-placement half of the
+same rule.
+
 ## Dark mode
 
 Dark mode is the `.dark` class on `<html>`, set before first paint by
