@@ -316,6 +316,25 @@ pages with `.Layout "requirements"` render "Requirements"; everything
 else uses `.Title`. A consumer without those layouts gets plain
 `.Title` crumbs — harmless, not an error.
 
+## Text utilities
+
+`partials/text/lead-sentence.html` reduces a block of markdown to its
+leading sentence as plain text: `markdownify` → `plainify` → first
+sentence → terminal punctuation dropped → capped at 80 characters on a
+word boundary with a trailing ellipsis. The return value is therefore
+never longer than 81 characters.
+
+Params (dict): `text` — the source markdown. Returns a plain-text string.
+
+Empty in, empty out. A caller that needs a guaranteed non-blank result —
+an id-bearing heading under the Pagefind sub-result convention, say —
+must supply its own placeholder.
+
+Its reason to exist is headings: a requirement whose title lookup comes
+up empty still needs a heading with real, distinct text, and the
+requirement's own opening words beat a repeated "Requirement N"
+placeholder for both accessible names and search sub-result titles.
+
 ## Search page
 
 `partials/search/page.html` renders the search page shell (breadcrumb,
