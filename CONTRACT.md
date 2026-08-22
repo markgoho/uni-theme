@@ -471,6 +471,23 @@ mapping as `partials/breadcrumb.html` below. Both are override points
 (replace the file locally per the `theme/logo.html` precedent), not
 parameterized.
 
+`partials/json-ld/merit-badge-landing.html` and
+`merit-badge-requirements.html` render `Course` schema for a badge's
+landing and requirements pages; `drg-index.html` and
+`drg-requirement.html` render `LearningResource` schema for its Digital
+Resource Guide. All four are merit-badge-shaped, not generic: the
+`Course` pair reads `hugo.Data "merit-badges"` keyed by
+`.File.ContentBaseName`/`$badge.File.ContentBaseName` for fields like
+`slug`, `requirements`, `eagle_required`, and `pamphlet_url`; the
+`LearningResource` pair instead expects `.Params.badge_name`/
+`.Params.guide_nav` on the calling page. A future rank-schema consumer
+needs its own partials, not a dict-driven call into these —
+scouting-u's rank data has no `pamphlet_url`/`eagle_required`/
+`subrequirements` equivalent (see uni-theme#23). `drg-index.html`'s
+provider name reads `.Site.Title`; everything else that names the org
+hardcodes "Scouting America" as the awarding body, which is correct for
+any Scouting America program, not mbu-specific.
+
 ## Breadcrumb
 
 `partials/breadcrumb.html` renders the ancestor-to-current trail via
