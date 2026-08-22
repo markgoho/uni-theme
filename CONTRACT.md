@@ -107,9 +107,16 @@ Content-page shells (#152):
   lives in the markup, not here.
 - `merit-badge-landing.css` — landing-page bento shell:
   `.badge-overview`, `.badge-preview*`, `.badge-glance*`,
-  `.badge-resources*`, `.badge-start-cta*`. The *template* that fills it
-  stays in `mbu` (it reads merit-badge front matter); only the CSS is
-  theme-owned.
+  `.badge-resources*`, `.badge-start-cta*`. `.badge-preview*` and
+  `.badge-start-cta*` stay filled by each consumer's own template (it
+  reads merit-badge/rank front matter). `.badge-glance*`/
+  `.badge-resources*` markup is filled by
+  `layouts/partials/glance-card.html`/`resources-card.html` (#29),
+  which take a generic rows slice ({icon, label, value} / {icon, label,
+  url}) — callers own
+  which facts/links exist and pre-compute row data from their own
+  domain (mbu's badge rows differ from scouting-u's rank rows), but not
+  the row markup itself.
 
 Sections a consumer keeps for itself, because they are Scouting-specific
 rather than shell: `mbu` styles `.home-eagle*` and `.eagle-group*` in its
