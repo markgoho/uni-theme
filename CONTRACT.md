@@ -70,11 +70,15 @@ pulls both in. `assets/css/components/` holds classed, opt-in UI pieces:
   `.req-external-link`/`.req-download`, `.req-video`, `.req-next-page`,
   `.req-experience-card`, `.req-org-card`, `.req-tabs`.
 
-- `badge-hero.css` — `.badge-hero` and its `__bg`/`__inner`/`__content`/
-  `__eyebrow`/`__title`/`__lead`/`__meta`/`__actions`/`__image*` parts,
+- `badge-hero.css` — `.badge-hero` and its `__backdrop`/`__glow`/`__grid`/
+  `__content`/`__eyebrow-row`/`__eyebrow`/`__eagle-chip`/`__pill`/
+  `__title`/`__lead`/`__ctas`/`__cta`/`__emblem-col`/`__emblem` parts,
   plus the `--hero-on`/`--hero-on-muted` pair it defines for its own
   light/dark text split. "Badge" here is the hero's own name, not a
-  merit-badge dependency.
+  merit-badge dependency. Paired with `layouts/partials/hero.html` (#26),
+  which owns the `.badge-hero-wrap`/`.badge-hero` markup shape; callers
+  supply pre-rendered eyebrow/backdrop/emblem HTML and own their own
+  domain derivation (icons, category links, view-transition-name values).
 
 `callout.css`, `nav-card.css`, and `forms.css` currently have no markup
 in `mbu` using their classes — they came from mbu unused, not vetted
