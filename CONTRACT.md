@@ -52,14 +52,15 @@ pulls both in. `assets/css/components/` holds classed, opt-in UI pieces:
 - `forms.css` — `.form-container`, `.form`, `.search-form`, `.date-grid`,
   `.form__label`/`__input`/`__error-message`/`__confirmation`, plus bare
   `fieldset`/`legend` styling.
-- `search.css` — the base Pagefind UI layer: `.pagefind-ui` custom-property
-  mapping, `.pagefind-ui__form`/`__search-input`/`__search-clear`/
-  `__filter-panel`/`__message`/`__loading`/`__button`, plus
-  `.search-header`/`.search-description`. Paired with
-  `partials/search/page.html` and `partials/search/scripts.html` — see
-  `## Search page`. Result-card presentation (thumbnails, excerpt
-  line-clamp, meta tag pills) is consumer-specific and stays out of this
-  file; `mbu` keeps its own `search.css` for that.
+- `search.css` — the whole search page: `.search-header`/`.search-description`,
+  the form (`.search__form`/`__input`/`__clear`/`__message`/`__more`), and
+  the results display (`.award-result` and its `__emblem`/`__body`/`__title`/
+  `__requirements`, `.requirement-result` and its `__title`/`__path`/
+  `__excerpt`). Paired with `partials/search/page.html` and
+  `partials/search/scripts.html` — see `## Search page`. Result-card
+  presentation is theme-owned as of uni-theme#14, so a consumer no longer
+  ships result CSS of its own: `assets/css/search.css` in a consumer is
+  **not loaded** and should be deleted.
 - `drg-blocks.css` — the guide page's content blocks, all under the
   `req-` prefix despite the filename (see `## Page CSS`): `.req-callout`
   (`--safety`/`--fact`/`--tip`), `.req-be-prepared`, `.req-checklist`
@@ -337,49 +338,115 @@ placeholder for both accessible names and search sub-result titles.
 
 ## Search page
 
-`partials/search/page.html` renders the search page shell (breadcrumb,
-`<h1>`/description header, and the `#search` mount point Pagefind's UI
-attaches to); `partials/search/scripts.html` is the paired
-`footer-scripts` partial that loads `/pagefind/pagefind-ui.js` and the
-built `assets/ts/search.ts`. A consumer's own build step must produce
-`/pagefind/` (e.g. `bunx pagefind --site public`) — that indexing step is
-not theme-owned.
+`partials/search/page.html` renders the whole search page: breadcrumb,
+`<h1>`/description header, the search form, and the `#search-results`
+region. `partials/search/scripts.html` is the paired `footer-scripts`
+partial that loads the built `assets/ts/search.ts`. A consumer's own
+build step must produce `/pagefind/` (e.g. `bunx pagefind --site public`)
+— that indexing step is not theme-owned.
+
+**Pagefind's Default UI is not used.** `search.ts` renders results itself
+against the raw Pagefind API (uni-theme#14), so `/pagefind/pagefind-ui.js`
+is never loaded and no `.pagefind-ui__*` class exists on the page.
 
 ```
 {{ define "main" }}
-  {{ partial "search/page.html" (dict "page" . "description" "…") }}
+  {{ partial "search/page.html" (dict "page" . "description" "…" "awardLabel" "Merit Badge") }}
 {{ end }}
 {{ define "footer-scripts" }}
   {{ partial "search/scripts.html" . }}
 {{ end }}
 ```
 
-`page.html` params: `page` and `description` are required (`errorf` on
-either missing). `placeholder` and `zeroResults` are optional UI copy,
-defaulting to `"Search..."` / `"No results found"`. `noResultsEvent` and
-`resultClickEvent` are optional Pirsch event names; each is only fired
-by `search.ts` when its param is supplied, so a consumer without Pirsch
-can omit both and get no analytics calls. `pageSize` is an optional int
-overriding Pagefind's own built-in top-level-result page size (5) —
-omit to keep that default; pass it when a consumer's corpus can
-plausibly match more than 5 distinct pages on one query, so a broad
-query doesn't hide real matches behind a "Load more" click (scouting-u
-passes 7, one per rank). All five surface as `data-search-*` attributes
-on `#search`. `mbu` passes its pre-extraction values
+`page.html` params: `page`, `description`, and `awardLabel` are required
+(`errorf` on any missing). `awardLabel` is the suffix appended to each
+result's award title at render time — `"Hiking"` renders as `"Hiking
+Merit Badge"` — so the suffix is never indexed and never has to be
+repeated in content. `emblemPlaceholder` is an optional URL for the image
+shown in an award's emblem rail when Pagefind has no `image` meta for
+that page; omit it and the rail renders an empty tinted ground rather
+than a broken image. `placeholder` and `zeroResults` are optional UI
+copy, defaulting to `"Search..."` / `"No results found"`.
+`noResultsEvent` and `resultClickEvent` are optional Pirsch event names;
+each is only fired by `search.ts` when its param is supplied, so a
+consumer without Pirsch can omit both and get no analytics calls.
+`pageSize` is an optional int — how many award panels render before the
+"Load more" button appears, defaulting to 5. It is now theme-implemented
+pagination over Pagefind's raw result list rather than a pass-through to
+Pagefind's own UI; behavior is unchanged. Raise it when a consumer's
+corpus can plausibly match more than 5 distinct pages on one query, so a
+broad query doesn't hide real matches behind a click (scouting-u passes
+7, one per rank). All optional params surface as `data-search-*`
+attributes on `#search`. `mbu` passes its pre-extraction event values
 (`merit-badge-search-no-results`, `merit-badge-search-result-click`) so
-the Pirsch event taxonomy didn't change when this moved.
+the Pirsch event taxonomy has never changed.
 
-Result-card presentation (thumbnails, excerpt line-clamp, meta tag
-pills) is not part of this partial or `search.css` — see the `search.css`
-entry under `## Public component CSS classes`.
+### Indexing conventions
+
+A consumer's own requirement markup decides the quality of this display,
+because `search.ts` reads Pagefind's index and nothing else. Five rules,
+each of them found by reading live `pagefind.search()` output rather than
+inferred from Pagefind's docs — the reasoning is recorded in
+[ADR 0001](docs/adr/0001-pagefind-search-indexing-contract.md).
+
+1. **The anchor id goes on the requirement's heading**, not on the
+   wrapping `<li>`/`<article>`. Pagefind builds a sub-result per
+   `id`-bearing heading; an id on the wrapper yields no sub-results at
+   all. The id's text is the requirement path the tile renders.
+2. **`data-pagefind-ignore` every non-prose span that renders before its
+   own heading** — markers, number bubbles, rings, group eyebrows, mode
+   pills. Pagefind attributes pre-heading text to the *previous* region,
+   so an unignored span lands in the wrong requirement's excerpt (mbu#162).
+3. **Scope the index with one `data-pagefind-body`** on the requirement
+   list wrapper — not the whole page, not one per requirement. Page-level
+   `data-pagefind-meta` outside it is still read.
+4. **Index only award requirement pages.** The renderer treats one
+   Pagefind result as one award panel, so any other indexed page renders
+   as an award with no requirements. The search page itself carries no
+   `data-pagefind-body`.
+5. **No `data-pagefind-index-attrs`.** It inlines the named attributes'
+   *values* into the indexed text; it is not a metadata-only mechanism.
+   Keep the attributes for a consumer's own JS, drop the directive.
+
+A doubled or foreign excerpt in the results is the symptom of rule 2 being
+broken somewhere in the consumer's markup. The theme does not paper over
+it — see the excerpt note below.
+
+### Results display
+
+Results group by Award: one `.award-result` panel per matching page, with
+an emblem rail, the award title, and one `.requirement-result` tile per
+matching Requirement. The panel as a whole is not a link — the emblem and
+the award title point at the award page, and each requirement tile is its
+own click target, pointing at that requirement's anchor.
+
+Three things the renderer reads from a consumer's index, all governed by
+the indexing conventions above:
+
+- **`meta.title`** is the bare award name, with no label suffix. Adding
+  the suffix in content would double-stamp it.
+- **`sub_result.anchor.id` is the requirement path** (`2`, `2.a`,
+  `4.option2`), shown as the tile's path prefix. An id that doesn't match
+  that shape still renders its tile, just without a path.
+- **`meta.image`** (via `data-pagefind-meta="image[src]"`) is the award
+  emblem. Absent, `emblemPlaceholder` fills the rail.
+
+Pagefind's sub-result excerpt begins with the heading's own text, so a
+requirement whose heading comes from `partials/text/lead-sentence.html`
+would otherwise render its title twice over. `search.ts` strips a leading
+repeat of the title from the excerpt and drops the excerpt entirely when
+too little is left. It does **not** compensate for marker text leaking
+into an excerpt — that means a `data-pagefind-ignore` is missing in the
+consumer's own markup.
 
 `search.ts` sets `ranking.termSimilarity: 10` (Pagefind's default is 1.0)
 on every consumer — not a per-consumer param. This demotes short
 fuzzy-match noise (e.g. a query like "knives" against a corpus that only
 has "knife" otherwise surfacing a 1-character "(k)" match) below genuine
-matches when both are present in a result set. It does not produce a
-"no results" state for a query whose only candidate is noise — Pagefind's
-ranking API re-scores results, it never drops one from the list.
+matches when both are present in a result set. Because Pagefind's ranking
+API re-scores results and never drops one, `search.ts` additionally
+suppresses the entire result set when the best score falls below its own
+`FUZZY_MATCH_FLOOR`, showing `zeroResults` instead — see uni-theme#5.
 
 ## Asset path collisions
 
