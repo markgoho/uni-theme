@@ -463,22 +463,41 @@ else uses `.Title`. A consumer without those layouts gets plain
 
 ## Text utilities
 
-`partials/text/lead-sentence.html` reduces a block of markdown to its
-leading sentence as plain text: `markdownify` → `plainify` →
-`htmlUnescape` (undoes `markdownify`'s own smart-quote entities, e.g.
-`'` → `&rsquo;`, that `plainify` doesn't decode and raw output would
-otherwise double-escape) → first sentence → terminal punctuation dropped
-→ capped at 80 characters on a word boundary with a trailing ellipsis.
-The return value is therefore never longer than 81 characters unless
-`uncapped` is set.
+Two internal partials resolve `text_format` so downstream code doesn't
+have to. Neither takes a default for `text_format` — both `errorf` on
+anything other than `"markdown"`/`"html"`, since the node-dict default
+(`"markdown"`) lives exactly once, at `req-card.html`/
+`req-child-item.html` per the node dict above; a forgotten pass anywhere
+downstream now fails the build instead of silently defaulting to the
+format that strips a consumer's HTML.
 
-Params (dict): `text` — the source markdown (or HTML — see
-`text_format`). `text_format` — `"markdown"` | `"html"`, default
-`"markdown"`; `"html"` skips `markdownify`. `uncapped` — bool, default
-false; skips the 80-character cap, for `text/heading-for.html`'s own
-promotion test, which needs the full sentence, not a capped one, when
-deciding whether a requirement's text is short enough to promote.
-Returns a plain-text string.
+`partials/text/plain-text.html` resolves text to a plain-text string:
+`markdownify` → `plainify` → `htmlUnescape` for `"markdown"`; `plainify`
+→ `htmlUnescape` for `"html"` (the `htmlUnescape` undoes `markdownify`'s
+own smart-quote entities, e.g. `'` → `&rsquo;`, that `plainify` doesn't
+decode and raw output would otherwise double-escape). Params: `text`,
+`text_format` (required). Returns a plain-text string.
+
+`partials/text/render.html` renders text as safe HTML: `markdownify` for
+`"markdown"`, `safeHTML` for `"html"`. Params: `text`, `text_format`
+(required). Returns safe HTML. `req-text.html` and
+`req-child-item.html`'s chips variant both call this for their final
+output, rather than each branching on `text_format` itself.
+
+`partials/text/lead-sentence.html` reduces already-resolved plain text
+(the output of `text/plain-text.html`) to its leading sentence: first
+sentence → terminal punctuation dropped → capped at 80 characters on a
+word boundary with a trailing ellipsis. The return value is therefore
+never longer than 81 characters unless `uncapped` is set. It does not
+know about `text_format` at all — `text/heading-for.html` resolves
+plain text once and passes the same resolved string into both its
+capped and uncapped call, rather than each call re-deriving it.
+
+Params (dict): `text` — plain text. `uncapped` — bool, default false;
+skips the 80-character cap, for `text/heading-for.html`'s own promotion
+test, which needs the full sentence, not a capped one, when deciding
+whether a requirement's text is short enough to promote. Returns a
+plain-text string.
 
 Empty in, empty out. A caller that needs a guaranteed non-blank result —
 an id-bearing heading under the Pagefind sub-result convention, say —
