@@ -122,17 +122,20 @@ say `drg`/`merit-badge` (renaming the files themselves would break
 `critical-css.html`'s fixed manifest for no behavioral gain):
 
 - `drg.css` — the guide page shell: `.req-page-main`/`.req-page`/
-  `.req-page-body`/`.req-body-grid`/`.req-content`, the desktop
-  `.req-sidebar`(`-wrap`)/`.req-nav` and mobile `.req-mobile-nav` navs,
-  `.req-rail` (paired with `.req-rail__inner` in `drg-blocks.css` and
-  `req-rail.ts`), `.req-header`, `.req-footer-nav`, `.req-illustration`,
-  `.req-table-scroll`.
+  `.req-page-body`/`.req-body-grid`/`.req-content`, the desktop `.req-nav`
+  and mobile `.req-mobile-nav` navs, `.req-rail` (paired with
+  `.req-rail__inner` in `drg-blocks.css` and `req-rail.ts`), `.req-header`,
+  `.req-footer-nav`, `.req-illustration`, `.req-table-scroll`.
+  `.req-sidebar`(`-wrap`) is defined once, in
+  `merit-badge-requirements.css` below, since `drg.css` always loads
+  alongside it (see #3 — two divergent definitions of the same selector
+  silently cascade-fought each other).
 - `drg-print.css` — the guide's print stylesheet: `.req-worksheet` and its
   parts, `.req-print-header`/`.req-print-btn`/`.req-print-divider`/
   `.req-print-section`, plus `@media print` rules hiding `drg.css`'s and
   `drg-blocks.css`'s interactive chrome.
 - `merit-badge-requirements.css` — the plain requirements-page shell:
-  `.req-page`/`.req-main`/`.req-sidebar`, the requirement-tree card family
+  `.req-page`/`.req-main`/`.req-sidebar`(`-wrap`), the requirement-tree card family
   `.req-card`/`.req-child`(`-item`)/`.req-children` (`--chips`/`--options`/
   `--rail` variants), `.req-dock`, `.req-pill`, `.req-timeline`,
   `.req-toast`, `.req-guide-lookup`, `.req-text-list` (a node's structured
