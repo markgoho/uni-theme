@@ -365,8 +365,12 @@ Merit Badge"` — so the suffix is never indexed and never has to be
 repeated in content. `emblemPlaceholder` is an optional URL for the image
 shown in an award's emblem rail when Pagefind has no `image` meta for
 that page; omit it and the rail renders an empty tinted ground rather
-than a broken image. `placeholder` and `zeroResults` are optional UI
-copy, defaulting to `"Search..."` / `"No results found"`.
+than a broken image. `placeholder`, `zeroResults`, and `minQueryHint` are
+optional UI copy, defaulting to `"Search..."` / `"No results found"` /
+`"Type at least 3 characters to search."`. `minQueryHint` replaces
+`zeroResults` while the field holds 1-2 characters, since Pagefind's
+index isn't queried below `search.ts`'s own `MIN_QUERY_LENGTH` of 3 — an
+empty field shows neither message.
 `noResultsEvent` and `resultClickEvent` are optional Pirsch event names;
 each is only fired by `search.ts` when its param is supplied, so a
 consumer without Pirsch can omit both and get no analytics calls.
@@ -434,10 +438,19 @@ the indexing conventions above:
 Pagefind's sub-result excerpt begins with the heading's own text, so a
 requirement whose heading comes from `partials/text/lead-sentence.html`
 would otherwise render its title twice over. `search.ts` strips a leading
-repeat of the title from the excerpt and drops the excerpt entirely when
-too little is left. It does **not** compensate for marker text leaking
-into an excerpt — that means a `data-pagefind-ignore` is missing in the
-consumer's own markup.
+repeat of the title from the excerpt. When a requirement's whole body
+*is* its lead sentence (a short, single-sentence "chip" requirement) both
+repeats strip away to nothing; rather than showing no excerpt at all,
+`search.ts` falls back to leaving one repeat standing, so the match stays
+visible. A tile whose excerpt is still empty after that (a grouping
+heading like "5 Hiking" that matched on title text alone, with no body of
+its own) is dropped entirely whenever one of its own child requirements
+is also in the result set — the assumption is that the child's tile
+already carries the match. `search.ts` also moves a leading/trailing
+punctuation character out of a Pagefind `<mark>` (e.g. `hammer,` renders
+as `<mark>hammer</mark>,`) so only the matched word is highlighted. None
+of this compensates for marker text leaking into an excerpt — that means
+a `data-pagefind-ignore` is missing in the consumer's own markup.
 
 `search.ts` sets `ranking.termSimilarity: 10` (Pagefind's default is 1.0)
 on every consumer — not a per-consumer param. This demotes short
