@@ -3,7 +3,7 @@ name: Notify consumers of new commits
 on:
   push:
     branches: [master]
-    paths: &watched-paths
+    paths:
       - "assets/**"
       - "layouts/**"
       - "hugo.toml"
@@ -11,7 +11,13 @@ on:
       - "exampleSite/**"
       - ".github/workflows/notify-consumers.yml"
   pull_request:
-    paths: *watched-paths
+    paths:
+      - "assets/**"
+      - "layouts/**"
+      - "hugo.toml"
+      - "go.mod"
+      - "exampleSite/**"
+      - ".github/workflows/notify-consumers.yml"
 
 # Requires the CONSUMER_DISPATCH_TOKEN secret: a fine-grained PAT with
 # Contents: Read and write on each consumer repo, since GITHUB_TOKEN
@@ -19,6 +25,28 @@ on:
 # include markgoho/scouting-u before this matrix entry will work there.
 
 jobs:
+  # A push/PR touching ONLY exampleSite/** or this workflow file (a
+  # fixture tweak, say) must still validate but must NOT dispatch a bump
+  # PR -- nothing consumer-relevant changed. dispatch below reads
+  # consumer_relevant to preserve that: it fires on push only when the
+  # ORIGINAL, narrower path set (assets/layouts/hugo.toml/go.mod) is
+  # what changed.
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      consumer_relevant: ${{ steps.filter.outputs.consumer_relevant }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            consumer_relevant:
+              - "assets/**"
+              - "layouts/**"
+              - "hugo.toml"
+              - "go.mod"
+
   # Builds exampleSite/, a minimal Hugo site that imports this repo as a
   # local Hugo Module and renders one req-card.html fixture per
   # text_format value (see uni-theme#24 and CONTRACT.md's "Text
@@ -61,8 +89,11 @@ jobs:
           grep -q 'class="footnote-ref"' public/index.html
 
   dispatch:
-    needs: build-fixture
-    if: github.event_name == 'push'
+    needs: [changes, build-fixture]
+    if: >-
+      github.event_name == 'push' &&
+      needs.changes.outputs.consumer_relevant == 'true' &&
+      needs.build-fixture.result == 'success'
     runs-on: ubuntu-latest
     strategy:
       matrix:

@@ -19,9 +19,9 @@
   {{ errorf "text/render.html: text_format must be \"markdown\" or \"html\", got %q" $textFormat }}
 {{ end }}
 
-{{ $rendered := $text | markdownify }}
-{{ if eq $textFormat "html" }}
-  {{ $rendered = $text | safeHTML }}
+{{ $rendered := $text | safeHTML }}
+{{ if ne $textFormat "html" }}
+  {{ $rendered = $text | markdownify }}
 {{ end }}
 
 {{ return $rendered }}
