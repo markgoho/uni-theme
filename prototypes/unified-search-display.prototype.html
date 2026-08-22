@@ -620,7 +620,11 @@
 
       const reqUrl = (award, req) => `${award.url}#${req.path}`;
 
-      /* --- Variant A: emblem rail card -------------------------------- */
+      /* --- Variant A: emblem rail card — CHOSEN ------------------------
+         Amended after the pick (uni-theme#12): the award-level excerpt is
+         gone, borrowed from B. It was inert text competing with the
+         requirement matches below it. The emblem rail stays full-bleed
+         even with no art, so a mixed result list holds one grid.        */
       function variantA() {
         return AWARDS.map(
           (a) => `
@@ -632,7 +636,6 @@
               <h2 class="award-result__title">
                 <a href="${a.url}">${a.name} ${a.label}</a>
               </h2>
-              <p class="award-result__excerpt">${a.excerpt}</p>
               <ul class="award-result__requirements">
                 ${a.requirements
                   .map(
