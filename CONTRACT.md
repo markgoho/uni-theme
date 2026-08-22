@@ -381,6 +381,37 @@ attributes on `#search`. `mbu` passes its pre-extraction event values
 (`merit-badge-search-no-results`, `merit-badge-search-result-click`) so
 the Pirsch event taxonomy has never changed.
 
+### Indexing conventions
+
+A consumer's own requirement markup decides the quality of this display,
+because `search.ts` reads Pagefind's index and nothing else. Five rules,
+each of them found by reading live `pagefind.search()` output rather than
+inferred from Pagefind's docs — the reasoning is recorded in
+[ADR 0001](docs/adr/0001-pagefind-search-indexing-contract.md).
+
+1. **The anchor id goes on the requirement's heading**, not on the
+   wrapping `<li>`/`<article>`. Pagefind builds a sub-result per
+   `id`-bearing heading; an id on the wrapper yields no sub-results at
+   all. The id's text is the requirement path the tile renders.
+2. **`data-pagefind-ignore` every non-prose span that renders before its
+   own heading** — markers, number bubbles, rings, group eyebrows, mode
+   pills. Pagefind attributes pre-heading text to the *previous* region,
+   so an unignored span lands in the wrong requirement's excerpt (mbu#162).
+3. **Scope the index with one `data-pagefind-body`** on the requirement
+   list wrapper — not the whole page, not one per requirement. Page-level
+   `data-pagefind-meta` outside it is still read.
+4. **Index only award requirement pages.** The renderer treats one
+   Pagefind result as one award panel, so any other indexed page renders
+   as an award with no requirements. The search page itself carries no
+   `data-pagefind-body`.
+5. **No `data-pagefind-index-attrs`.** It inlines the named attributes'
+   *values* into the indexed text; it is not a metadata-only mechanism.
+   Keep the attributes for a consumer's own JS, drop the directive.
+
+A doubled or foreign excerpt in the results is the symptom of rule 2 being
+broken somewhere in the consumer's markup. The theme does not paper over
+it — see the excerpt note below.
+
 ### Results display
 
 Results group by Award: one `.award-result` panel per matching page, with
@@ -389,8 +420,8 @@ matching Requirement. The panel as a whole is not a link — the emblem and
 the award title point at the award page, and each requirement tile is its
 own click target, pointing at that requirement's anchor.
 
-Two things the renderer reads from a consumer's index, both governed by
-the Pagefind conventions above:
+Three things the renderer reads from a consumer's index, all governed by
+the indexing conventions above:
 
 - **`meta.title`** is the bare award name, with no label suffix. Adding
   the suffix in content would double-stamp it.
