@@ -168,6 +168,11 @@ marker        - bubble/marker text (depth-1 number, or nested
 content_name  - badge/rank name, for data-content-name + Pirsch (required)
 title         - curated title, "" if none                       (optional)
 text          - markdown body text, "" if none/boilerplate      (optional)
+text_format   - "markdown" | "html", default "markdown". "html"
+                for a consumer whose own pipeline already produces
+                sanitized HTML (e.g. pre-rendered upstream content) --
+                text is emitted via safeHTML instead of markdownify
+                (optional)
 eyebrow       - group label shown above title, depth-1 only     (optional)
 pill          - {type: "select"|"all", count: N} or nil         (optional)
 guide_href    - resolved study-guide URL, "" if none             (optional)
@@ -260,14 +265,21 @@ must match it exactly:
 
 `deep-link.ts`'s copy-text paste (`requirementText()`) reads title then
 body: when title is present it emits `"{path}. {title}"` then the body
-on the next line; when title is empty it emits `"{path}. {body}"`.
-Because a `visually-hidden` title still has real `textContent`, a
-promoted node (title = full text, no body) pastes as one line; a hidden-
-derived-heading node (title = lead sentence, body = full text including
-that same sentence) relies on `req-text.html`'s title-echo stripping to
-avoid pasting the lead sentence twice — this is why the empty-title-slot
-policy above and `req-text.html`'s stripping logic have to agree with
-each other, not just with what's on screen.
+on the next line; when title is empty it emits `"{path}. {body}"`. A
+`visually-hidden` title element still has real `textContent`, so
+`requirementText()` treats a title as "present" only when its element
+does **not** carry `.visually-hidden` — a curated title (shown normally)
+or a promoted one (`--verbatim`, shown as the heading) counts; a hidden-
+derived heading does not, and is read as if title were empty. This is
+why a hidden-derived node's body renders the **full**, unstripped text
+(including the sentence the derived heading was built from) rather than
+having it echo-stripped: the same sentence would otherwise exist nowhere
+a sighted reader can see it, since the derived heading is visually
+hidden. `req-text.html`'s title-echo stripping only ever runs against a
+CURATED title (`node.title`, never `text/heading-for.html`'s `display`)
+for exactly this reason — stripping against a derived title would delete
+the requirement's own opening words from the only place they're visibly
+shown.
 
 ### The Pagefind non-blank-heading invariant
 
@@ -452,12 +464,21 @@ else uses `.Title`. A consumer without those layouts gets plain
 ## Text utilities
 
 `partials/text/lead-sentence.html` reduces a block of markdown to its
-leading sentence as plain text: `markdownify` → `plainify` → first
-sentence → terminal punctuation dropped → capped at 80 characters on a
-word boundary with a trailing ellipsis. The return value is therefore
-never longer than 81 characters.
+leading sentence as plain text: `markdownify` → `plainify` →
+`htmlUnescape` (undoes `markdownify`'s own smart-quote entities, e.g.
+`'` → `&rsquo;`, that `plainify` doesn't decode and raw output would
+otherwise double-escape) → first sentence → terminal punctuation dropped
+→ capped at 80 characters on a word boundary with a trailing ellipsis.
+The return value is therefore never longer than 81 characters unless
+`uncapped` is set.
 
-Params (dict): `text` — the source markdown. Returns a plain-text string.
+Params (dict): `text` — the source markdown (or HTML — see
+`text_format`). `text_format` — `"markdown"` | `"html"`, default
+`"markdown"`; `"html"` skips `markdownify`. `uncapped` — bool, default
+false; skips the 80-character cap, for `text/heading-for.html`'s own
+promotion test, which needs the full sentence, not a capped one, when
+deciding whether a requirement's text is short enough to promote.
+Returns a plain-text string.
 
 Empty in, empty out. A caller that needs a guaranteed non-blank result —
 an id-bearing heading under the Pagefind sub-result convention, say —
