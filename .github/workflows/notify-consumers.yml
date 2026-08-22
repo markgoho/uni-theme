@@ -87,6 +87,13 @@ jobs:
           grep -q '<sup id="fnref-1">' public/index.html
           grep -q '<sup id="fnref-2">' public/index.html
           grep -q 'class="footnote-ref"' public/index.html
+          # node.list (both types) and req-footnotes.html -- uni-theme#22's
+          # list/footnote follow-up. A regression that silently drops
+          # either wouldn't trip the "raw HTML omitted" grep above.
+          grep -q '<ul class="req-text-list">' public/index.html
+          grep -q '<ol class="req-text-list">' public/index.html
+          grep -q 'id="fn-1"' public/index.html
+          grep -q 'id="fn-2"' public/index.html
 
   dispatch:
     needs: [changes, build-fixture]

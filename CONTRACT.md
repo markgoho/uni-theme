@@ -135,10 +135,13 @@ say `drg`/`merit-badge` (renaming the files themselves would break
   `.req-page`/`.req-main`/`.req-sidebar`, the requirement-tree card family
   `.req-card`/`.req-child`(`-item`)/`.req-children` (`--chips`/`--options`/
   `--rail` variants), `.req-dock`, `.req-pill`, `.req-timeline`,
-  `.req-toast`, `.req-guide-lookup`. `.badge-identity`/`.badge-description`
-  are a deliberate exception to the `req-` rename: Scouting rank badges are
-  themselves badges, so "badge" reads as generic vocabulary here, unlike
-  "drg" which is merit-badge-specific by definition.
+  `.req-toast`, `.req-guide-lookup`, `.req-text-list` (a node's structured
+  `list`, see "Text utilities"), `.req-footnotes`(`__heading`/`__list`/
+  `__item`/`__marker`/`__text`) (see "Footnotes"). `.badge-identity`/
+  `.badge-description` are a deliberate exception to the `req-` rename:
+  Scouting rank badges are themselves badges, so "badge" reads as generic
+  vocabulary here, unlike "drg" which is merit-badge-specific by
+  definition.
 
 ## Requirement-rendering behavior
 
@@ -177,6 +180,9 @@ eyebrow       - group label shown above title, depth-1 only     (optional)
 pill          - {type: "select"|"all", count: N} or nil         (optional)
 guide_href    - resolved study-guide URL, "" if none             (optional)
 resources     - [{title, url}]                                  (optional)
+list          - {type: "ul"|"ol", items: [string, ...]}, renders
+                after this node's own text, inside the same text
+                element -- see "Text utilities" below            (optional)
 children      - [node, ...], same shape, recursive              (optional)
 variant       - "rail" | "chips" | "options", default "rail"    (optional)
 ring          - bool, options-variant marker-as-ring; default true (optional)
@@ -227,7 +233,20 @@ rules) — a consumer never supplies its own CSS for them.
 shape regardless of what `text/heading-for.html` returned, since a chip
 is already a short single-sentence label by construction (the exact
 condition that triggers promotion elsewhere) and has nowhere else for
-promoted text to go.
+promoted text to go. `node.list` is not supported on chips for the same
+reason — a chip's text renders inline inside its `<li>`, with no
+element a block-level list could legally nest inside.
+
+**`node.list` and promotion.** Stripping a trailing list out of
+`node.text` can leave a short remaining sentence that would otherwise
+promote into the heading (e.g. "Demonstrate first aid for the
+following:"). A node with both a curated `title` and a `list` is
+unaffected — promotion only ever applies when `title` is empty. A node
+that relies on promotion (`title` empty, short remaining sentence) still
+gets its list rendered: `req-card.html`/`req-child-item.html` call
+`req-text.html` whenever `node.list` is set, even when text alone would
+have promoted, passing an empty `text` so only the list appears in the
+body below the promoted heading.
 
 `layouts/partials/text/transition-key.html` derives the `view-
 transition-name` key from a path (`"3.a"` → `"3-a"`); use it rather than
@@ -480,9 +499,17 @@ decode and raw output would otherwise double-escape). Params: `text`,
 
 `partials/text/render.html` renders text as safe HTML: `markdownify` for
 `"markdown"`, `safeHTML` for `"html"`. Params: `text`, `text_format`
-(required). Returns safe HTML. `req-text.html` and
-`req-child-item.html`'s chips variant both call this for their final
+(required). Returns safe HTML. `req-text.html`, `req-child-item.html`'s
+chips variant, and `req-footnotes.html` all call this for their final
 output, rather than each branching on `text_format` itself.
+
+`req-text.html` additionally takes an optional `list` param —
+`{type: "ul"|"ol", items: [string, ...]}` — rendered as a real
+`<ul>`/`<ol class="req-text-list">` immediately after the text above,
+inside the *same* element (`.req-card__text`/`.req-child__text`), not as
+a sibling. Items are plain text, auto-escaped; there is no per-item
+`text_format`. See the node dict's `list` field and "`node.list` and
+promotion" above.
 
 `partials/text/lead-sentence.html` reduces already-resolved plain text
 (the output of `text/plain-text.html`) to its leading sentence: first
@@ -512,7 +539,9 @@ placeholder for both accessible names and search sub-result titles.
 this repo, see its `go.mod`) that renders one `req-card.html` fixture
 per `text_format` value, with representative `<sup>`/`<ul>` content in
 the `"html"` fixture (both a `req-text.html` node and a chips-variant
-child, covering `text/render.html`'s two call sites). The
+child, covering `text/render.html`'s two call sites), plus a `node.list`
+fixture (one promoted, one not) and a `req-footnotes.html` call whose
+markers resolve the fixture's own `<sup>` links. The
 `build-fixture` job in `.github/workflows/notify-consumers.yml` builds
 it on every push/PR and fails if the output contains `raw HTML
 omitted` — that string only appears when `"html"`-formatted text gets
@@ -524,6 +553,37 @@ regression after the fact. This is uni-theme's only build-time coverage
 of the `"html"` path: no consumer in this repo ever sets it, so without
 this fixture a regression here would only surface once a bump PR
 reached scouting-u (uni-theme#24).
+
+## Footnotes
+
+`partials/req-footnotes.html` renders a badge/rank-level list of footnote
+definitions as a real endnotes section — one `<section class="req-
+footnotes">` call per page, not per-node. Params: `footnotes` — `[{marker,
+text, text_format}, ...]`, required (renders nothing if empty/unset);
+`heading` — optional visible section title, default `"Notes"`.
+
+Each entry gets `id="fn-{marker}"`, so a consumer's own citation markup
+(e.g. a bare `<sup>N</sup>` in some `node.text`, rewritten by the
+consumer's own ingestion into `<sup><a href="#fn-N">N</a></sup>`) has
+something real to link to. **All parsing, marker extraction, and
+marker-to-definition matching is the consumer's job**, done before
+calling this partial — same "no site-specific lookup inside the
+partials" split as the node dict above. This partial never inspects
+`node.text` for citation markers itself. Forward links only: no
+`id="fnref-N"` back-reference on the citation side, since one footnote
+can be cited from more than one requirement (an id there would be
+duplicated across the page).
+
+A footnote's own `text`/`text_format` render through `text/render.html`
+exactly like a requirement's — a definition can itself contain HTML
+(e.g. a nested `<ul>`).
+
+```
+partial "req-footnotes.html" (dict "footnotes" (slice
+  (dict "marker" "2" "text" "…" "text_format" "html")
+  (dict "marker" "3" "text" "…" "text_format" "html")
+))
+```
 
 ## Search page
 

@@ -7,7 +7,14 @@
   safeHTML, which is what produces that HTML comment. The html node also
   carries a chips-variant child so text/render.html's OTHER call site
   (req-child-item.html's chips branch, not just req-text.html) has
-  coverage too. */}}
+  coverage too.
+
+  $listNode/$promotedListNode cover node.list (uni-theme#22's footnote/
+  list follow-up): one with a title (no promotion), one without (list
+  must still render after the promoted heading -- see CONTRACT.md's
+  "node.list and promotion"). req-footnotes.html at the bottom resolves
+  the #fn-1/#fn-2 links $htmlNode/$htmlChipChild's <sup> markers already
+  point at, including a nested <ul> inside one definition. */}}
 {{ $htmlChipChild := dict
   "path" "1.a.i"
   "marker" "i"
@@ -34,7 +41,42 @@
   "text" "This claim needs a citation.[^1] Supporting details:\n\n- Item one\n- Item two\n\n[^1]: A fixture footnote."
   "text_format" "markdown"
 }}
+{{ $listNode := dict
+  "path" "1.c"
+  "marker" "1c"
+  "content_name" "Fixture Badge"
+  "title" "Demonstrate first aid"
+  "text" "Demonstrate first aid for the following:"
+  "text_format" "html"
+  "list" (dict "type" "ul" "items" (slice "Object in the eye" "Puncture wound from a splinter"))
+}}
+{{ $promotedListNode := dict
+  "path" "1.d"
+  "marker" "1d"
+  "content_name" "Fixture Badge"
+  "title" ""
+  "text" "Complete the following steps."
+  "text_format" "markdown"
+  "list" (dict "type" "ol" "items" (slice "Step one" "Step two"))
+}}
+{{/* No "text" key at all -- req-text.html's `.text | default ""` guard is
+  what keeps this from erroring on a nil findRE/text-render input. */}}
+{{ $textlessListNode := dict
+  "path" "1.e"
+  "marker" "1e"
+  "content_name" "Fixture Badge"
+  "title" "Textless list"
+  "text_format" "markdown"
+  "list" (dict "type" "ul" "items" (slice "Only item"))
+}}
 <ul class="req-list">
   {{ partial "req-card.html" (dict "node" $htmlNode) }}
   {{ partial "req-card.html" (dict "node" $markdownNode) }}
+  {{ partial "req-card.html" (dict "node" $listNode) }}
+  {{ partial "req-card.html" (dict "node" $promotedListNode) }}
+  {{ partial "req-card.html" (dict "node" $textlessListNode) }}
 </ul>
+{{ partial "req-footnotes.html" (dict "footnotes" (slice
+  (dict "marker" "1" "text" "A fixture footnote definition." "text_format" "markdown")
+  (dict "marker" "2" "text" "Another fixture footnote, with a nested list.<ul><li>Sub point</li></ul>" "text_format" "html")
+)) }}
