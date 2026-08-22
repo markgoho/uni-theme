@@ -439,10 +439,10 @@ override:
   `prefetch` for `/pagefind/pagefind-ui.js` — all mbu-specific; a
   consumer without those domains/pagefind gets a harmless dead hint, not
   a build error.
-- `analytics.html`, `clarity.html` — embed mbu's Pirsch site code and
-  Clarity project ID directly. A second consumer reports into mbu's
-  analytics properties until these are parameterized; treat as an
-  override point (replace the file locally), not as configurable today.
+- `analytics.html`, `clarity.html` — read their tracking codes from
+  `[params.analytics]` in the consumer's `hugo.toml`:
+  - `pirsch_code` — Pirsch site code. No `<script>` emitted when unset.
+  - `clarity_id` — Clarity project ID. No `<script>` emitted when unset.
 - `critical-css.html`, `non-critical-css.html` — concatenate a **fixed,
   mbu-specific manifest** of asset paths, in that exact order. Many
   entries resolve to theme-owned files (the `css/components/` and
