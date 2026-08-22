@@ -148,7 +148,12 @@ say `drg`/`merit-badge` (renaming the files themselves would break
   `.badge-description` are a deliberate exception to the `req-` rename:
   Scouting rank badges are themselves badges, so "badge" reads as generic
   vocabulary here, unlike "drg" which is merit-badge-specific by
-  definition.
+  definition. Paired with `layouts/partials/identity.html` (#27), which
+  owns the `.badge-identity` markup shape (icon glow-ring, eyebrow,
+  title, micro-tag); callers supply plain data (icon name, eyebrow text
+  and optional URL, title, micro-tag text) and own their own domain
+  derivation (icon lookup by slug, category URL, rank level text) via a
+  local `badge-identity.html`/`rank-identity.html` that calls it.
 
 ## Requirement-rendering behavior
 
