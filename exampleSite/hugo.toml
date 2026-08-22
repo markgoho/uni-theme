@@ -1,0 +1,6 @@
+baseURL = "https://example.org/"
+title = "uni-theme fixture site"
+
+[module]
+[[module.imports]]
+path = "github.com/markgoho/uni-theme"

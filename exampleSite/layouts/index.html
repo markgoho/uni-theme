@@ -1,0 +1,40 @@
+{{/* Renders one req-card.html fixture per text_format value, each with a
+  footnote marker and a list, so a build-time grep for "raw HTML omitted"
+  catches a text_format threading regression before it reaches a
+  consumer -- see uni-theme#24 and CONTRACT.md's "Text utilities"
+  section. The "html" fixture's raw <sup>/<ul> markup is exactly what a
+  forgotten text_format pass would route through markdownify instead of
+  safeHTML, which is what produces that HTML comment. The html node also
+  carries a chips-variant child so text/render.html's OTHER call site
+  (req-child-item.html's chips branch, not just req-text.html) has
+  coverage too. */}}
+{{ $htmlChipChild := dict
+  "path" "1.a.i"
+  "marker" "i"
+  "content_name" "Fixture Badge"
+  "title" ""
+  "text" "A short chip claim.<sup id=\"fnref-2\"><a href=\"#fn-2\">2</a></sup>"
+  "text_format" "html"
+}}
+{{ $htmlNode := dict
+  "path" "1.a"
+  "marker" "1a"
+  "content_name" "Fixture Badge"
+  "title" ""
+  "text" "This claim needs a citation.<sup id=\"fnref-1\"><a href=\"#fn-1\">1</a></sup> Supporting details:<ul><li>Item one</li><li>Item two</li></ul>"
+  "text_format" "html"
+  "children" (slice $htmlChipChild)
+  "variant" "chips"
+}}
+{{ $markdownNode := dict
+  "path" "1.b"
+  "marker" "1b"
+  "content_name" "Fixture Badge"
+  "title" ""
+  "text" "This claim needs a citation.[^1] Supporting details:\n\n- Item one\n- Item two\n\n[^1]: A fixture footnote."
+  "text_format" "markdown"
+}}
+<ul class="req-list">
+  {{ partial "req-card.html" (dict "node" $htmlNode) }}
+  {{ partial "req-card.html" (dict "node" $markdownNode) }}
+</ul>

@@ -1,2 +1,6 @@
 hugo.work
 hugo.work.sum
+public/
+resources/
+.hugo_build.lock
+exampleSite/go.sum

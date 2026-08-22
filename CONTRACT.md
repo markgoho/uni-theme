@@ -508,6 +508,23 @@ up empty still needs a heading with real, distinct text, and the
 requirement's own opening words beat a repeated "Requirement N"
 placeholder for both accessible names and search sub-result titles.
 
+`exampleSite/` is a minimal Hugo site (a local Hugo Module import of
+this repo, see its `go.mod`) that renders one `req-card.html` fixture
+per `text_format` value, with representative `<sup>`/`<ul>` content in
+the `"html"` fixture (both a `req-text.html` node and a chips-variant
+child, covering `text/render.html`'s two call sites). The
+`build-fixture` job in `.github/workflows/notify-consumers.yml` builds
+it on every push/PR and fails if the output contains `raw HTML
+omitted` — that string only appears when `"html"`-formatted text gets
+routed through `markdownify` instead of `safeHTML`, i.e. a
+`text_format` threading regression. `dispatch` in the same workflow
+depends on `build-fixture` and only runs on push, so this gate blocks a
+bump PR from ever reaching a consumer, rather than catching the
+regression after the fact. This is uni-theme's only build-time coverage
+of the `"html"` path: no consumer in this repo ever sets it, so without
+this fixture a regression here would only surface once a bump PR
+reached scouting-u (uni-theme#24).
+
 ## Search page
 
 `partials/search/page.html` renders the whole search page: breadcrumb,
