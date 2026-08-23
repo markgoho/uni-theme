@@ -19,7 +19,7 @@ public. Consumers may read and override these:
   `--on-secondary-container`
 - Outline: `--outline`, `--outline-variant`
 - Error: `--error`, `--error-container`, `--on-error-container`
-- Fonts: `--font-display`, `--font-body`
+- Fonts: `--font-display`, `--font-body`, `--font-verbatim`
 - Radius: `--radius-sm`, `--radius-md`, `--radius-lg`, `--radius-xl`,
   `--radius-full`
 - Shadow: `--shadow-card`, `--shadow-raised`
