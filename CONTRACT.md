@@ -344,6 +344,101 @@ then `"Requirement {path}"`) exists entirely to guarantee this — see
 indexing convention 1 below, which states the id-placement half of the
 same rule.
 
+## DRG shortcodes and guide layouts
+
+`layouts/shortcodes/drg/*.html` (13: `requirement`, `inherited-
+requirement`, `tip`, `did-you-know`, `safety-first`, `be-prepared`,
+`checklist`, `external-link`, `download`, `video`, `next-page`,
+`org-card`, `experience-card`) render the `req-*` markup
+`drg-blocks.css`/`drg.css`/`drg-print.css` style, for use inside a
+guide page's markdown body. `mbu` keeps its own local copy of all 13 at
+`hugo/layouts/shortcodes/drg/` (plus two the theme does not ship:
+`phishing-email`, a one-off hardcoded illustration, and `image`,
+ImageKit-bound) — Hugo's standard site-over-module layout precedence
+means mbu's copies keep winning for all of mbu's content, so this
+addition is purely additive there (verified empirically: a same-named
+scratch shortcode in each location resolves to the site's local one).
+A future consumer with no local override gets the theme's copy.
+
+Every shortcode here follows the node-dict split above: `.Get`/`.Inner`
+and the calling page's own `.Params`/`.Page.Store` only, never a
+`hugo.Data` lookup.
+
+**`requirement` and `inherited-requirement` take a `text_format`
+param** (`"markdown"` default | `"html"`), same convention as the
+node-dict's own `text_format` field above. Requirement text sourced
+from a JSON dataset is typically already pre-rendered HTML (embedded
+`<a href>`, `<sup>` footnote markers) rather than markdown; running it
+through `markdownify` is a second, unrelated goldmark pass that
+silently strips those tags to `<!-- raw HTML omitted -->` on any
+consumer without `markup.goldmark.renderer.unsafe = true` set (mbu sets
+it; a rank consumer following the plan's own constraints does not).
+Discovered empirically verifying this port: `.Inner` substituting into
+a `{{< >}}`-delimited shortcode's output is safe (goldmark never
+touches it), but a shortcode's own subsequent `| markdownify` call on
+that same string is not the same operation and does not inherit that
+safety. Pass `text_format="html"` for pre-rendered source text — e.g.
+scouting-u's Phase 3 scaffold, which writes the exact rank-JSON `text`
+verbatim, should always pass it. The `requirement` shortcode also
+threads `text_format` through `Page.Store.Set "leadRequirement"` so
+`guide.html`'s `.req-rail` renders the same string the same way.
+
+**`inherited-requirement` is the one shortcode whose
+mbu source violates that split** — mbu's copy resolves its parent
+requirement's text itself via `index hugo.Data "merit-badges" $slug`
+and a recursive tree walk. The theme's copy keeps mbu's grammar/merge
+algorithm (verb detection, article insertion, sentence-trimming,
+capitalization — pure text transformation, not a lookup) but replaces
+that lookup with an explicit required param:
+
+```
+inherited-requirement:
+  number       - requirement number, e.g. "6.a"
+  topic        - the child's own (possibly bare) text, or .Inner
+  parent_text  - REQUIRED. The parent requirement's verbatim text,
+                 pre-resolved by the calling site (e.g. scouting-u's
+                 Phase 3 scaffold, which reads rank JSON directly and
+                 can write the exact string as a literal param at
+                 generation time — no runtime Hugo lookup needed).
+```
+
+This is a different, simpler contract than mbu's local copy — mbu is
+unaffected (its own copy still wins for its own content) and no mbu
+content needs to change.
+
+`layouts/_default/guide.html` and `guide-print.html` are the page
+shells for a `layout: guide`/`layout: guide-print` page. They live
+under `_default/`, not a type-specific directory, because a consumer
+whose guide content sits under a type-specific section (mbu's own
+`layouts/merit-badges/guide.html`, more specific, always wins there and
+never resolves to this file) is expected to keep its own copy; this
+file is for a consumer selecting the layout purely by front-matter
+`layout:`. No `hugo.Data` lookup: `guide_nav` and `identity` are read
+off `.Params`/`.CurrentSection.Params`/`.Parent.Params`, both pre-
+resolved by the calling content or its scaffold. `.Page.Store.Get
+"leadRequirement"` (set by the `requirement` shortcode) feeds `.req-
+rail`. `guide.html` does not render a hero — no hero markup exists in
+`drg.css`/`drg-blocks.css`; a consumer wanting one renders it via its
+own hero partial elsewhere (e.g. the badge/rank landing page's own
+hero, which already links *to* the guide — see `guide_href` above).
+
+`layouts/partials/drg/sidebar.html` is the guide's sticky sidebar plus
+mobile nav, generalized from mbu's local `merit-badges/drg-sidebar.html`.
+Params:
+
+```
+page       - the current guide Page (resolves the "active" nav item)
+guide_nav  - [{group_title, items: [{title, url}]}, ...]
+identity   - dict, passed straight to `identity.html` unmodified
+             (icon, eyebrow, eyebrow_url, title, demote_heading,
+             micro_tag) -- resolved by the calling site exactly like
+             mbu's `badge-identity.html`/scouting-u's `rank-identity.html`
+             already do for their landing pages, never inside this
+             partial
+req_url    - URL of the requirements page, "" renders no Reference item
+print_page - the "print complete guide" Page, nil renders no item
+```
+
 ## Dark mode
 
 Dark mode is the `.dark` class on `<html>`, set before first paint by
@@ -503,29 +598,43 @@ parameterized.
 
 `partials/json-ld/merit-badge-landing.html` and
 `merit-badge-requirements.html` render `Course` schema for a badge's
-landing and requirements pages; `drg-index.html` and
-`drg-requirement.html` render `LearningResource` schema for its Digital
-Resource Guide. All four are merit-badge-shaped, not generic: the
-`Course` pair reads `hugo.Data "merit-badges"` keyed by
+landing and requirements pages. These two are still merit-badge-shaped,
+not generic: they read `hugo.Data "merit-badges"` keyed by
 `.File.ContentBaseName`/`$badge.File.ContentBaseName` for fields like
-`slug`, `requirements`, `eagle_required`, and `pamphlet_url`; the
-`LearningResource` pair instead expects `.Params.badge_name`/
-`.Params.guide_nav` on the calling page. A future rank-schema consumer
-needs its own partials, not a dict-driven call into these —
-scouting-u's rank data has no `pamphlet_url`/`eagle_required`/
-`subrequirements` equivalent (see uni-theme#23). `drg-index.html`'s
-provider name reads `.Site.Title`; everything else that names the org
-hardcodes "Scouting America" as the awarding body, which is correct for
-any Scouting America program, not mbu-specific.
+`slug`, `requirements`, `eagle_required`, and `pamphlet_url`. A future
+rank-schema consumer needs its own partials, not a dict-driven call into
+these — scouting-u's rank data has no `pamphlet_url`/`eagle_required`/
+`subrequirements` equivalent (see uni-theme#23).
+
+`drg-index.html` and `drg-requirement.html` render `LearningResource`
+schema for a Digital Resource/Requirements Guide, and **are** generic:
+both read `.Params.badge_name` (mbu) **or** `.Params.rank_name` (a rank
+consumer) for the subject's name, and `.Params.drg_noun` (default
+`"Merit Badge"`, mbu never sets it) for the noun used in the schema's
+`name`/`description` fields — a rank consumer sets `drg_noun: "Rank"`.
+No `hugo.Data` lookup in either partial; every field is a pre-resolved
+Param the calling content/scaffold already wrote, per the node-dict
+split above. The guide-label string (`"— Digital Resource Guide"`
+suffix in `drg-index.html`'s `name`, `drg-requirement.html`'s
+`isPartOf.name`) reads the same `site.Params.theme.guideLabel` param as
+`## Breadcrumb` below. `drg-index.html`'s provider name reads
+`.Site.Title`; everything else that names the org hardcodes "Scouting
+America" as the awarding body, which is correct for any Scouting
+America program, not mbu-specific.
 
 ## Breadcrumb
 
-`partials/breadcrumb.html` renders the ancestor-to-current trail via
-`.Parent` walking. It hardcodes two label overrides: pages with
-`.Layout "guide"` on an `.IsSection` render "Digital Resource Guide", and
-pages with `.Layout "requirements"` render "Requirements"; everything
-else uses `.Title`. A consumer without those layouts gets plain
-`.Title` crumbs — harmless, not an error.
+`partials/breadcrumb.html` and `partials/json-ld/breadcrumb-auto.html`
+render the ancestor-to-current trail via `.Parent` walking. Both
+hardcode one label override via `site.Params.theme.guideLabel` (default
+`"Digital Resource Guide"`, mbu's existing string — mbu never sets the
+param so its output is unchanged): pages with `.Layout "guide"` on an
+`.IsSection` render that label. `partials/breadcrumb.html` additionally
+renders "Requirements" for pages with `.Layout "requirements"`;
+everything else in both partials uses `.Title`. A consumer without
+those layouts gets plain `.Title` crumbs — harmless, not an error. A
+rank consumer sets `[params.theme] guideLabel = "Digital Requirements
+Guide"` in `hugo.toml`.
 
 ## Text utilities
 
