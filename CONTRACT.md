@@ -246,6 +246,17 @@ a heading always renders and always carries `id="{path}"` on an actual
 (styled in `merit-badge-requirements.css`, next to the base title
 rules) — a consumer never supplies its own CSS for them.
 
+**`site.Params.theme.hideReqChildTitles`** (bool, default `false`,
+`req-child-item.html` only — `req-card.html`'s depth-1 heading is
+unaffected) forces every child heading into the visually-hidden shape
+regardless of what `text/heading-for.html` returned, so only the marker
+and requirement text show. `node.title`/`node.text` still flow through
+unchanged — a consumer sets this to stop rendering redundant per-child
+headings on a page that already carries a group heading one level up,
+while keeping `node.title` populated for other surfaces (search
+results, landing-page previews, a future guide page) that read it
+separately from this render path.
+
 **Chips never promote.** A chip's marker and text sit directly under its
 `<li>` with no `.req-child__body`/`.req-card__panel` wrapper (see below)
 — `req-child-item.html`'s chips branch always renders the hidden-heading
