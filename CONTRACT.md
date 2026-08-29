@@ -546,7 +546,7 @@ expected quality/format; there is no build-time check for this.
 the `head/*` partials below, then exposes these blocks for pages to
 override:
 
-- `html-class` — class list on `<html>`.
+- `html-class` — class list on `<html>` (defaults to `"theme-v2"`).
 - `hero` — full-bleed content before `<header>`.
 - `header` — defaults to `partial "header.html"`.
 - `main` / `main-class` — page body / extra class on `<main>`.
