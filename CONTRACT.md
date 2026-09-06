@@ -195,7 +195,6 @@ text_format   - "markdown" | "html", default "markdown". "html"
                 sanitized HTML (e.g. pre-rendered upstream content) --
                 text is emitted via safeHTML instead of markdownify
                 (optional)
-eyebrow       - group label shown above title, depth-1 only     (optional)
 pill          - {type: "select"|"all", count: N} or nil         (optional)
 guide_href    - resolved study-guide URL, "" if none             (optional)
 resources     - [{title, url}]                                  (optional)
@@ -421,6 +420,13 @@ rail`. `guide.html` does not render a hero — no hero markup exists in
 `drg.css`/`drg-blocks.css`; a consumer wanting one renders it via its
 own hero partial elsewhere (e.g. the badge/rank landing page's own
 hero, which already links *to* the guide — see `guide_href` above).
+
+The requirement card no longer carries a group-label eyebrow: a group
+label now appears only on guide pages (the kicker above the `<h1>`) and
+in the sidebar/print nav, both routed through `text/group-label.html`
+so a label numbered for only its first member (e.g. `"4. Saving &
+Investing"` over requirements 4-6) drops that leading number instead of
+misattributing it to every member.
 
 `layouts/partials/drg/sidebar.html` is the guide's sticky sidebar plus
 mobile nav, generalized from mbu's local `merit-badges/drg-sidebar.html`.
