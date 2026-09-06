@@ -1,0 +1,321 @@
+<!--
+  PROTOTYPE - throwaway, not production code.
+
+  Question: how should a standalone top-level DRG requirement (no
+  lettered children, e.g. "3. Psychology of Money") visually separate
+  itself from the preceding lettered group in the sidebar, given that
+  showing its own group-title header would just repeat its own item
+  text? Four static columns -- Before, A, C, D -- mbu's Personal
+  Management sidebar only, styled with uni-theme's real drg.css
+  sidebar tokens/classes.
+
+  A header-link variant (B: render the singleton itself in header
+  typography) was tried and dropped -- it made "3" match "2. BUDGETING"
+  but then mismatch "4"/"5", which are the same kind of thing (a
+  top-level requirement page) as "3". D is the fix for that: type
+  (header vs. page) stays typography; depth (top-level vs. child) is
+  indent + weight, applied uniformly to every numbered top-level page
+  whether or not a thematic header sits above it.
+
+  Run: open this file directly in a browser (double-click), or
+  `open PROTOTYPE-sidebar-hierarchy.html`.
+
+  Data: real sidebar content from mbu's personal-management badge,
+  currently live. scouting-u is out of scope -- its singleton headers
+  have no leading digit, so this fix's gate never matches them.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>DRG sidebar hierarchy prototype</title>
+<style>
+  :root {
+    --surface: #171816;
+    --surface-raised: #272825;
+    --surface-sunken: #0d0d0c;
+    --on-surface: #ebebea;
+    --on-surface-muted: #bebfba;
+    --secondary-container: #313d49;
+    --on-secondary-container: #d7e0ea;
+    --space-3xs: 0.3125rem;
+    --space-2xs: 0.5625rem;
+    --space-xs: 0.875rem;
+    --space-s: 1.125rem;
+    --space-m: 1.6875rem;
+    --radius-md: 0.5rem;
+    --font-body: "Inter", system-ui, sans-serif;
+    --font-display: "Literata", Georgia, serif;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: #0a0a09;
+    color: var(--on-surface);
+    font-family: var(--font-body);
+    padding: 2rem 1.5rem 6rem;
+  }
+  h1 {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    margin: 0 0 0.25rem;
+  }
+  .intro {
+    color: var(--on-surface-muted);
+    max-width: 70ch;
+    margin: 0 0 2rem;
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+  .columns {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(240px, 290px));
+    gap: 1.5rem;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+  }
+  .col-heading {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    color: var(--on-surface);
+    margin: 0 0 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .col-heading .tag {
+    font-family: var(--font-body);
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 700;
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+  }
+  .col-before .tag { background: rgba(255,255,255,0.1); color: var(--on-surface-muted); }
+  .col-variant .tag { background: var(--secondary-container); color: var(--on-secondary-container); }
+  .col-note {
+    font-size: 0.78rem;
+    color: var(--on-surface-muted);
+    line-height: 1.4;
+    margin: 0 0 0.75rem;
+    min-height: 4.5em;
+  }
+  .sidebar {
+    background: var(--surface);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 0.75rem;
+    padding: var(--space-s);
+  }
+
+  /* --- real drg.css sidebar rules (copied from assets/css/pages/drg.css) --- */
+  .req-nav { list-style: none; padding: 0; margin: 0; }
+  .req-nav__item { margin-bottom: var(--space-3xs); }
+  .req-nav__link {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-3xs);
+    min-height: 40px;
+    padding-inline: var(--space-xs);
+    padding-block: var(--space-3xs);
+    border-radius: var(--radius-md);
+    color: var(--on-surface-muted);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 1rem;
+    line-height: 1.25;
+  }
+  .req-nav__link:hover { background-color: var(--surface-sunken); color: var(--on-surface); }
+  .req-nav__link--active {
+    background-color: var(--secondary-container);
+    color: var(--on-secondary-container);
+    font-weight: 700;
+  }
+  .req-nav__group-title {
+    display: block;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--on-surface-muted);
+    opacity: 0.75;
+    margin-top: var(--space-m);
+    margin-bottom: var(--space-2xs);
+    padding-left: var(--space-xs);
+    font-weight: 700;
+  }
+  .req-nav__group-title:first-child { margin-top: 0; }
+  .req-nav__marker {
+    display: inline-flex;
+    align-items: center;
+    font-variant-numeric: tabular-nums;
+    font-family: monospace;
+    font-size: 0.85em;
+    font-weight: 700;
+    color: var(--on-surface-muted);
+    opacity: 0.85;
+    min-width: 1.65rem;
+    flex-shrink: 0;
+    letter-spacing: -0.02em;
+  }
+  .req-nav__label { flex: 1; }
+
+  /* --- Variant A: singleton stays an item row (no header), but borrows
+     the header's own top margin so it still reads as a new section
+     starting instead of a continuation of the previous group. --- */
+  [data-variant="A"] .req-nav__item--singleton { margin-top: var(--space-m); }
+
+  /* --- Variant C: header logic is untouched (numbered singletons stay
+     hidden, exactly like Before) -- instead, every LETTERED child
+     indents, so number-only top-level rows read as peers by staying
+     flush with the sidebar edge. --- */
+  [data-variant="C"] .req-nav__item--lettered .req-nav__link,
+  [data-variant="D"] .req-nav__item--lettered .req-nav__link {
+    padding-inline-start: calc(var(--space-xs) + var(--space-m));
+  }
+
+  /* --- Variant D: C's indent, plus a type/depth split. Type (header vs
+     page) stays typography; depth (top-level vs child) is indent AND
+     weight. Every row with a NUMBER marker -- 3, 4, 5, 6 -- is a full
+     top-level requirement page, whether or not a thematic header
+     happens to sit above it, so they all get the same emphasis: full
+     weight, full-opacity marker. Still sentence-case, still the item
+     font size -- heavier, not header-styled, so a page never reads as
+     a label. Lettered children keep the lighter child weight. --- */
+  [data-variant="D"] .req-nav__item--toplevel .req-nav__link { font-weight: 700; }
+  [data-variant="D"] .req-nav__item--toplevel .req-nav__marker { opacity: 1; }
+  [data-variant="D"] .req-nav__item--singleton { margin-top: var(--space-m); }
+
+  .caption {
+    font-size: 0.8rem;
+    color: var(--on-surface-muted);
+    background: var(--surface-raised);
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    margin: 0 0 1.5rem;
+    max-width: 62ch;
+  }
+  .caption b { color: var(--on-surface); }
+</style>
+</head>
+<body>
+
+<h1>mbu DRG sidebar: standalone requirement hierarchy</h1>
+<p class="intro">
+  Scoped to mbu's Personal Management sidebar only. scouting-u is
+  unaffected by this change (its singleton headers have no leading
+  digit, so the "numbered singleton" gate below never matches them)
+  and isn't shown here. Mobile nav mirrors this desktop sidebar and
+  isn't separately prototyped.
+</p>
+
+<div class="caption">
+  <b>The bug:</b> req 3 and req 6 have no lettered children, so each is
+  its own "singleton group." Showing their own header would just repeat
+  their item text, so an existing rule hides it outright -- but that
+  also removes the header's spacing, leaving both to read as orphaned
+  children of the group above them. Three ways to fix it, judged
+  against minimal duplication, obvious hierarchy, and consistency.
+</div>
+
+<div class="columns">
+  <div class="col-before">
+    <p class="col-heading">Before <span class="tag">today</span></p>
+    <p class="col-note">Reqs 3 and 6 render as plain item rows, no header, no extra space -- they visually blend into "2. Budgeting" and "Saving &amp; Investing" above them.</p>
+    <nav class="sidebar" id="col-before"></nav>
+  </div>
+  <div class="col-variant">
+    <p class="col-heading">A <span class="tag">spacing only</span></p>
+    <p class="col-note">Same item row as Before, but it borrows the header's own top margin -- breathing room without repeating any text.</p>
+    <nav class="sidebar" id="col-a"></nav>
+  </div>
+  <div class="col-variant">
+    <p class="col-heading">C <span class="tag">indent by depth</span></p>
+    <p class="col-note">Header logic untouched (still hidden for 3 and 6) -- lettered children (a, b, c...) indent instead, so flush number-only rows read as peers.</p>
+    <nav class="sidebar" id="col-c"></nav>
+  </div>
+  <div class="col-variant">
+    <p class="col-heading">D <span class="tag">indent + weight</span></p>
+    <p class="col-note">C's indent, plus every top-level page (3, 4, 5, 6) gets full weight/marker opacity -- still item font, never header font, so pages never look like labels. 4 &amp; 5 now render identically to 3 &amp; 6.</p>
+    <nav class="sidebar" id="col-d"></nav>
+  </div>
+</div>
+
+<script>
+// mbu Personal Management sidebar, real content. Each group: { title, items }.
+// items.length > 1 => ordinary group, header always shown, unchanged by
+// this fix. items.length === 1 AND title starts with a digit => the
+// "numbered singleton" set 191ad0c already hides the header for -- that
+// exact gate is what "after" repurposes into a header-link instead.
+const GROUPS = [
+  { title: "Getting Started", items: [{ label: "Introduction &amp; Overview" }] },
+  { title: "1. Smart Shopping", items: [
+    { marker: "a", label: "Comparison Shopping" },
+    { marker: "b", label: "Reading Labels" },
+    { marker: "c", label: "Avoiding Scams" },
+  ]},
+  { title: "2. Budgeting", items: [
+    { marker: "a", label: "Building a Budget" },
+    { marker: "b", label: "Balancing Your Budget" },
+    { marker: "c", label: "Tracking Your Money" },
+    { marker: "d", label: "Budget Review" },
+  ]},
+  { title: "3. Psychology of Money", numberedSingleton: true,
+    items: [{ marker: "3.", label: "Psychology of Money", active: true }] },
+  { title: "Saving &amp; Investing", items: [
+    { marker: "4.", label: "Saving vs. Investing" },
+    { marker: "5.", label: "Types of Investments" },
+  ]},
+  { title: "6. Insurance", numberedSingleton: true,
+    items: [{ marker: "6.", label: "Understanding Insurance" }] },
+  { title: "7. Credit &amp; Debt", items: [
+    { marker: "a", label: "Understanding Credit" },
+    { marker: "b", label: "Managing Debt" },
+  ]},
+  { title: "Beyond the Badge", items: [{ label: "Extended Learning" }] },
+];
+
+function isLetterMarker(marker) {
+  return !!marker && /^[a-zA-Z]\.?$/.test(marker);
+}
+// A numbered marker (3., 4., 5., 6.) names a full top-level requirement
+// page -- true whether or not a thematic header happens to sit above
+// it (4 and 5 do, via "Saving & Investing"; 3 and 6 don't, today).
+// Markerless nav-only rows (Introduction, Extended Learning) are
+// neither -- they were never part of the numbering, so they sit out.
+function isTopLevelPage(marker) {
+  return !!marker && !isLetterMarker(marker);
+}
+
+function itemRow(item, { indentLetters, weightTopLevel, extraMarginOnSingleton, isSingleton }) {
+  const classes = ["req-nav__item"];
+  if (isSingleton && extraMarginOnSingleton) classes.push("req-nav__item--singleton");
+  if (indentLetters && isLetterMarker(item.marker)) classes.push("req-nav__item--lettered");
+  if (weightTopLevel && isTopLevelPage(item.marker)) classes.push("req-nav__item--toplevel");
+  const linkClass = "req-nav__link" + (item.active ? " req-nav__link--active" : "");
+  const marker = item.marker ? `<span class="req-nav__marker">${item.marker}</span>` : "";
+  return `<li class="${classes.join(" ")}"><a class="${linkClass}" href="#">${marker}<span class="req-nav__label">${item.label}</span></a></li>`;
+}
+
+// Before / A / C / D all keep the header hidden for a numbered
+// singleton and render an item row underneath -- they differ only in
+// which extra treatment that row (and its siblings) gets.
+function renderVariant(groups, opts) {
+  let html = "";
+  for (const g of groups) {
+    if (!g.numberedSingleton) html += `<li class="req-nav__group-title">${g.title}</li>`;
+    for (const item of g.items) html += itemRow(item, { ...opts, isSingleton: !!g.numberedSingleton });
+  }
+  return html;
+}
+
+function mount(id, variant, innerHtml) {
+  document.getElementById(id).innerHTML = `<ul class="req-nav" data-variant="${variant}">${innerHtml}</ul>`;
+}
+
+mount("col-before", "before", renderVariant(GROUPS, {}));
+mount("col-a", "A", renderVariant(GROUPS, { extraMarginOnSingleton: true }));
+mount("col-c", "C", renderVariant(GROUPS, { indentLetters: true }));
+mount("col-d", "D", renderVariant(GROUPS, { indentLetters: true, weightTopLevel: true, extraMarginOnSingleton: true }));
+</script>
+</body>
+</html>
