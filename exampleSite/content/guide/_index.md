@@ -8,5 +8,7 @@ guide_nav:
     items:
       - title: "1a. Every shortcode"
         url: "/guide/req1/"
+      - title: "1b. Second page"
+        url: "/guide/req2/"
 ---
 The guide index body.

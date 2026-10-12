@@ -119,6 +119,8 @@ jobs:
           grep -qF '![A fixture image](https://ik.imagekit.io/example/tr:w-800/fixture-assets/fixture-badge/guide/fixture-image?v=abc123)' public/guide/req1/index.md
           grep -qF -- '- [First note](https://example.org/notes/first/index.md)' public/notes/index.md
           grep -q '^# With Markdown$' public/with-markdown/index.md
+          grep -qF '[the second page](https://example.org/guide/req2/)' public/guide/req1/index.md
+          grep -qF -- '- Next: [Second page](https://example.org/guide/req2/)' public/guide/req1/index.md
 
       - name: Assert LLM discovery files
         working-directory: exampleSite

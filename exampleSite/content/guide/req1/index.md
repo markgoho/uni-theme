@@ -5,7 +5,8 @@ req_number: "1a"
 outputs: ["html", "markdown"]
 ---
 Every theme shortcode once, so the Markdown twin proves each has a clean
-`.md` variant (uni-theme#39) and the HTML page still builds.
+`.md` variant (uni-theme#39) and the HTML page still builds. See
+[the second page](/guide/req2/).
 
 {{< drg/requirement number="1a" >}}Do the fixture requirement. Use a *pocketknife*.{{< /drg/requirement >}}
 
