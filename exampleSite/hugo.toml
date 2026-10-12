@@ -10,6 +10,11 @@ path = "github.com/markgoho/uni-theme"
 
 [params.imagekit]
   endpoint = "https://ik.imagekit.io/example"
+  widths = [400, 800]
+
+[params.drg.image]
+  path = "/fixture-assets/%s/guide/%s"
+  max_width = 800
 
 [outputs]
   home = ["html", "rss", "markdown", "robots", "llms", "llmsfull"]

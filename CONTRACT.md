@@ -345,19 +345,50 @@ same rule.
 
 ## DRG shortcodes and guide layouts
 
-`layouts/shortcodes/drg/*.html` (13: `requirement`, `inherited-
+`layouts/shortcodes/drg/*.html` (16: `requirement`, `inherited-
 requirement`, `tip`, `did-you-know`, `safety-first`, `be-prepared`,
 `checklist`, `external-link`, `download`, `video`, `next-page`,
-`org-card`, `experience-card`) render the `req-*` markup
-`drg-blocks.css`/`drg.css`/`drg-print.css` style, for use inside a
-guide page's markdown body. `mbu` keeps its own local copy of all 13 at
-`hugo/layouts/shortcodes/drg/` (plus two the theme does not ship:
-`phishing-email`, a one-off hardcoded illustration, and `image`,
-ImageKit-bound) — Hugo's standard site-over-module layout precedence
-means mbu's copies keep winning for all of mbu's content, so this
-addition is purely additive there (verified empirically: a same-named
-scratch shortcode in each location resolves to the site's local one).
-A future consumer with no local override gets the theme's copy.
+`org-card`, `experience-card`, `cross-link`, `related-guide`, `image`;
+plus top-level `cross-link` and `related-guide`) render the `req-*`
+markup `drg-blocks.css`/`drg.css`/`drg-print.css` style, for use inside
+a guide page's markdown body. They serve both consumers: mbu keeps only
+its one-off `phishing-email` locally, scouting-u none (uni-theme#39).
+A local copy with the same name still wins by Hugo's site-over-module
+precedence, so a consumer that keeps one also owns its `.md` variant.
+
+**Markdown variants.** Each shortcode has a `<name>.md` next to its
+`<name>.html`. Hugo picks it when the page renders in the `markdown`
+output format; without one, Hugo falls back to the `.html` output, which
+puts HTML in the Markdown twin. So a consumer-local shortcode used on a
+page with a Markdown twin needs its own `.md` variant. Logic that both
+variants need lives in one partial, so they cannot drift:
+`drg/link-target.html` (cross-link/related-guide URL),
+`drg/inherited-text.html` (the inherited-requirement grammar merge),
+`drg/requirement-text.html` (the lead-requirement sentence strip),
+`drg/image-resolve.html` (manifest lookup), `drg/blockquote.md`
+(Markdown blockquote builder). Mapping: requirement and
+inherited-requirement → blockquote with the bold number; tip,
+did-you-know, safety-first, be-prepared → blockquote with a bold label;
+checklist → bold title and a task list; video, external-link, download,
+org-card, cross-link, related-guide → Markdown links with absolute URLs
+and the description; experience-card → bold title and details; image →
+`![alt](absolute ImageKit URL)` and the caption in italics; next-page →
+nothing.
+
+**`drg/image`** resolves `src` (`images/<id>.avif`, `.png`, or a bare
+id) against the guide's `images.json` manifest (a page resource of the
+page or its parent) and serves it from ImageKit through
+`imagekit/img.html`. A local `images/<id>.png` page resource, when
+present, renders through `drg/local-image.html` instead (a freshly
+generated image before upload). Site params:
+
+```
+[params.drg.image]
+  path      = "/mbu-assets/merit-badges/%s/guide/%s"   # REQUIRED; printf of
+                                                      # (manifest "badge" or
+                                                      # "rank" key, image id)
+  max_width = 800                                     # default 800
+```
 
 Every shortcode here follows the node-dict split above: `.Get`/`.Inner`
 and the calling page's own `.Params`/`.Page.Store` only, never a
@@ -382,28 +413,34 @@ verbatim, should always pass it. The `requirement` shortcode also
 threads `text_format` through `Page.Store.Set "leadRequirement"` so
 `guide.html`'s `.req-rail` renders the same string the same way.
 
-**`inherited-requirement` is the one shortcode whose
-mbu source violates that split** — mbu's copy resolves its parent
-requirement's text itself via `index hugo.Data "merit-badges" $slug`
-and a recursive tree walk. The theme's copy keeps mbu's grammar/merge
-algorithm (verb detection, article insertion, sentence-trimming,
-capitalization — pure text transformation, not a lookup) but replaces
-that lookup with an explicit required param:
+**`inherited-requirement` needs the parent's text.** mbu's former local
+copy looked it up itself via `index hugo.Data "merit-badges" $slug`
+and a recursive tree walk, which breaks that split. The theme's copy
+keeps mbu's grammar/merge algorithm (verb detection, article insertion,
+sentence-trimming, capitalization — pure text transformation, not a
+lookup, in `drg/inherited-text.html`) and takes the text as a param or
+from a consumer hook:
 
 ```
 inherited-requirement:
   number       - requirement number, e.g. "6.a"
   topic        - the child's own (possibly bare) text, or .Inner
-  parent_text  - REQUIRED. The parent requirement's verbatim text,
-                 pre-resolved by the calling site (e.g. scouting-u's
-                 Phase 3 scaffold, which reads rank JSON directly and
-                 can write the exact string as a literal param at
-                 generation time — no runtime Hugo lookup needed).
+  parent_text  - The parent requirement's verbatim text, pre-resolved
+                 by the calling site (e.g. scouting-u's Phase 3
+                 scaffold, which reads rank JSON directly and can write
+                 the exact string as a literal param at generation
+                 time — no runtime Hugo lookup needed). When omitted,
+                 the drg/parent-text.html hook resolves it.
+  req_path     - optional, passed to the hook.
 ```
 
-This is a different, simpler contract than mbu's local copy — mbu is
-unaffected (its own copy still wins for its own content) and no mbu
-content needs to change.
+**`drg/parent-text.html` hook.** Params (dict): `page`, `number`,
+`req_path`. Returns the parent's text or `""`. The theme default returns
+`""` (the topic then shows alone). A consumer whose content omits
+`parent_text` overrides this partial with its own data lookup — mbu does
+(walks `hugo.Data "merit-badges" <badge slug>` by path), so mbu content
+needs no change and mbu needs no local copy of the shortcode. The
+lookup stays in the consumer, per the node-dict split above.
 
 `layouts/_default/guide.html` and `guide-print.html` are the page
 shells for a `layout: guide`/`layout: guide-print` page. They live
@@ -600,7 +637,7 @@ override:
 
 The module config (`hugo.toml`) defines a `markdown` output format: media type `text/markdown`, base name `index`, `isPlainText = true`, `rel = "alternate"`. A page that outputs it gets `<page>/index.md` next to its `index.html`. Current Hugo ships the same format and the `text/markdown` media type built in; the theme defines the format so every consumer gets the same values, and does not redefine the media type, because a narrower suffix list would change it.
 
-The format is defined but not turned on. A consumer opts in per page kind with `[outputs]` in its `hugo.toml` (for example `page = ["html", "markdown"]`) or per page with front-matter `outputs`. Both replace the default list, so keep `"html"` in it. The consumer also supplies the `.md` templates for each kind it turns on (for example `layouts/_default/single.md`); the theme does not ship them.
+The format is defined but not turned on. A consumer opts in per page kind with `[outputs]` in its `hugo.toml` (for example `page = ["html", "markdown"]`) or per page with front-matter `outputs`. Both replace the default list, so keep `"html"` in it. The theme ships `layouts/_default/guide.md`, `single.md`, and `list.md` next to their HTML templates (uni-theme#41). Each writes `# Title`, the description, then the body through `.RenderShortcodes` (raw Markdown with each shortcode rendered by its `.md` variant; `.Content` would be goldmark HTML) with HTML comments removed. `guide.md` also writes the group label and prev/next links (absolute URLs) from `drg/resolve-nav.html`; `list.md` writes one link per child page through `llms/page-url.md`. `guide-print.html` has no twin: do not turn on `markdown` for print pages. A consumer that overrides an HTML layout in a more specific place (for example `layouts/merit-badges/guide.html`) checks whether the theme's `.md` twin leaves out page content, and adds its own `.md` there if it does. Raw HTML in content passes through to the twin unchanged, so keep it out of pages that have one.
 
 `head/llms-links.html` (called from `baseof.html` right after `head/meta.html`, so a consumer override of `meta.html` does not drop it) adds one `<link rel="alternate" type="text/markdown" href="…">` for each `text/markdown` output the page has, with an absolute URL. A page without one gets no link.
 

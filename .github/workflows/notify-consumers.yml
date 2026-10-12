@@ -111,6 +111,14 @@ jobs:
           grep -qF -- '- **1.a** This claim needs a citation.[^1][^2]' public/index.md
           grep -q '^  - \*\*2.beef-cattle\*\* (Do all) Option A' public/index.md
           grep -qF '[^2]: Another fixture footnote' public/index.md
+          # uni-theme#39/#41: the guide fixture uses every shortcode; a few
+          # .md variants and the page templates, spot-checked.
+          grep -qF '> **1a.** Do the fixture requirement.' public/guide/req1/index.md
+          grep -qF '> **Tip**' public/guide/req1/index.md
+          grep -qF -- '- [ ] **First**: one' public/guide/req1/index.md
+          grep -qF '![A fixture image](https://ik.imagekit.io/example/tr:w-800/fixture-assets/fixture-badge/guide/fixture-image?v=abc123)' public/guide/req1/index.md
+          grep -qF -- '- [First note](https://example.org/notes/first/index.md)' public/notes/index.md
+          grep -q '^# With Markdown$' public/with-markdown/index.md
 
       - name: Assert LLM discovery files
         working-directory: exampleSite
