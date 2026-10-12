@@ -565,6 +565,8 @@ override:
 
 - `site.html`, `theme-init.html` (sets `.dark` pre-paint, see
   `## Dark mode`), `resource-hints.html`, `meta.html` — head boilerplate.
+  `meta.html` also emits the Markdown and `llms.txt` alternate links (see
+  `### Markdown alternates for LLMs`).
   `resource-hints.html` hardcodes `dns-prefetch` hints for
   `filestore.scouting.org`, `api.pirsch.io`, and `www.clarity.ms`, and a
   `prefetch` for `/pagefind/pagefind-ui.js` — all mbu-specific; a
@@ -591,6 +593,16 @@ override:
 
   This is the one theme-owned file that most clearly encodes mbu's
   specific asset layout rather than a generic one.
+
+### Markdown alternates for LLMs
+
+The module config (`hugo.toml`) defines a `markdown` output format: media type `text/markdown`, base name `index`, `isPlainText = true`, `rel = "alternate"`. A page that outputs it gets `<page>/index.md` next to its `index.html`. Current Hugo ships the same format and the `text/markdown` media type built in; the theme defines the format so every consumer gets the same values, and does not redefine the media type, because a narrower suffix list would change it.
+
+The format is defined but not turned on. A consumer opts in per page kind with `[outputs]` in its `hugo.toml` (for example `page = ["html", "markdown"]`) or per page with front-matter `outputs`. Both replace the default list, so keep `"html"` in it. The consumer also supplies the `.md` templates for each kind it turns on (for example `layouts/_default/single.md`); the theme does not ship them.
+
+`head/meta.html` adds one `<link rel="alternate" type="text/markdown" href="…">` for each `text/markdown` output the page has, with an absolute URL. A page without one gets no link.
+
+On the home page only, `head/meta.html` also adds `<link rel="alternate" type="text/plain" href="…/llms.txt" title="llms.txt">` when the site has an output format named `llms` on the home page. The name `llms` is the contract; the href comes from that format's permalink.
 
 ## JSON-LD partials
 
