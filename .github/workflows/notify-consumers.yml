@@ -121,6 +121,7 @@ jobs:
           grep -q '^# With Markdown$' public/with-markdown/index.md
           grep -qF '[the second page](https://example.org/guide/req2/)' public/guide/req1/index.md
           grep -qF -- '- Next: [Second page](https://example.org/guide/req2/)' public/guide/req1/index.md
+          grep -qF 'Part of the Fixture Badge guide: [Fixture Guide](https://example.org/guide/index.md)' public/guide/req1/index.md
 
       - name: Assert LLM discovery files
         working-directory: exampleSite

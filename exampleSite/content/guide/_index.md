@@ -2,6 +2,8 @@
 title: "Fixture Guide"
 description: "A guide section that turns on the markdown output format (uni-theme#41)."
 layout: guide
+identity:
+  title: "Fixture Badge"
 outputs: ["html", "markdown"]
 guide_nav:
   - group_title: "1. Fixture group"
