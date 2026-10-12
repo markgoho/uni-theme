@@ -53,7 +53,7 @@
   output this page has. Pages without the `markdown` format get none. */}}
 {{ range .AlternativeOutputFormats }}
   {{ if eq .MediaType.Type "text/markdown" }}
-    <link rel="{{ .Rel }}" type="text/markdown" href="{{ .Permalink }}" />
+    <link rel="alternate" type="text/markdown" href="{{ .Permalink }}" />
   {{ end }}
 {{ end }}
 {{/* The format name `llms` is the seam uni-theme#40's llms.txt format

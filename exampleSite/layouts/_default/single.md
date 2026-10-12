@@ -1,4 +1,5 @@
-{{/* Markdown alternative for content/with-markdown.md (uni-theme#37). */}}
+{{/* Markdown alternative for any page that turns on the `markdown` output
+  format; only content/with-markdown.md does (uni-theme#37). */}}
 # {{ .Title }}
 
 {{ .RawContent }}
