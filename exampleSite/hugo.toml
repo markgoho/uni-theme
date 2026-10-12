@@ -17,4 +17,7 @@ path = "github.com/markgoho/uni-theme"
   max_width = 800
 
 [outputs]
-  home = ["html", "rss", "markdown", "robots", "llms", "llmsfull"]
+  home = ["html", "rss", "markdown", "robots", "llms", "llmsfull", "agentskills", "ard", "aicatalog"]
+
+[params.agents.representative_queries]
+  fixture-lookup = ["What are the Fixture Badge requirements?", "Show requirement 1a of the Fixture Badge"]

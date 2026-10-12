@@ -669,6 +669,22 @@ Hook partials (override in the consumer's `layouts/partials/llms/`). Both get th
 
 A consumer still adds Firebase headers itself: `/llms.txt` and `/llms-full.txt` → `text/plain; charset=utf-8`, `**/*.md` → `text/markdown; charset=utf-8`.
 
+### Agent discovery files
+
+The theme ships three home-page JSON outputs for agent discovery. Each is off until the consumer adds it to `[outputs] home`:
+
+| Output | Format name | File | Template |
+| --- | --- | --- | --- |
+| Agent Skills index ([v0.2.0](https://github.com/cloudflare/agent-skills-discovery-rfc)) | `agentskills` | `/.well-known/agent-skills/index.json` | `layouts/home.agentskills.json` |
+| ARD manifest ([agenticresourcediscovery.org](https://agenticresourcediscovery.org)) | `ard` | `/.well-known/ard.json` | `layouts/home.ard.json` |
+| ARD manifest, predecessor path | `aicatalog` | `/.well-known/ai-catalog.json` | `layouts/home.aicatalog.json` |
+
+- A consumer writes each skill at `assets/agent-skills/<name>/SKILL.md`, with `name` (equal to `<name>`, else the build fails) and `description` in YAML front matter. `partials/agents/skills.html` publishes each one at `/.well-known/agent-skills/<name>/SKILL.md` and returns name, description, absolute URL, and `sha256:<hex>` of the published bytes. Both JSON outputs list skills only from this partial.
+- **ARD**: `specVersion` `"1.0"`, `host` (site title, home URL), one entry per skill: identifier `urn:air:<host>:skill:<name>`, type `application/agent-skills+md`. `representativeQueries` come from `[params.agents.representative_queries]`, one array per skill name (ARD asks for 2–5). `ard.json` and `ai-catalog.json` have the same body; the second exists because some scanners read only the old path.
+- `head/llms-links.html` adds `<link rel="ard" type="application/json" href="…">` on the home page when the `ard` format is on.
+- Firebase's default `"ignore": ["**/.*"]` drops `.well-known/` from the deploy. A consumer replaces it with patterns that keep `.well-known/` (for example `**/.DS_Store`, `**/.git/**`).
+- A consumer still adds Firebase headers itself: `/.well-known/**` → `Access-Control-Allow-Origin: *` (ARD asks for it). Firebase already serves `.json` as `application/json`. A `Link` header on `/` that points at these files is also the consumer's (`firebase.json`).
+
 ### Requirement Markdown
 
 `partials/text/requirements.md` renders a requirement tree as Markdown. It is the plain-text twin of `req-card.html`/`req-children.html`/`req-child-item.html` and takes the same node dicts (see "Requirement-rendering behavior"). Use it for every Markdown surface that shows requirements (a requirements page's `.md` twin, `llms-full.txt`), so the HTML page and each text output build from one mapping and cannot drift.

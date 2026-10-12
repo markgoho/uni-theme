@@ -139,6 +139,13 @@ jobs:
             echo "::error::an LLM discovery file contains HTML or {{"
             exit 1
           fi
+          # Agent discovery files: the skills index digest is the sha256
+          # of the published SKILL.md, and ard.json = ai-catalog.json.
+          skill=public/.well-known/agent-skills/fixture-lookup/SKILL.md
+          sum=$(sha256sum "$skill" | cut -d' ' -f1)
+          jq -e --arg d "sha256:$sum" '.skills[0] | .name == "fixture-lookup" and .type == "skill-md" and .digest == $d and .url == "https://example.org/.well-known/agent-skills/fixture-lookup/SKILL.md"' public/.well-known/agent-skills/index.json
+          jq -e '.specVersion == "1.0" and .entries[0].identifier == "urn:air:example.org:skill:fixture-lookup" and (.entries[0].representativeQueries | length) == 2' public/.well-known/ard.json
+          cmp public/.well-known/ard.json public/.well-known/ai-catalog.json
 
   dispatch:
     needs: [changes, build-fixture]
