@@ -7,3 +7,6 @@ path = "github.com/markgoho/uni-theme"
 
 [params.imagekit]
   endpoint = "https://ik.imagekit.io/example"
+
+[outputs]
+  home = ["html", "rss", "markdown"]

@@ -604,6 +604,23 @@ The format is defined but not turned on. A consumer opts in per page kind with `
 
 On the home page only, `head/meta.html` also adds `<link rel="alternate" type="text/plain" href="…/llms.txt" title="llms.txt">` when the site has an output format named `llms` on the home page. The name `llms` is the contract; the href comes from that format's permalink.
 
+### Requirement Markdown
+
+`partials/text/requirements.md` renders a requirement tree as Markdown. It is the plain-text twin of `req-card.html`/`req-children.html`/`req-child-item.html` and takes the same node dicts (see "Requirement-rendering behavior"). Use it for every Markdown surface that shows requirements (a requirements page's `.md` twin, `llms-full.txt`), so the HTML page and each text output build from one mapping and cannot drift.
+
+```
+{{ partial "text/requirements.md" (dict "nodes" $nodes "footnotes" $footnotes) }}
+```
+
+- `nodes` (required): a slice of node dicts. `footnotes` (optional): the same `[{marker, text, text_format}]` slice that `req-footnotes.html` takes; it renders `[^marker]: text` definitions after the list.
+- Returns a string. Call it from a plain-text output format (`markdown`, `llms-full`). An HTML template escapes it.
+- One list item per node, nested two spaces per depth: `- **{path}** *{title}* ({pill}) {text}`. The label is `path`, not `marker`, because a path (`6.a`, `6.beef-cattle`) stands alone and keeps a named option's name. The title shows only when it is set and the text does not start with it. The pill uses `req-pill.html`'s wording (`Choose N`, `Do all`). `list` renders as a nested list and `resources` as a nested `Resources:` item.
+- `variant`, `ring`, `transition_num`, `text_transition_key`, `content_name`, and `guide_href` are ignored. The heading promotion policy (`text/heading-for.html`) does not apply: the text renders once, in full.
+
+`partials/text/markdown-text.md` converts one text to Markdown, for any text twin that shows requirement text (`text/requirements.md`, the DRG shortcode `.md` variants). Params: `text`, `text_format` (required, same rule as `text/render.html`). `"markdown"` returns unchanged. `"html"` rewrites `<sup>` groups of `#fn-N` links to `[^N]` refs, `<a>` to `[text](href)` (a root-relative href gets the site base URL), `<ul>`/`<ol>`/`<li>` to list lines (flattened to one level), `<br>`/`<p>` to line breaks, `<strong>`/`<em>` to `**`/`*`, then strips every other tag and decodes entities.
+
+`exampleSite` renders the same fixture nodes (`layouts/partials/fixture/requirements.html`) as HTML (`index.html`) and as Markdown (`index.md`). The `build-fixture` CI job fails if any generated `.md` file contains an HTML tag or `{{`.
+
 ## JSON-LD partials
 
 `partials/json-ld/organization.html` hardcodes mbu's name, description,

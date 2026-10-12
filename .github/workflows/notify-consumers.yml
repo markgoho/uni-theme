@@ -95,6 +95,23 @@ jobs:
           grep -q 'id="fn-1"' public/index.html
           grep -q 'id="fn-2"' public/index.html
 
+      - name: Assert Markdown twins are clean
+        working-directory: exampleSite
+        run: |
+          # Every generated .md file (uni-theme#38/#39/#41) must hold no
+          # HTML tag and no unrendered template syntax -- a shortcode
+          # without a .md variant falls back to its .html output, which
+          # this catches.
+          if grep -rnE '<[a-zA-Z/!]|\{\{' public --include='*.md'; then
+            echo "::error::a generated .md file contains HTML or {{ -- see CONTRACT.md's Markdown alternates for LLMs section"
+            exit 1
+          fi
+          # Positive checks: the fixture nodes rendered through
+          # text/requirements.md, footnote refs and definitions included.
+          grep -qF -- '- **1.a** This claim needs a citation.[^1][^2]' public/index.md
+          grep -q '^  - \*\*2.beef-cattle\*\* (Do all) Option A' public/index.md
+          grep -qF '[^2]: Another fixture footnote' public/index.md
+
   dispatch:
     needs: [changes, build-fixture]
     if: >-

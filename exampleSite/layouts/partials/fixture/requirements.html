@@ -1,0 +1,89 @@
+{{/* fixture/requirements.html
+
+  The requirement node dicts and footnotes that exampleSite renders
+  twice: as HTML (index.html, via req-card.html) and as Markdown
+  (index.md, via text/requirements.md). One source, so the two outputs
+  can be compared for the same nodes.
+
+  Returns: dict {nodes, footnotes}.
+*/}}
+{{ $htmlChipChild := dict
+  "path" "1.a.i"
+  "marker" "i"
+  "content_name" "Fixture Badge"
+  "title" ""
+  "text" "A short chip claim.<sup id=\"fnref-2\"><a href=\"#fn-2\">2</a></sup>"
+  "text_format" "html"
+}}
+{{ $htmlNode := dict
+  "path" "1.a"
+  "marker" "1a"
+  "content_name" "Fixture Badge"
+  "title" ""
+  "text" "This claim needs a citation.<sup id=\"fnref-1\"><a href=\"#fn-1\">1</a>, <a href=\"#fn-2\">2</a></sup> See <a href=\"/plain/\">the plain page</a>. Supporting details:<ul><li>Item one</li><li>Item two</li></ul>"
+  "text_format" "html"
+  "children" (slice $htmlChipChild)
+  "variant" "chips"
+}}
+{{ $markdownNode := dict
+  "path" "1.b"
+  "marker" "1b"
+  "content_name" "Fixture Badge"
+  "title" ""
+  "text" "This claim needs a citation.[^1] Supporting details:\n\n- Item one\n- Item two\n\n[^1]: A fixture footnote."
+  "text_format" "markdown"
+}}
+{{ $listNode := dict
+  "path" "1.c"
+  "marker" "1c"
+  "content_name" "Fixture Badge"
+  "title" "Demonstrate first aid"
+  "text" "Demonstrate first aid for the following:"
+  "text_format" "html"
+  "list" (dict "type" "ul" "items" (slice "Object in the eye" "Puncture wound from a splinter"))
+}}
+{{ $promotedListNode := dict
+  "path" "1.d"
+  "marker" "1d"
+  "content_name" "Fixture Badge"
+  "title" ""
+  "text" "Complete the following steps."
+  "text_format" "markdown"
+  "list" (dict "type" "ol" "items" (slice "Step one" "Step two"))
+}}
+{{/* No "text" key at all -- req-text.html's `.text | default ""` guard is
+  what keeps this from erroring on a nil findRE/text-render input. */}}
+{{ $textlessListNode := dict
+  "path" "1.e"
+  "marker" "1e"
+  "content_name" "Fixture Badge"
+  "title" "Textless list"
+  "text_format" "markdown"
+  "list" (dict "type" "ul" "items" (slice "Only item"))
+}}
+{{/* $optionsNode covers the Markdown twin's named-option, pill, title
+  and resources paths (uni-theme#38): a "Choose 1" group whose children
+  are slug-pathed options, one of which nests a further level. */}}
+{{ $optionsNode := dict
+  "path" "2"
+  "marker" "2"
+  "content_name" "Fixture Badge"
+  "title" "Pick a species"
+  "text" "Do ONE of the following:"
+  "text_format" "markdown"
+  "pill" (dict "type" "select" "count" 1)
+  "variant" "options"
+  "resources" (slice (dict "title" "Fixture pamphlet" "url" "https://example.org/pamphlet"))
+  "children" (slice
+    (dict "path" "2.beef-cattle" "marker" "beef-cattle" "content_name" "Fixture Badge" "title" "" "text" "Option A—Beef Cattle. Do ALL of the following:" "pill" (dict "type" "all")
+      "children" (slice (dict "path" "2.beef-cattle.a" "marker" "a." "content_name" "Fixture Badge" "title" "" "text" "Visit a beef cattle farm.")))
+    (dict "path" "2.dairy" "marker" "dairy" "content_name" "Fixture Badge" "title" "" "text" "Option B—Dairy Cattle. Visit a dairy farm.")
+  )
+}}
+{{ return (dict
+  "nodes" (slice $htmlNode $markdownNode $listNode $promotedListNode $textlessListNode $optionsNode)
+  "footnotes" (slice
+    (dict "marker" "1" "text" "A fixture footnote definition." "text_format" "markdown")
+    (dict "marker" "2" "text" "Another fixture footnote, with a nested list.<ul><li>Sub point</li></ul>" "text_format" "html")
+  )
+) }}
