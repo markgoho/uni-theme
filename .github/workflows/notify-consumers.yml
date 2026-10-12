@@ -112,6 +112,23 @@ jobs:
           grep -q '^  - \*\*2.beef-cattle\*\* (Do all) Option A' public/index.md
           grep -qF '[^2]: Another fixture footnote' public/index.md
 
+      - name: Assert LLM discovery files
+        working-directory: exampleSite
+        run: |
+          # uni-theme#40: robots.txt keeps Content-Signal inside the
+          # `User-agent: *` group (no blank line between them), llms.txt
+          # links llms-full.txt, llms-full.txt carries the hook body.
+          grep -A2 '^User-agent: \*$' public/robots.txt | grep -q '^Content-Signal: search=yes, ai-input=yes, ai-train=yes$'
+          grep -q '^Sitemap: https://example.org/sitemap.xml$' public/robots.txt
+          head -1 public/llms.txt | grep -q '^# uni-theme fixture site$'
+          grep -q '^> A fixture site for uni-theme partials.$' public/llms.txt
+          grep -qF '[llms-full.txt](https://example.org/llms-full.txt)' public/llms.txt
+          grep -q '^## Fixture Badge$' public/llms-full.txt
+          if grep -rnE '<[a-zA-Z/!]|\{\{' public/llms.txt public/llms-full.txt public/robots.txt; then
+            echo "::error::an LLM discovery file contains HTML or {{"
+            exit 1
+          fi
+
   dispatch:
     needs: [changes, build-fixture]
     if: >-

@@ -602,7 +602,33 @@ The format is defined but not turned on. A consumer opts in per page kind with `
 
 `head/meta.html` adds one `<link rel="alternate" type="text/markdown" href="…">` for each `text/markdown` output the page has, with an absolute URL. A page without one gets no link.
 
-On the home page only, `head/meta.html` also adds `<link rel="alternate" type="text/plain" href="…/llms.txt" title="llms.txt">` when the site has an output format named `llms` on the home page. The name `llms` is the contract; the href comes from that format's permalink.
+On the home page only, `head/meta.html` also adds `<link rel="alternate" type="text/plain" href="…/llms.txt" title="llms.txt">` when the site has an output format named `llms` on the home page (see `### LLM discovery files`). The name `llms` is the contract; the href comes from that format's permalink.
+
+### LLM discovery files
+
+The theme ships three home-page text outputs (uni-theme#40). Each is off until the consumer adds it to `[outputs] home` (keep `"html"` and the other formats it already has):
+
+| Output | Format name | File | Template |
+| --- | --- | --- | --- |
+| robots.txt | `robots` (Hugo built-in) | `/robots.txt` | `layouts/home.robots.txt` |
+| llms.txt ([llmstxt.org](https://llmstxt.org)) | `llms` | `/llms.txt` | `layouts/home.llms.txt` |
+| llms-full.txt | `llmsfull` | `/llms-full.txt` | `layouts/home.llmsfull.txt` |
+
+- The full-text format is named `llmsfull`, not `llms-full`. Hugo does not resolve a hyphenated format name in a template file name: `home.llms-full.txt` also rendered the `robots` output. Its base name keeps the `/llms-full.txt` URL. Use `.OutputFormats.Get "llmsfull"` to link it.
+- The robots template is `home.robots.txt`, not `robots.txt`. With the `llms` formats on, Hugo ranks `home.llms.txt` above a bare `robots.txt` for the home page's robots output. A consumer's own `layouts/robots.txt` loses to the theme's `home.robots.txt`, so delete it; to customize, override `home.robots.txt`. A consumer with a static `static/robots.txt` and no `robots` output sees no change.
+- **robots.txt**: `User-agent: *`, `Allow: /`, then `Content-Signal: search=…, ai-input=…, ai-train=…` in the same group ([contentsignals.org](https://contentsignals.org)), then `Sitemap:`. Values come from `[params.llms.content_signal]` (`search`, `ai_input`, `ai_train`), each `"yes"` by default.
+- **llms.txt**: `# {site.Title}`, a `>` summary, a link to `llms-full.txt` when the `llmsfull` format is on, then the `llms/sections.md` hook.
+- **llms-full.txt**: `# {site.Title}`, the `>` summary, then the `llms/full.md` hook.
+- The summary is `params.llms.summary`, else `params.theme.tagline` (`partials/llms/summary.md`).
+
+Hook partials (override in the consumer's `layouts/partials/llms/`). Both get the home Page as context and output Markdown. Neither may emit HTML.
+
+- `llms/sections.md`: the H2 sections of llms.txt (`## Merit Badges`, `## Ranks`, …). The default lists the home page's top-level sections and writes nothing when there are none.
+- `llms/full.md`: the body of llms-full.txt, normally one `## <award>` section per award with its requirements through `text/requirements.md`. The default writes nothing.
+
+`partials/llms/page-url.md` returns the absolute URL an LLM should read for a page: its `markdown` twin when it has one, else its HTML permalink. Use it for every link in the hooks.
+
+A consumer still adds Firebase headers itself: `/llms.txt` and `/llms-full.txt` → `text/plain; charset=utf-8`, `**/*.md` → `text/markdown; charset=utf-8`.
 
 ### Requirement Markdown
 
