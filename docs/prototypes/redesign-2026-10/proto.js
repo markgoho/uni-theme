@@ -6,7 +6,6 @@
     {key:'A',file:'option-a.html',name:'Handbook'},
     {key:'B',file:'option-b.html',name:'Trailhead'},
     {key:'C',file:'option-c.html',name:'Ledger'},
-    {key:'D',file:'option-d.html',name:'Patrol Poster'},
     {key:'E',file:'option-e.html',name:'Night Watch'},
     {key:'F',file:'option-f.html',name:'Expedition'},
     {key:'G',file:'option-g.html',name:'Atlas'},

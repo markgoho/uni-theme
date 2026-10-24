@@ -1,30 +1,104 @@
 [
- {"key":"A","name":"Handbook","file":"option-a.html","tier":"core","thesis":"The site reads like the printed Scout handbook: table of contents, chapter openers, hanging numbers, marginalia and plates.",
-  "look":"Tan paper and olive-black ink, handbook red as the one accent, gold only for Eagle marks. Fraunces + Source Serif 4 + Public Sans small caps.",
-  "axes":{"nav":"Running-head header; sticky left margin column with chapter contents (collapsible on mobile)","modes":"Labelled rules across the block: “Do one of the following”","reqs":"Numbered document with hanging numbers and letters, small-caps eyebrow for curated titles, “See also” references","guide":"Book page: boxed requirement epigraph, drop cap, margin notes at wide widths, plates with captions","search":"Concordance: italic headword, entries grouped by award, red paths, no cards"},
-  "home":"Title page with an Index box, then a Contents list with dotted leaders (MBU: 14 fields; SU: two Parts, seven ranks)","award":"Chapter opener spread: plate or level numeral, “In this chapter”, chapter facts, references"},
- {"key":"B","name":"Trailhead","file":"option-b.html","tier":"core","thesis":"Every page answers “where am I, where next, how far”: wayfinding borrowed from topographic maps, trailhead kiosks and blaze markers.",
-  "look":"Olive and tan ground, blaze orange accent, CSS contour-line texture. Condensed grotesque labels with a sturdy body sans.",
-  "axes":{"nav":"Persistent left trail-legend rail (bottom sheet on mobile); slim kiosk header","modes":"Trail-junction signposts: DO ALL ↓ / CHOOSE 1 OF 3 →, children as forks","reqs":"One continuous vertical trail with blaze markers; children as side spurs; “you are here” highlight","guide":"Mile-marker gutter of guide groups; sticky requirement box; callouts as trail signs","search":"Legend-style filter rail; results as map pins per award with waypoint hits"},
-  "home":"MBU: a trail map hero with categories as trailheads and the marked Trail to Eagle. SU: the seven ranks as a winding blazed path","award":"Trailhead kiosk: big sign, distance board, route preview strip, pamphlet rack"},
- {"key":"C","name":"Ledger","file":"option-c.html","tier":"core","thesis":"A fast, dense reference tool for counselors and leaders: a docs site, not a brochure. Density, scannability, keyboard-first search.",
-  "look":"Olive-tinted greys, one green accent, 1px rules, tight radii, tabular numerals. One neutral sans for everything.",
-  "axes":{"nav":"Three-column docs layout: outline tree · content · on-this-page; 48px toolbar with always-present search","modes":"Compact label row under the stem plus a right-margin counter","reqs":"Table-like outline: path column, content column, indented children, filter toolbar","guide":"Docs page with bordered Requirement block and right-rail TOC generated from headings","search":"Flat ranked rows with a left facet rail; first row selected"},
-  "home":"No hero photo: big search, then a dense directory (MBU: category list + Eagle table; SU: seven-rank table + link lists)","award":"Spec sheet: title row with pills, key-value facts grid, collapsed outline, plain link list"},
- {"key":"D","name":"Patrol Poster","file":"option-d.html","tier":"core","thesis":"Energy for Scouts, not institutions: flat printed-poster graphics, giant type, colour blocks, stickers and stamps from patrol culture.",
-  "look":"Flat campfire palette: deep green, canvas tan, brick red, marigold; thick rules, no gradients or shadows. Loud display face with a friendly body sans.",
-  "axes":{"nav":"Top bar plus a full-width coloured section tab strip; no sidebar","modes":"Rotated stamps (DO ALL / PICK ONE) on the block corner; choices as big lettered tiles","reqs":"Colour-blocked poster panels, giant numerals, chunky lettered rows","guide":"Zine spread: coloured title block, full-bleed callout bands with stamp labels, horizontal chapter strip","search":"Colour-blocked tiles per award; query echoed in giant type; count as a stamp"},
-  "home":"MBU: poster headline, photo in a flat frame, wall of category tiles, scroll-snap rail of Eagle patch cards. SU: seven coloured rank stripes","award":"Poster for the award: giant name, emblem or giant level numeral, sticker facts, chunky buttons"},
- {"key":"E","name":"Night Watch","file":"option-e.html","tier":"core","thesis":"The campfire at night. Dark-first and cinematic: emblems glow like lanterns on layered forest greens with amber light.",
-  "look":"Near-black greens, lantern amber, pale moss; soft glows and translucent borders. Light theme is “dawn”. Elegant serif display with a soft humanist sans.",
-  "axes":{"nav":"Floating glass header that shrinks on scroll; right-hand floating rail; mobile bottom tab bar","modes":"Glowing amber eyebrow in the card header; children as a lit vertical rail","reqs":"Cards in a spotlight: the hovered or focused card lifts and lights while siblings dim","guide":"Reading mode: 65ch measure, amber-ruled requirement, full-bleed vignetted images, progress line","search":"Award panels with emblem lanterns in circular frames; amber underline-glow highlights"},
-  "home":"MBU: full-bleed night hero with glowing search, Eagle badges as a constellation grid. SU: seven ranks as rising stars along an ascending line","award":"Floating glowing emblem or lit level numeral, glass facts card, lit requirement rail"},
- {"key":"F","name":"Expedition","file":"option-f.html","tier":"push","thesis":"The page is a journey you scroll through: pinned stacking scenes, a progress rail that fills, elements entering on their own view timelines, view transitions between pages. Native CSS only.",
-  "look":"Slate-green, canvas, ember red-orange, chalk white; big photographic moments. Variable display face with axes animated on scroll.",
-  "axes":{"nav":"No sidebar; slim header that becomes a sticky expedition HUD with progress after the hero","modes":"“Leg 3 · Choose 1 of 3 routes” eyebrow; children as route options","reqs":"Scenes: each requirement a full-width scene with a sticky number panel; right-edge scroll-driven progress rail","guide":"Immersive article: pinned hero image, reading progress, parallax images, callouts entering on view()","search":"Staggered reveal of award panels on their own view() timelines"},
-  "home":"MBU: scroll story in four pinned scenes with a scroll-snap badge rail. SU: seven pinned rank scenes climbing to the summit","award":"Cinematic hero that compresses into the HUD; the route as a horizontal scroll-snap rail of stops"},
- {"key":"G","name":"Atlas","file":"option-g.html","tier":"push","thesis":"A spatial reference instrument: a radial atlas of badges, a requirement wheel, a ⌘K command palette on every page, popovers anchored to the thing they describe.",
-  "look":"Graphite and bone instrument surfaces, deep green primary, brass gold ticks, hairline rules on a 4px grid. Geometric sans with tabular numerals.",
-  "axes":{"nav":"Command-palette-first instrument bar; sticky top dial strip replaces any sidebar","modes":"Ring segments: a select mode draws an N-segment ring with “choose 1” in the centre","reqs":"Split instrument: tracklist on the left, full verbatim detail pane on the right; guide links as anchored popovers","guide":"Split view: requirement pinned in a sticky instrument card, prose scrolls; lightbox dialog images; radial chapter dial","search":"The command palette expanded: facet chips and a two-pane finder (awards · hits)"},
-  "home":"MBU: inline-SVG radial map of 14 categories with Eagle badges orbiting. SU: seven-segment rank dial climbing to Eagle","award":"Requirement wheel (SVG spokes) with popover verbatim text; instrument readouts for facts"}
+ {
+  "key": "A",
+  "name": "Handbook",
+  "file": "option-a.html",
+  "tier": "core",
+  "thesis": "The site reads like the printed Scout handbook: table of contents, chapter openers, hanging numbers, marginalia and plates.",
+  "look": "Tan paper and olive-black ink, handbook red as the one accent, gold only for Eagle marks. Fraunces + Source Serif 4 + Public Sans small caps.",
+  "axes": {
+   "nav": "Running-head header; sticky left margin column with chapter contents (collapsible on mobile)",
+   "modes": "Labelled rules across the block: “Do one of the following”",
+   "reqs": "Numbered document with hanging numbers and letters, small-caps eyebrow for curated titles, “See also” references",
+   "guide": "Book page: boxed requirement epigraph, drop cap, margin notes at wide widths, plates with captions",
+   "search": "Concordance: italic headword, entries grouped by award, red paths, no cards"
+  },
+  "home": "Title page with an Index box, then a Contents list with dotted leaders (MBU: 14 fields; SU: two Parts, seven ranks)",
+  "award": "Chapter opener spread: plate or level numeral, “In this chapter”, chapter facts, references"
+ },
+ {
+  "key": "B",
+  "name": "Trailhead",
+  "file": "option-b.html",
+  "tier": "core",
+  "thesis": "Every page answers “where am I, where next, how far”: wayfinding borrowed from topographic maps, trailhead kiosks and blaze markers.",
+  "look": "Olive and tan ground, blaze orange accent, CSS contour-line texture. Condensed grotesque labels with a sturdy body sans.",
+  "axes": {
+   "nav": "Persistent left trail-legend rail (bottom sheet on mobile); slim kiosk header",
+   "modes": "Trail-junction signposts: DO ALL ↓ / CHOOSE 1 OF 3 →, children as forks",
+   "reqs": "One continuous vertical trail with blaze markers; children as side spurs; “you are here” highlight",
+   "guide": "Mile-marker gutter of guide groups; sticky requirement box; callouts as trail signs",
+   "search": "Legend-style filter rail; results as map pins per award with waypoint hits"
+  },
+  "home": "MBU: a trail map hero with categories as trailheads and the marked Trail to Eagle. SU: the seven ranks as a winding blazed path",
+  "award": "Trailhead kiosk: big sign, distance board, route preview strip, pamphlet rack"
+ },
+ {
+  "key": "C",
+  "name": "Ledger",
+  "file": "option-c.html",
+  "tier": "core",
+  "thesis": "A fast, dense reference tool for counselors and leaders: a docs site, not a brochure. Density, scannability, keyboard-first search.",
+  "look": "Olive-tinted greys, one green accent, 1px rules, tight radii, tabular numerals. One neutral sans for everything.",
+  "axes": {
+   "nav": "Three-column docs layout: outline tree · content · on-this-page; 48px toolbar with always-present search",
+   "modes": "Compact label row under the stem plus a right-margin counter",
+   "reqs": "Table-like outline: path column, content column, indented children, filter toolbar",
+   "guide": "Docs page with bordered Requirement block and right-rail TOC generated from headings",
+   "search": "Flat ranked rows with a left facet rail; first row selected"
+  },
+  "home": "No hero photo: big search, then a dense directory (MBU: category list + Eagle table; SU: seven-rank table + link lists)",
+  "award": "Spec sheet: title row with pills, key-value facts grid, collapsed outline, plain link list"
+ },
+ {
+  "key": "E",
+  "name": "Night Watch",
+  "file": "option-e.html",
+  "tier": "core",
+  "thesis": "The campfire at night. Dark-first and cinematic: emblems glow like lanterns on layered forest greens with amber light.",
+  "look": "Near-black greens, lantern amber, pale moss; soft glows and translucent borders. Light theme is “dawn”. Elegant serif display with a soft humanist sans.",
+  "axes": {
+   "nav": "Floating glass header that shrinks on scroll; right-hand floating rail; mobile bottom tab bar",
+   "modes": "Glowing amber eyebrow in the card header; children as a lit vertical rail",
+   "reqs": "Cards in a spotlight: the hovered or focused card lifts and lights while siblings dim",
+   "guide": "Reading mode: 65ch measure, amber-ruled requirement, full-bleed vignetted images, progress line",
+   "search": "Award panels with emblem lanterns in circular frames; amber underline-glow highlights"
+  },
+  "home": "MBU: full-bleed night hero with glowing search, Eagle badges as a constellation grid. SU: seven ranks as rising stars along an ascending line",
+  "award": "Floating glowing emblem or lit level numeral, glass facts card, lit requirement rail"
+ },
+ {
+  "key": "F",
+  "name": "Expedition",
+  "file": "option-f.html",
+  "tier": "push",
+  "thesis": "The page is a journey you scroll through: pinned stacking scenes, a progress rail that fills, elements entering on their own view timelines, view transitions between pages. Native CSS only.",
+  "look": "Slate-green, canvas, ember red-orange, chalk white; big photographic moments. Variable display face with axes animated on scroll.",
+  "axes": {
+   "nav": "No sidebar; slim header that becomes a sticky expedition HUD with progress after the hero",
+   "modes": "“Leg 3 · Choose 1 of 3 routes” eyebrow; children as route options",
+   "reqs": "Scenes: each requirement a full-width scene with a sticky number panel; right-edge scroll-driven progress rail",
+   "guide": "Immersive article: pinned hero image, reading progress, parallax images, callouts entering on view()",
+   "search": "Staggered reveal of award panels on their own view() timelines"
+  },
+  "home": "MBU: scroll story in four pinned scenes with a scroll-snap badge rail. SU: seven pinned rank scenes climbing to the summit",
+  "award": "Cinematic hero that compresses into the HUD; the route as a horizontal scroll-snap rail of stops"
+ },
+ {
+  "key": "G",
+  "name": "Atlas",
+  "file": "option-g.html",
+  "tier": "push",
+  "thesis": "A spatial reference instrument: a radial atlas of badges, a requirement wheel, a ⌘K command palette on every page, popovers anchored to the thing they describe.",
+  "look": "Graphite and bone instrument surfaces, deep green primary, brass gold ticks, hairline rules on a 4px grid. Geometric sans with tabular numerals.",
+  "axes": {
+   "nav": "Command-palette-first instrument bar; sticky top dial strip replaces any sidebar",
+   "modes": "Ring segments: a select mode draws an N-segment ring with “choose 1” in the centre",
+   "reqs": "Split instrument: tracklist on the left, full verbatim detail pane on the right; guide links as anchored popovers",
+   "guide": "Split view: requirement pinned in a sticky instrument card, prose scrolls; lightbox dialog images; radial chapter dial",
+   "search": "The command palette expanded: facet chips and a two-pane finder (awards · hits)"
+  },
+  "home": "MBU: inline-SVG radial map of 14 categories with Eagle badges orbiting. SU: seven-segment rank dial climbing to Eagle",
+  "award": "Requirement wheel (SVG spokes) with popover verbatim text; instrument readouts for facts"
+ }
 ]
