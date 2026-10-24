@@ -1,0 +1,586 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Option A · Handbook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..900,0..100;1,9..144,300..900,0..100&family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Public+Sans:wght@400;500;600;700&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="proto.css">
+<script src="data.js"></script>
+<style>
+/* DESIGN PLAN — Option A “Handbook”
+   Colour: paper (tan ramp), ink (olive-black), rule (tan-400), red (handbook red accent), gold (Eagle only), wash (tinted panel).
+   Type: --display Fraunces (titles, headwords) · --body Source Serif 4 (prose + verbatim requirement text) · --ui Public Sans (labels, small caps, nav).
+   Layout: a book. Home = title page + contents with dotted leaders. Award = chapter opener spread. Requirements = numbered document with hanging
+   numbers and a sticky margin column. Guide = book page with margin notes and plates. Search = concordance entries. */
+:root{
+  --paper:oklch(0.965 0.012 86); --paper-2:oklch(0.935 0.016 86); --paper-3:oklch(0.90 0.02 84);
+  --ink:oklch(0.22 0.025 150); --ink-2:oklch(0.40 0.025 140); --ink-3:oklch(0.55 0.02 120);
+  --rule:oklch(0.80 0.025 86); --rule-2:oklch(0.70 0.03 86);
+  --red:oklch(0.50 0.19 25); --red-2:oklch(0.62 0.17 25); --gold:oklch(0.70 0.13 80); --gold-2:oklch(0.60 0.12 80);
+  --wash:oklch(0.93 0.02 150 / .55); --mark:oklch(0.88 0.12 90);
+  --display:"Fraunces",Georgia,serif; --body:"Source Serif 4","Iowan Old Style",Georgia,serif; --ui:"Public Sans",system-ui,sans-serif;
+  --measure:66ch; --gutter:max(16px,env(safe-area-inset-left,0px));
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:oklch(0.21 0.015 80); --paper-2:oklch(0.25 0.017 80); --paper-3:oklch(0.30 0.02 80);
+  --ink:oklch(0.93 0.012 86); --ink-2:oklch(0.78 0.015 86); --ink-3:oklch(0.64 0.015 86);
+  --rule:oklch(0.36 0.02 80); --rule-2:oklch(0.46 0.025 80);
+  --red:oklch(0.72 0.15 28); --red-2:oklch(0.80 0.12 30); --gold:oklch(0.78 0.12 85); --gold-2:oklch(0.85 0.10 85);
+  --wash:oklch(0.30 0.02 150 / .6); --mark:oklch(0.45 0.10 80);
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:oklch(0.21 0.015 80); --paper-2:oklch(0.25 0.017 80); --paper-3:oklch(0.30 0.02 80);
+  --ink:oklch(0.93 0.012 86); --ink-2:oklch(0.78 0.015 86); --ink-3:oklch(0.64 0.015 86);
+  --rule:oklch(0.36 0.02 80); --rule-2:oklch(0.46 0.025 80);
+  --red:oklch(0.72 0.15 28); --red-2:oklch(0.80 0.12 30); --gold:oklch(0.78 0.12 85); --gold-2:oklch(0.85 0.10 85);
+  --wash:oklch(0.30 0.02 150 / .6); --mark:oklch(0.45 0.10 80);
+  color-scheme:dark}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 1.0625rem/1.6 var(--body);font-optical-sizing:auto;padding-block-end:5rem}
+img{max-width:100%;height:auto;display:block}
+a{color:inherit;text-decoration-color:var(--rule-2);text-underline-offset:.18em}
+a:hover{text-decoration-color:var(--red)}
+:focus-visible{outline:2px solid var(--red);outline-offset:3px}
+h1,h2,h3,h4{font-family:var(--display);font-weight:500;line-height:1.1;margin:0;text-wrap:balance;letter-spacing:-.01em}
+p{margin:0}
+.ms{font-family:'Material Symbols Rounded';font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;font-size:1.25em;line-height:1;vertical-align:-.2em;display:inline-block}
+.sc{font-family:var(--ui);font-size:.72rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2)}
+.sc--red{color:var(--red)}
+.wrap{max-width:76rem;margin-inline:auto;padding-inline:var(--gutter) max(16px,env(safe-area-inset-right,0px))}
+mark{background:var(--mark);color:inherit;padding-inline:.1em;border-radius:2px}
+.rule{border:0;border-block-start:1px solid var(--rule);margin:0}
+.rule--double{border-block-start:3px double var(--rule-2)}
+.leaders{display:flex;align-items:baseline;gap:.5em}
+.leaders .dots{flex:1;border-block-end:1px dotted var(--rule-2);translate:0 -.35em;min-width:1.5em}
+.num{font-family:var(--display);font-variation-settings:"SOFT" 30;font-weight:600;color:var(--red);font-variant-numeric:tabular-nums}
+
+/* ---------- running head (header) ---------- */
+.rh{border-block-end:3px double var(--rule-2);background:var(--paper)}
+.rh__in{display:flex;align-items:center;gap:1.25rem;min-height:3.5rem;flex-wrap:wrap;padding-block:.5rem}
+.rh__brand{font-family:var(--display);font-weight:600;font-size:1.35rem;text-decoration:none;letter-spacing:-.01em;display:flex;align-items:center;gap:.5rem}
+.rh__brand small{font:600 .62rem/1 var(--ui);letter-spacing:.14em;text-transform:uppercase;color:var(--red);padding:.3em .5em;border:1px solid currentColor;border-radius:2px}
+.rh__nav{display:flex;gap:1.25rem;margin-inline-start:auto;align-items:center;flex-wrap:wrap}
+.rh__nav a{font:600 .74rem/1 var(--ui);letter-spacing:.1em;text-transform:uppercase;text-decoration:none;color:var(--ink-2)}
+.rh__nav a[aria-current],.rh__nav a:hover{color:var(--red)}
+.rh__cta{border:1px solid var(--ink);padding:.55em .9em;border-radius:2px;color:var(--ink)!important}
+.rh__toggle{appearance:none;background:none;border:1px solid var(--rule-2);border-radius:2px;color:var(--ink-2);padding:.35em .5em;cursor:pointer;font:inherit;display:inline-flex}
+@media (max-width:640px){.rh__nav{gap:.8rem;width:100%;justify-content:space-between}.rh__nav a:not(.rh__cta){letter-spacing:.06em}}
+
+/* ---------- colophon (footer) ---------- */
+.colophon{margin-block-start:4rem;border-block-start:3px double var(--rule-2);padding-block:2.5rem 1.5rem;color:var(--ink-2);font-size:.95rem}
+.colophon__grid{display:grid;grid-template-columns:minmax(14rem,1.4fr) repeat(auto-fit,minmax(10rem,1fr));gap:2rem}
+.colophon__brand{font-family:var(--display);font-size:1.4rem;color:var(--ink);font-weight:500}
+.colophon ul{list-style:none;margin:.6rem 0 0;padding:0;display:grid;gap:.35rem}
+.colophon li a{text-decoration:none}
+.colophon__edition{margin-block-start:2rem;padding-block-start:1rem;border-block-start:1px solid var(--rule);display:flex;justify-content:space-between;flex-wrap:wrap;gap:.5rem;font:500 .74rem/1.4 var(--ui);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3)}
+@media (max-width:640px){.colophon__grid{grid-template-columns:1fr 1fr}.colophon__grid>:first-child{grid-column:1/-1}}
+
+/* ---------- breadcrumb ---------- */
+.crumbs{font:500 .72rem/1.4 var(--ui);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);display:flex;flex-wrap:wrap;gap:.4em;padding-block:1rem}
+.crumbs a{text-decoration:none}.crumbs b{color:var(--ink);font-weight:600}
+.crumbs .sep{color:var(--rule-2)}
+
+/* ---------- title page (home) ---------- */
+.title-page{padding-block:3rem 2rem;display:grid;grid-template-columns:1fr;gap:2rem;align-items:end}
+@media (min-width:60rem){.title-page{grid-template-columns:1.1fr .9fr;gap:3rem}}
+.title-page__edition{display:flex;justify-content:space-between;border-block:1px solid var(--rule);padding-block:.5rem;margin-block-end:1.5rem}
+.title-page h1{font-size:clamp(2.6rem,6vw,4.75rem);font-variation-settings:"SOFT" 60;font-weight:400;line-height:.98}
+.title-page h1 em{font-style:italic;color:var(--red);font-weight:300}
+.title-page__lead{max-width:48ch;font-size:1.15rem;color:var(--ink-2);margin-block-start:1.25rem}
+.index-box{margin-block-start:1.75rem;border:1px solid var(--ink);border-radius:2px;display:flex;align-items:stretch;background:var(--paper)}
+.index-box label{align-self:center;padding-inline:.9rem;border-inline-end:1px solid var(--rule);white-space:nowrap}
+.index-box input{flex:1;min-width:0;border:0;background:transparent;font:inherit;font-size:1.05rem;padding:.8rem .9rem;color:var(--ink)}
+.index-box input::placeholder{color:var(--ink-3)}
+.index-box button{border:0;background:var(--ink);color:var(--paper);font:600 .74rem/1 var(--ui);letter-spacing:.1em;text-transform:uppercase;padding-inline:1.1rem;cursor:pointer}
+.title-page__links{display:flex;gap:1.5rem;margin-block-start:1rem;flex-wrap:wrap}
+.title-page__links a{font:600 .78rem/1 var(--ui);letter-spacing:.08em;text-transform:uppercase;text-decoration:none;display:inline-flex;gap:.4em;align-items:center;color:var(--ink-2)}
+.title-page__links a .ms{color:var(--red)}
+.plate{position:relative;border:1px solid var(--rule-2);padding:.6rem;background:var(--paper-2)}
+.plate img{aspect-ratio:3/2;object-fit:cover;width:100%;filter:sepia(.12) contrast(1.02)}
+.plate figcaption{font:italic 400 .9rem/1.4 var(--body);color:var(--ink-2);padding-block-start:.5rem;display:flex;justify-content:space-between;gap:1rem}
+.plate figcaption .sc{color:var(--ink-3)}
+.contents{padding-block:2.5rem}
+.contents__head{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;border-block-end:1px solid var(--ink);padding-block-end:.5rem;margin-block-end:1.25rem;flex-wrap:wrap}
+.contents__head h2{font-size:clamp(1.6rem,3vw,2.2rem)}
+.toc{list-style:none;margin:0;padding:0;columns:1;column-gap:3rem}
+@media (min-width:48rem){.toc{columns:2}}
+.toc li{break-inside:avoid;padding-block:.45rem;border-block-end:1px dotted transparent}
+.toc a{text-decoration:none;display:flex;align-items:baseline;gap:.5em}
+.toc a:hover .toc__name{color:var(--red)}
+.toc__name{font-size:1.1rem}
+.toc__count{font:500 .78rem/1 var(--ui);color:var(--ink-3);font-variant-numeric:tabular-nums}
+.toc__icon{color:var(--ink-3);font-size:1.1rem;vertical-align:-.15em}
+.toc--parts .toc__part{column-span:all;padding-block:1.25rem .4rem}
+.plates{display:grid;grid-template-columns:repeat(auto-fit,minmax(14rem,1fr));gap:1.25rem}
+.plates .plate a{text-decoration:none}
+.eagle-list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(16rem,1fr));gap:.1rem 2rem}
+.eagle-list li{border-block-end:1px dotted var(--rule-2)}
+.eagle-list a{display:flex;gap:.6rem;align-items:center;padding-block:.55rem;text-decoration:none}
+.eagle-list img{width:2.4rem;height:2.4rem;object-fit:cover;border-radius:2px;border:1px solid var(--rule)}
+.eagle-list .name{flex:1;min-width:0}
+.eagle-list .meta{font:500 .72rem/1 var(--ui);color:var(--ink-3)}
+.eagle-mark{color:var(--gold-2);font-variation-settings:'FILL' 1}
+.howto{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:2rem 2.5rem;counter-reset:step}
+.howto article{border-block-start:1px solid var(--ink);padding-block-start:.75rem;display:grid;grid-template-columns:auto 1fr;gap:.25rem .9rem}
+.howto article::before{counter-increment:step;content:counter(step,upper-roman);font-family:var(--display);font-size:2rem;color:var(--red);line-height:1;grid-row:1/3}
+.howto h3{font-size:1.2rem}.howto p{color:var(--ink-2);font-size:.98rem}
+.rank-toc .toc__name{display:inline-flex;gap:.6em;align-items:baseline}
+.rank-toc .lvl{font:600 .72rem/1 var(--ui);color:var(--red);letter-spacing:.08em}
+.rank-toc .samples{font-size:.92rem;color:var(--ink-3);font-style:italic;margin-inline-start:2.3rem;display:block;padding-block:.1rem .4rem}
+
+/* ---------- book layout (inner pages) ---------- */
+.book{display:grid;grid-template-columns:1fr;gap:2rem;padding-block-end:2rem}
+@media (min-width:64rem){.book{grid-template-columns:15rem minmax(0,1fr);gap:3.5rem}}
+.margin{font-family:var(--ui);font-size:.86rem}
+@media (min-width:64rem){.margin{position:sticky;top:1rem;align-self:start;max-height:calc(100dvh - 2rem);overflow:auto;scrollbar-width:thin;padding-inline-end:.5rem}}
+.margin details{border-block:1px solid var(--rule)}
+.margin summary{list-style:none;cursor:pointer;padding-block:.75rem;display:flex;justify-content:space-between;align-items:center}
+.margin summary::-webkit-details-marker{display:none}
+.margin summary .ms{transition:rotate .2s}
+.margin details[open] summary .ms{rotate:180deg}
+@media (min-width:64rem){.margin details{border:0}.margin summary{display:none}.margin details>div{display:block!important}}
+.ident{display:grid;gap:.35rem;padding-block:0 1rem;border-block-end:1px solid var(--ink);margin-block-end:1rem}
+.ident__plate{border:1px solid var(--rule-2);padding:.4rem;background:var(--paper-2);margin-block-end:.6rem}
+.ident__plate img{aspect-ratio:16/9;object-fit:cover}
+.ident__lvl{font-family:var(--display);font-size:3rem;line-height:1;color:var(--red);font-variation-settings:"SOFT" 40}
+.ident__lvl small{font:600 .7rem/1 var(--ui);letter-spacing:.12em;color:var(--ink-3);display:block;margin-block-start:.3rem}
+.ident__title{font-family:var(--display);font-size:1.5rem;line-height:1.1;font-weight:500}
+.ident p{color:var(--ink-2);font-size:.86rem}
+.mnav{list-style:none;margin:0;padding:0}
+.mnav>li{padding-block:.2rem}
+.mnav a{text-decoration:none;display:flex;gap:.6em;padding-block:.3rem;color:var(--ink-2);align-items:baseline}
+.mnav a[aria-current]{color:var(--red);font-weight:600}
+.mnav a:hover{color:var(--ink)}
+.mnav .m{font-variant-numeric:tabular-nums;color:var(--ink-3);min-width:1.6em;text-align:end;font-weight:600}
+.mnav a[aria-current] .m{color:var(--red)}
+.mnav__group{margin-block-start:.9rem}
+.mnav__group>.sc{display:block;padding-block:.25rem;border-block-end:1px solid var(--rule);margin-block-end:.25rem;color:var(--ink-3)}
+.mnav__sub{list-style:none;margin:0;padding:0}
+.mnav__sub a{font-size:.84rem}
+.mref{margin-block-start:1.25rem;padding-block-start:.75rem;border-block-start:1px solid var(--rule);display:grid;gap:.4rem}
+.mref a{display:flex;gap:.5em;align-items:center;text-decoration:none;color:var(--ink-2)}
+.mref .ms{color:var(--red);font-size:1.1rem}
+.page{min-width:0}
+
+/* ---------- chapter opener (award) ---------- */
+.chapter{display:grid;grid-template-columns:1fr;gap:2rem;align-items:start}
+@media (min-width:52rem){.chapter{grid-template-columns:minmax(0,1.3fr) minmax(16rem,.9fr)}}
+.chapter__kicker{display:flex;gap:1rem;align-items:center;flex-wrap:wrap;margin-block-end:1rem}
+.chapter__kicker .pill{font:600 .7rem/1 var(--ui);letter-spacing:.1em;text-transform:uppercase;border:1px solid var(--rule-2);padding:.35em .6em;border-radius:2px;color:var(--ink-2);text-decoration:none;display:inline-flex;gap:.4em;align-items:center}
+.chapter__kicker .pill--eagle{border-color:var(--gold-2);color:var(--gold-2)}
+.chapter h1{font-size:clamp(2.4rem,5.5vw,4.25rem);font-weight:400;font-variation-settings:"SOFT" 50;line-height:1}
+.chapter h1 em{display:block;font-style:italic;font-weight:300;font-size:.5em;color:var(--red);margin-block-start:.3em}
+.chapter__lead{font-size:1.2rem;color:var(--ink-2);max-width:var(--measure);margin-block:1.25rem 1.75rem}
+.chapter__ctas{display:flex;gap:.75rem;flex-wrap:wrap}
+.btn{font:600 .76rem/1 var(--ui);letter-spacing:.1em;text-transform:uppercase;text-decoration:none;padding:.85em 1.2em;border:1px solid var(--ink);border-radius:2px;display:inline-flex;align-items:center;gap:.5em;color:var(--ink);background:transparent;cursor:pointer}
+.btn--ink{background:var(--ink);color:var(--paper)}
+.btn--red{border-color:var(--red);color:var(--red)}
+.chapter__plate .plate img{aspect-ratio:4/3}
+.lvl-plate{border:1px solid var(--rule-2);padding:2rem 1.5rem;background:var(--paper-2);text-align:center}
+.lvl-plate .big{font-family:var(--display);font-size:clamp(5rem,10vw,8rem);line-height:.9;color:var(--red);font-variation-settings:"SOFT" 60;font-weight:400}
+.lvl-plate .big small{font-size:.3em;color:var(--ink-3);font-weight:300}
+.lvl-plate .sc{display:block;margin-block-start:.75rem}
+.lvl-plate .seq{display:flex;justify-content:center;gap:.35rem;margin-block-start:1rem}
+.lvl-plate .seq i{width:.6rem;height:.6rem;border:1px solid var(--rule-2);border-radius:50%;display:block}
+.lvl-plate .seq i.on{background:var(--red);border-color:var(--red)}
+.lvl-plate .seq i.done{background:var(--rule-2)}
+.in-chapter{margin-block-start:2.5rem}
+.in-chapter h2,.facts h2,.refs h2{font-size:1.35rem;border-block-end:1px solid var(--ink);padding-block-end:.4rem;margin-block-end:.75rem}
+.in-chapter ol{list-style:none;margin:0;padding:0;counter-reset:req}
+.in-chapter li a{display:grid;grid-template-columns:2.2rem 1fr auto;gap:.4rem .6rem;align-items:baseline;padding-block:.55rem;border-block-end:1px dotted var(--rule-2);text-decoration:none}
+.in-chapter li a:hover .t{color:var(--red)}
+.in-chapter .t{font-size:1.08rem}
+.in-chapter .snip{grid-column:2/-1;font-size:.95rem;color:var(--ink-3);font-style:italic}
+.in-chapter .pg{font:500 .74rem/1 var(--ui);color:var(--ink-3);font-variant-numeric:tabular-nums}
+.facts dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:.35rem 1rem;font-size:.98rem}
+.facts dt{font:600 .72rem/1.6 var(--ui);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.facts dd{margin:0;border-block-end:1px dotted var(--rule);padding-block-end:.3rem}
+.facts dd .eagle-mark{margin-inline-end:.25em}
+.refs ul{list-style:none;margin:0;padding:0;display:grid;gap:.5rem}
+.refs a{display:flex;gap:.6em;align-items:center;text-decoration:none}
+.refs .ms{color:var(--red)}
+.refs small{color:var(--ink-3);font:500 .72rem/1 var(--ui)}
+.start{margin-block-start:2.5rem;display:flex;justify-content:space-between;align-items:center;gap:1rem;border-block:1px solid var(--ink);padding-block:1rem;text-decoration:none;flex-wrap:wrap}
+.start b{font-family:var(--display);font-size:1.5rem;font-weight:500}
+.start .ms{color:var(--red);font-size:1.75rem}
+
+/* ---------- numbered document (requirements) ---------- */
+.doc-head{border-block-end:1px solid var(--ink);padding-block-end:1rem;margin-block-end:.5rem;display:flex;justify-content:space-between;align-items:end;gap:1rem;flex-wrap:wrap}
+.doc-head h1{font-size:clamp(2rem,4vw,3rem);font-weight:400}
+.doc-head h1 em{font-style:italic;color:var(--red);font-weight:300}
+.doc-head p{color:var(--ink-2);max-width:var(--measure);margin-block-start:.5rem}
+.doc-head .sc{text-align:end}
+.req{display:grid;grid-template-columns:3.2rem minmax(0,1fr);gap:.25rem 1rem;padding-block:1.75rem;border-block-end:1px solid var(--rule);scroll-margin-top:1rem}
+.req:last-child{border:0}
+.req__n{font-size:2.4rem;line-height:1;text-align:end;grid-row:1/span 3;padding-block-start:.1rem}
+.req__eyebrow{display:flex;gap:.8rem;align-items:center;flex-wrap:wrap;min-height:1.1rem}
+.req__eyebrow .sc{color:var(--ink-3)}
+.req__eyebrow .sc--red{color:var(--red)}
+.req__text{font-size:1.1rem;max-width:var(--measure);text-wrap:pretty}
+.req__text--stem{color:var(--ink-2);font-style:italic}
+.mode{display:flex;align-items:center;gap:.75rem;margin-block:1rem .25rem;color:var(--red)}
+.mode::after{content:"";flex:1;border-block-start:1px solid var(--red);opacity:.5}
+.mode .sc{color:var(--red)}
+.kids{list-style:none;margin:.5rem 0 0;padding:0}
+.kid{display:grid;grid-template-columns:1.9rem minmax(0,1fr);gap:.15rem .7rem;padding-block:.65rem;border-block-end:1px dotted var(--rule)}
+.kid:last-child{border:0}
+.kid__m{text-align:end;font-size:1.15rem;line-height:1.45}
+.kid__eyebrow{font:600 .7rem/1.4 var(--ui);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.kid__text{max-width:var(--measure);text-wrap:pretty}
+.kid__text ul{margin:.4rem 0 0;padding-inline-start:1.2rem}
+.kid .kids{margin-inline-start:0}
+.kid .kid{grid-template-columns:1.8rem 1fr;padding-block:.4rem}
+.kid .kid__m{font-size:1rem}
+.see-also{margin-block-start:.75rem;font-size:.92rem;color:var(--ink-2);display:flex;gap:.5em;flex-wrap:wrap;align-items:baseline}
+.see-also .sc{color:var(--ink-3)}
+.see-also a{text-decoration-style:dotted}
+.see-also a+a::before{content:"· ";color:var(--rule-2)}
+.guide-link{font:600 .7rem/1 var(--ui);letter-spacing:.08em;text-transform:uppercase;color:var(--red);text-decoration:none;display:inline-flex;gap:.3em;align-items:center;margin-inline-start:auto}
+.notes{margin-block-start:2.5rem;border-block-start:3px double var(--rule-2);padding-block-start:1rem;font-size:.95rem;color:var(--ink-2)}
+.notes h2{font-size:1rem;margin-block-end:.5rem}
+.notes ol{margin:.4rem 0 0;padding-inline-start:1.2rem}
+
+/* ---------- book page (guide) ---------- */
+.gp{max-width:var(--measure);min-width:0}
+@media (min-width:80rem){.book--guide{grid-template-columns:15rem minmax(0,1fr) 15rem}}
+.gp__kicker{display:flex;gap:1rem;align-items:baseline;justify-content:space-between;border-block-end:1px solid var(--ink);padding-block-end:.5rem}
+.gp h1{font-size:clamp(2.2rem,4.5vw,3.4rem);font-weight:400;margin-block:1rem}
+.epigraph{border-inline-start:3px solid var(--red);padding:.75rem 1.1rem;margin-block:1.5rem 1.75rem;background:var(--wash);display:grid;grid-template-columns:auto 1fr;gap:.9rem;align-items:baseline}
+.epigraph .num{font-size:1.5rem}
+.epigraph p{font-size:1.1rem}
+.epigraph small{display:block;font:600 .66rem/1 var(--ui);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin-block-end:.5rem;grid-column:1/-1}
+.gp .prose>p{margin-block:1rem;text-wrap:pretty}
+.gp .prose>p.dc::first-letter{font-family:var(--display);font-size:3.6em;float:inline-start;line-height:.8;padding-inline-end:.1em;padding-block-start:.08em;color:var(--red);font-weight:400}
+.gp h2{font-size:1.75rem;margin-block:2.25rem .75rem;font-weight:500}
+.gp h3{font-size:1.25rem;margin-block:1.75rem .5rem;font-style:italic;font-weight:400}
+.gp ul,.gp ol{margin-block:.75rem;padding-inline-start:1.4rem}
+.gp li{margin-block:.3rem;text-wrap:pretty}
+.gp ol li::marker{color:var(--red);font-family:var(--display);font-weight:600}
+.note{border-block:1px solid var(--rule-2);padding-block:.9rem;margin-block:1.5rem;font-size:.98rem;display:grid;gap:.4rem}
+.note .sc{display:flex;gap:.4em;align-items:center}
+.note--safety{border-color:var(--red);border-inline-start:3px solid var(--red);padding-inline-start:1rem;border-block-width:1px}
+.note--safety .sc{color:var(--red)}
+.note--tip .sc{color:var(--ink-2)}
+.note--box{border:1px solid var(--rule-2);padding:1rem 1.1rem;background:var(--paper-2)}
+.note--box h4{font-size:1.15rem;font-weight:500}
+.note--box ul{margin:.4rem 0 0}
+.checklist{list-style:none;padding:0;margin:.5rem 0 0}
+.checklist li{display:grid;grid-template-columns:1.1rem 1fr;gap:.6rem;align-items:start}
+.checklist li::before{content:"";width:.9rem;height:.9rem;border:1.5px solid var(--ink-2);margin-block-start:.35rem;border-radius:2px}
+.gp .plate{margin-block:1.75rem}
+.video{display:grid;grid-template-columns:auto 1fr;gap:1rem;align-items:center;border:1px solid var(--rule-2);padding:.9rem 1rem;margin-block:1.5rem;text-decoration:none;background:var(--paper-2)}
+.video .ms{font-size:2.4rem;color:var(--red);font-variation-settings:'FILL' 1}
+.video small{display:block;color:var(--ink-3);font:500 .74rem/1.4 var(--ui)}
+.extlink{display:block;border-block:1px dotted var(--rule-2);padding-block:.7rem;margin-block:1.25rem;text-decoration:none}
+.extlink b{display:flex;gap:.4em;align-items:center}.extlink .ms{color:var(--red);font-size:1.05em}
+.extlink span{display:block;color:var(--ink-2);font-size:.95rem}
+.nextpage{margin-block-start:2.5rem;border:1px solid var(--ink);padding:1.1rem 1.25rem;display:grid;gap:.25rem;text-decoration:none}
+.nextpage .sc{color:var(--ink-3)}.nextpage b{font-family:var(--display);font-size:1.3rem;font-weight:500}
+.nextpage span{color:var(--ink-2)}
+.turn{display:flex;justify-content:space-between;gap:1rem;margin-block-start:2rem;border-block-start:3px double var(--rule-2);padding-block-start:1rem;flex-wrap:wrap}
+.turn a{text-decoration:none;display:grid;gap:.2rem;max-width:45%}
+.turn a .sc{color:var(--ink-3)}.turn a b{font-family:var(--display);font-weight:500;font-size:1.1rem}
+.turn a:last-child{text-align:end;margin-inline-start:auto}
+.sidenotes{display:none}
+@media (min-width:80rem){.sidenotes{display:block;font-size:.84rem;color:var(--ink-2);position:sticky;top:1rem;align-self:start}.sidenotes p{border-block-start:1px solid var(--rule);padding-block:.6rem;margin:0}.sidenotes .sc{display:block;margin-block-end:.2rem;color:var(--red)}}
+
+/* ---------- concordance (search) ---------- */
+.conc-head{padding-block:2.5rem 1.5rem;border-block-end:3px double var(--rule-2)}
+.conc-head h1{font-size:clamp(2rem,4vw,3rem);font-weight:400}
+.conc-head form{margin-block-start:1.25rem;max-width:40rem}
+.headword{display:flex;align-items:baseline;gap:1rem;padding-block:1.5rem .5rem;flex-wrap:wrap}
+.headword h2{font-size:clamp(2.6rem,6vw,4.5rem);font-style:italic;font-weight:300;color:var(--red);line-height:1}
+.headword .sc{color:var(--ink-3)}
+.entry{display:grid;grid-template-columns:1fr;gap:.5rem 2rem;padding-block:1.4rem;border-block-end:1px solid var(--rule)}
+@media (min-width:52rem){.entry{grid-template-columns:14rem minmax(0,1fr)}}
+.entry__award a{text-decoration:none;display:flex;gap:.7rem;align-items:center}
+.entry__award img{width:3.2rem;height:3.2rem;object-fit:cover;border:1px solid var(--rule-2);border-radius:2px}
+.entry__award .lvl{width:3.2rem;height:3.2rem;border:1px solid var(--rule-2);display:grid;place-items:center;font-family:var(--display);font-size:1.5rem;color:var(--red);font-variation-settings:"SOFT" 40}
+.entry__award h3{font-size:1.2rem;font-weight:500}
+.entry__award small{display:block;font:500 .7rem/1.4 var(--ui);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+.hits{list-style:none;margin:0;padding:0}
+.hit{display:grid;grid-template-columns:2.6rem minmax(0,1fr);gap:.1rem .7rem;padding-block:.45rem}
+.hit+.hit{border-block-start:1px dotted var(--rule)}
+.hit a{text-decoration:none}
+.hit .num{font-size:1rem;text-align:end;line-height:1.6}
+.hit b{font-weight:600}
+.hit p{color:var(--ink-2);font-size:.97rem;text-wrap:pretty}
+.conc-more{display:block;text-align:center;padding-block:1.25rem;font:600 .74rem/1 var(--ui);letter-spacing:.1em;text-transform:uppercase;text-decoration:none;color:var(--ink-2)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+(function(){
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const ms = (n, extra='') => `<span class="ms ${extra}" aria-hidden="true">${n}</span>`;
+const isMBU = site => site.key === 'mbu';
+const edition = () => '2026 edition';
+const breadcrumbs = (site, key) => {
+  const items = site.breadcrumbs[key];
+  const urls = { Home:'/', 'Merit Badges':'/merit-badges/', 'Scouts BSA':'/scouts-bsa/', 'Rank Advancement':'/scouts-bsa/ranks/' };
+  return `<nav class="crumbs" aria-label="Breadcrumb">${items.map((t,i)=> i===items.length-1 ? `<b aria-current="page">${esc(t)}</b>` : `<a href="${urls[t] || (i===items.length-2 ? site.award.url : '#')}">${esc(t)}</a><span class="sep">›</span>`).join('')}</nav>`;
+};
+const header = (site, ctx) => `
+<header class="rh"><div class="wrap rh__in">
+  <a class="rh__brand" href="/">${esc(site.name)} <small>${esc(edition())}</small></a>
+  <nav class="rh__nav" aria-label="Site">
+    ${site.nav.map(n=>`<a href="${n.url}">${esc(n.name)}</a>`).join('')}
+    <a href="${site.cta.href}">${esc(site.cta.label)}</a>
+    <a href="/search/" ${ctx.page==='search'?'aria-current="page"':''}>Index ${ms('search')}</a>
+    <button class="rh__toggle" type="button" data-toggle-theme aria-label="Toggle light and dark">${ms(ctx.dark?'light_mode':'dark_mode')}</button>
+  </nav>
+</div></header>`;
+const footer = site => `
+<footer class="colophon"><div class="wrap">
+  <div class="colophon__grid">
+    <div><div class="colophon__brand">${esc(site.name)}</div><p>${esc(site.tagline)}</p></div>
+    ${site.footer.map(c=>`<div><span class="sc">${esc(c.title)}</span><ul>${c.links.map(l=>`<li><a href="${l.href}">${esc(l.label)}</a></li>`).join('')}</ul></div>`).join('')}
+  </div>
+  <div class="colophon__edition"><span>© 2026 ${esc(site.name)}</span><span>Requirements © Scouting America · ${esc(edition())}</span></div>
+</div></footer>`;
+const indexBox = (site, q='') => `
+<form class="index-box" action="/search/" role="search"><label class="sc" for="idx">Index</label>
+<input id="idx" type="search" name="q" value="${esc(q)}" placeholder="Look up any requirement — e.g. ${isMBU(site)?'knots, first aid, budget':'knot, map, first aid'}" autocomplete="off">
+<button type="submit">Look up</button></form>`;
+
+/* ---------- HOME ---------- */
+function home(site, ctx){
+  const mbu = isMBU(site);
+  const parts = mbu ? `
+    <section class="contents wrap">
+      <div class="contents__head"><h2>Contents</h2><span class="sc">${site.counts.categories} fields of interest · ${site.counts.badges} merit badges</span></div>
+      <ol class="toc">${site.categories.map(c=>`<li><a href="${c.url}" class="leaders"><span class="toc__name">${esc(c.name)}</span><span class="dots"></span><span class="toc__count">${c.count} badges</span></a></li>`).join('')}</ol>
+    </section>
+    <section class="contents wrap">
+      <div class="contents__head"><h2>Plates</h2><span class="sc">Featured badges</span></div>
+      <div class="plates">${site.featured.map(b=>`<figure class="plate"><a href="${b.url}"><img src="${b.emblem}" alt="${esc(b.title)} merit badge emblem" loading="lazy"><figcaption><span>${esc(b.title)} <em>Merit Badge</em></span><span class="sc">${b.reqCount} req.</span></figcaption></a></figure>`).join('')}</div>
+    </section>
+    <section class="contents wrap">
+      <div class="contents__head"><h2>${ms('workspace_premium','eagle-mark')} Eagle-required merit badges</h2><span class="sc">${site.counts.eagleBadges} badges · ${site.counts.eagle} categories</span></div>
+      <ul class="eagle-list">${site.eagle.map(b=>`<li><a href="${b.url}"><img src="${b.emblem}" alt="" loading="lazy"><span class="name">${esc(b.title)}</span><span class="meta">${b.reqCount} req.</span></a></li>`).join('')}</ul>
+      <p style="margin-block-start:1rem"><a class="btn btn--red" href="/merit-badges/eagle-required/">${ms('workspace_premium')} Browse ${site.counts.eagle} Eagle-required categories</a></p>
+    </section>
+    <section class="contents wrap">
+      <div class="contents__head"><h2>How to use this handbook</h2><span class="sc">What is on every badge page</span></div>
+      <div class="howto">${site.steps.map(s=>`<article><h3>${esc(s.title)}</h3><p>${esc(s.text)}</p></article>`).join('')}</div>
+    </section>` : `
+    <section class="contents wrap">
+      <div class="contents__head"><h2>Contents</h2><span class="sc">7 ranks, earned in sequence</span></div>
+      <ol class="toc toc--parts rank-toc">
+        ${site.phases.map((ph,i)=>`<li class="toc__part"><span class="sc sc--red">Part ${i===0?'I':'II'} · Ranks ${ph.ranks}</span><h3 style="font-size:1.4rem;margin-block:.2rem .3rem">${esc(ph.title)}</h3><p style="color:var(--ink-2);max-width:60ch">${esc(ph.text)}</p></li>
+        ${site.ranks.filter(r=> i===0 ? r.level<=4 : r.level>=5).map(r=>`<li><a href="${r.url}" class="leaders"><span class="toc__name"><span class="lvl">${r.level}</span>${esc(r.title)}</span><span class="dots"></span><span class="toc__count">${r.leafCount} requirements</span></a><span class="samples">${r.samples.map(esc).join(' · ')}</span></li>`).join('')}`).join('')}
+      </ol>
+    </section>
+    <section class="contents wrap">
+      <div class="contents__head"><h2>Appendices</h2><span class="sc">Field guides and leadership</span></div>
+      <div class="howto">
+        <article><h3>Field Guides</h3><p>${site.fieldGuides.map(f=>`<a href="${f.url}">${esc(f.title)}</a>`).join(' · ')}</p></article>
+        ${site.footer.find(c=>c.title==='Leadership').links.slice(1).map(l=>`<article><h3>${esc(l.label)}</h3><p><a href="${l.href}">Read the guide</a></p></article>`).join('')}
+      </div>
+    </section>`;
+  return header(site, ctx) + `
+<main id="main">
+  <section class="wrap title-page">
+    <div>
+      <div class="title-page__edition"><span class="sc">${esc(site.name)}</span><span class="sc">${mbu ? site.counts.badges+' merit badges' : '7 ranks'} · ${esc(edition())}</span></div>
+      <h1>${mbu ? 'Find any merit badge <em>requirement</em>' : 'The trail <em>to Eagle</em>'}</h1>
+      <p class="title-page__lead">${mbu ? 'The official requirements for every Scouting America merit badge, set like the handbook, with a study guide for each one.' : 'Every Scouts BSA member walks the same seven ranks, in order. The official requirements for each, with a guide to doing them well.'}</p>
+      ${indexBox(site)}
+      <div class="title-page__links">
+        <a href="${site.cta.href}">${ms('menu_book')} ${mbu ? 'Browse all '+site.counts.badges+' badges' : 'All seven ranks'}</a>
+        ${mbu ? `<a href="/merit-badges/eagle-required/">${ms('workspace_premium')} Eagle-required list</a>` : `<a href="/scouts-bsa/ranks/eagle/">${ms('workspace_premium')} Eagle Scout</a>`}
+      </div>
+    </div>
+    <figure class="plate"><img src="${site.hero.image}" alt="${esc(site.hero.alt)}" width="1400" height="939" fetchpriority="high"><figcaption><span>Plate 1 — ${esc(site.hero.alt)}</span></figcaption></figure>
+  </section>
+  ${parts}
+</main>` + footer(site);
+}
+
+/* ---------- shared margin column ---------- */
+function identity(site, demote){
+  const a = site.award, mbu = isMBU(site);
+  const T = demote ? 'p' : 'h1';
+  return `<div class="ident">
+    ${mbu ? `<div class="ident__plate"><img src="${a.emblem}" alt="${esc(a.title)} merit badge emblem"></div><span class="sc">${esc(a.category)}${a.eagle?` · <span class="eagle-mark">${ms('workspace_premium')}</span> Eagle`:''}</span>`
+          : `<div class="ident__lvl">${a.level}<small>Rank ${a.level} of ${a.totalLevels}</small></div>`}
+    <${T} class="ident__title">${esc(a.title)}</${T}>
+    <p>${esc(a.label)} · ${a.reqCount} requirements · ${a.guidePages} guide pages</p>
+  </div>`;
+}
+function marginNav(site, ctx, items, groups){
+  const a = site.award;
+  const refs = `<div class="mref">
+    ${isMBU(site) ? `<a href="${a.worksheetUrl}">${ms('download')} Fillable worksheet</a><a href="${a.pamphletUrl}">${ms('menu_book')} Merit badge pamphlet</a><a href="${a.officialUrl}">${ms('open_in_new')} Scouting.org</a>` : `<a href="${a.prev.url}">${ms('arrow_back')} ${esc(a.prev.title)} (rank ${a.level-1})</a><a href="${a.next.url}">${ms('arrow_forward')} ${esc(a.next.title)} (rank ${a.level+1})</a>`}
+    <a href="${a.guidePrintUrl}">${ms('print')} Print the complete guide</a>
+  </div>`;
+  const list = groups ? groups.map(g=>`<li class="mnav__group"><span class="sc">${esc(g.title)}</span><ul class="mnav__sub">${g.items.map(it=>`<li><a href="${it.url}" ${it.url===site.guide.url?'aria-current="page"':''}><span class="m">${esc(it.marker||'')}</span><span>${esc(it.title)}</span></a></li>`).join('')}</ul></li>`).join('')
+                      : items.map(it=>`<li><a href="${it.url}" ${it.current?'aria-current="page"':''}><span class="m">${esc(it.m)}</span><span>${esc(it.label)}</span></a></li>`).join('');
+  return `<aside class="margin"><details ${ctx.page==='guide'?'':'open'}><summary><span class="sc">In this chapter</span>${ms('expand_more')}</summary><div>
+    ${identity(site, ctx.page!=='requirements')}
+    <nav aria-label="Chapter contents"><ul class="mnav">${list}</ul></nav>${refs}
+  </div></details></aside>`;
+}
+const chapterItems = (site, cur) => [
+  {m:'§', label:'Overview', url:site.award.url, current:cur==='award'},
+  {m:'1–'+site.award.requirements.length, label:'Requirements', url:site.award.requirementsUrl, current:cur==='requirements'},
+  {m:'¶', label:site.guideLabel, url:site.award.guideUrl, current:cur==='guide'},
+];
+
+/* ---------- AWARD (chapter opener) ---------- */
+function award(site, ctx){
+  const a = site.award, mbu = isMBU(site);
+  const preview = a.requirements.slice(0,5).map(r=>{
+    const lead = r.children?.find(c=>c.text && !/^do the following/i.test(c.text)) ;
+    const snippet = (r.text && !/^do the following:?$/i.test(r.text) && r.text) || lead?.text || '';
+    const title = r.title || lead?.title || r.text;
+    return `<li><a href="${a.requirementsUrl}#${r.path}"><span class="num">${esc(r.path)}</span><span class="t">${esc(title)}</span><span class="pg">${r.children?.length ? r.children.length+' parts' : ''}</span>${snippet && snippet!==title ? `<span class="snip">${esc(snippet.replace(/<[^>]+>/g,'')).slice(0,120)}${snippet.length>120?'…':''}</span>`:''}</a></li>`;
+  }).join('');
+  return header(site, ctx) + `<main id="main" class="wrap">${breadcrumbs(site,'award')}
+  <div class="book">${marginNav(site, ctx, chapterItems(site,'award'))}
+  <div class="page">
+    <section class="chapter">
+      <div>
+        <div class="chapter__kicker">
+          ${mbu ? `<a class="pill" href="/categories/">${ms('category')} ${esc(a.category)}</a>${a.eagle?`<span class="pill pill--eagle">${ms('workspace_premium')} Eagle required</span>`:''}` : `<span class="pill">${ms('hiking')} ${esc(a.program)}</span><span class="pill">Rank ${a.level} of ${a.totalLevels}</span>`}
+          <span class="sc">Chapter ${mbu ? site.categories.findIndex(c=>c.name===a.category)+1 : a.level}</span>
+        </div>
+        <h1>${esc(a.title)}<em>${esc(a.label)}</em></h1>
+        <p class="chapter__lead">${esc(a.description)}</p>
+        <div class="chapter__ctas"><a class="btn btn--ink" href="${a.requirementsUrl}">${ms('checklist')} Requirements</a><a class="btn" href="${a.guideUrl}">${ms('menu_book')} ${esc(site.guideLabel)}</a></div>
+      </div>
+      <div class="chapter__plate">
+        ${mbu ? `<figure class="plate"><img src="${a.emblem}" alt="${esc(a.title)} merit badge emblem" width="640" height="357"><figcaption><span>Plate — ${esc(a.title)} merit badge</span><span class="sc">Updated ${esc(a.updated)}</span></figcaption></figure>`
+              : `<div class="lvl-plate"><div class="big">${a.level}<small>/${a.totalLevels}</small></div><span class="sc">${esc(a.program)} · Rank ${a.level} of ${a.totalLevels}</span><div class="seq" aria-hidden="true">${Array.from({length:a.totalLevels},(_,i)=>`<i class="${i+1<a.level?'done':i+1===a.level?'on':''}"></i>`).join('')}</div></div>`}
+      </div>
+    </section>
+    <div class="chapter" style="margin-block-start:2rem">
+      <section class="in-chapter" style="margin:0"><h2>In this chapter</h2><ol>${preview}</ol>
+        ${a.requirements.length>5?`<p style="margin-block-start:.75rem"><a href="${a.requirementsUrl}" class="sc sc--red" style="text-decoration:none">+${a.requirements.length-5} more requirements ${ms('arrow_forward')}</a></p>`:''}</section>
+      <div style="display:grid;gap:2rem">
+        <section class="facts"><h2>Chapter facts</h2><dl>
+          <dt>Requirements</dt><dd>${a.reqCount}</dd>
+          ${mbu ? `<dt>Category</dt><dd><a href="/categories/">${esc(a.category)}</a></dd><dt>Eagle required</dt><dd>${a.eagle?`<span class="eagle-mark">${ms('workspace_premium')}</span>Yes`:'No'}</dd>` : `<dt>Program</dt><dd>${esc(a.program)}</dd><dt>Position</dt><dd>Rank ${a.level} of ${a.totalLevels}</dd><dt>Groups</dt><dd>${a.groupCount}</dd>`}
+          <dt>Guide</dt><dd>${a.guidePages} pages</dd><dt>Updated</dt><dd>${esc(a.updated)}</dd></dl></section>
+        <section class="refs"><h2>References</h2><ul>
+          ${mbu ? `<li><a href="${a.worksheetUrl}">${ms('download')} Fillable worksheet <small>PDF</small></a></li><li><a href="${a.pamphletUrl}">${ms('menu_book')} Merit badge pamphlet <small>PDF</small></a></li><li><a href="${a.officialUrl}">${ms('open_in_new')} Official page on Scouting.org</a></li>` : `<li><a href="${a.prev.url}">${ms('arrow_back')} Previous rank: ${esc(a.prev.title)}</a></li><li><a href="${a.next.url}">${ms('arrow_forward')} Next rank: ${esc(a.next.title)}</a></li>`}
+          <li><a href="${a.guidePrintUrl}">${ms('print')} Print the complete guide</a></li></ul></section>
+      </div>
+    </div>
+    <a class="start" href="${a.requirementsUrl}#${a.requirements[0].path}"><b>Begin with requirement ${esc(a.requirements[0].path)}</b>${ms('arrow_forward')}</a>
+  </div></div></main>` + footer(site);
+}
+
+/* ---------- REQUIREMENTS (numbered document) ---------- */
+const modeLabel = m => !m ? '' : m.type==='select' ? (m.count===1 ? 'Do one of the following' : `Do ${['','one','two','three','four','five'][m.count]||m.count} of the following`) : 'Do all of the following';
+const isStem = t => /^do the following:?$/i.test((t||'').trim()) || !t;
+function kid(n, site, depth){
+  return `<li class="kid" id="${esc(n.path)}">
+    <span class="kid__m num">${esc(n.marker)}.</span>
+    <div>
+      ${n.title && !isStem(n.text) && n.title!==n.text ? `<div class="kid__eyebrow">${esc(n.title)}</div>` : ''}
+      <div class="kid__text">${isStem(n.text) && n.title ? `<em style="color:var(--ink-2)">${esc(n.title)}</em>` : n.textFormat==='html' ? n.text : esc(n.text)}${n.list ? `<ul>${n.list.items.map(i=>`<li>${esc(i)}</li>`).join('')}</ul>`:''}</div>
+      ${n.mode ? `<div class="mode"><span class="sc">${modeLabel(n.mode)}</span></div>`:''}
+      ${n.children?.length ? `<ol class="kids">${n.children.map(c=>kid(c, site, depth+1)).join('')}</ol>`:''}
+      ${n.resources?.length ? `<div class="see-also"><span class="sc">See also</span>${n.resources.map(r=>`<a href="${r.url}">${esc(r.title)}</a>`).join('')}</div>`:''}
+    </div></li>`;
+}
+function req(n, site){
+  const stem = isStem(n.text);
+  return `<article class="req" id="${esc(n.path)}">
+    <div class="req__n num">${esc(n.path)}</div>
+    <div class="req__eyebrow">${n.title ? `<span class="sc">${esc(n.title)}</span>`:''}${n.guide ? `<a class="guide-link" href="${n.guide}">${ms('menu_book')} Guide</a>`:''}</div>
+    ${n.text ? `<p class="req__text ${stem?'req__text--stem':''}">${n.textFormat==='html'? n.text : esc(n.text)}</p>` : ''}
+    <div style="grid-column:2">
+      ${n.list ? `<ul class="kid__text">${n.list.items.map(i=>`<li>${esc(i)}</li>`).join('')}</ul>`:''}
+      ${n.mode ? `<div class="mode"><span class="sc">${modeLabel(n.mode)}</span></div>`:''}
+      ${n.children?.length ? `<ol class="kids">${n.children.map(c=>kid(c, site, 2)).join('')}</ol>`:''}
+      ${n.resources?.length ? `<div class="see-also"><span class="sc">See also</span>${n.resources.map(r=>`<a href="${r.url}">${esc(r.title)}</a>`).join('')}</div>`:''}
+    </div></article>`;
+}
+function requirements(site, ctx){
+  const a = site.award, mbu = isMBU(site);
+  return header(site, ctx) + `<main id="main" class="wrap">${breadcrumbs(site,'requirements')}
+  <div class="book">${marginNav(site, ctx, chapterItems(site,'requirements'))}
+  <div class="page">
+    <div class="doc-head"><div><h1>${esc(a.title)} <em>Requirements</em></h1><p>${esc(a.description)}</p></div><span class="sc">${a.reqCount} requirements${mbu?'':` in ${a.groupCount} groups`}<br>Official text · updated ${esc(a.updated)}</span></div>
+    ${a.requirements.map(r=>req(r, site)).join('')}
+    ${!mbu && (a.footerNote || a.footnotes?.length) ? `<section class="notes"><h2>Notes</h2>${a.footerNote?`<p>${a.footerNote}</p>`:''}${a.footnotes?.length?`<ol>${a.footnotes.map(f=>`<li>${f.text||f}</li>`).join('')}</ol>`:''}</section>`:''}
+  </div></div></main>` + footer(site);
+}
+
+/* ---------- GUIDE (book page) ---------- */
+function block(b){
+  switch(b.type){
+    case 'p': return `<p>${b.html}</p>`;
+    case 'h2': return `<h2>${esc(b.text)}</h2>`;
+    case 'h3': return `<h3>${esc(b.text)}</h3>`;
+    case 'ul': return `<ul>${b.items.map(i=>`<li>${i}</li>`).join('')}</ul>`;
+    case 'ol': return `<ol>${b.items.map(i=>`<li>${i}</li>`).join('')}</ol>`;
+    case 'tip': return `<aside class="note note--tip"><span class="sc">${ms('lightbulb')} Tip</span><p>${b.html}</p></aside>`;
+    case 'safety': return `<aside class="note note--safety"><span class="sc">${ms('warning')} Safety first</span><p>${b.html}</p></aside>`;
+    case 'be-prepared': return `<aside class="note note--box ${b.safety?'note--safety':''}"><span class="sc">${ms('campaign')} Be prepared</span><h4>${esc(b.title)}</h4><ul>${b.items.map(i=>`<li>${i}</li>`).join('')}</ul></aside>`;
+    case 'checklist': return `<aside class="note note--box"><span class="sc">${ms('checklist')} Checklist</span><h4>${esc(b.title)}</h4><p style="color:var(--ink-3);font-style:italic">${esc(b.subtitle)}</p><ul class="checklist">${b.items.map(i=>`<li>${esc(i)}</li>`).join('')}</ul></aside>`;
+    case 'image': return `<figure class="plate"><img src="${b.src}" alt="${esc(b.alt)}" width="${b.width}" height="${b.height}" loading="lazy"><figcaption><span>${esc(b.caption||b.alt)}</span></figcaption></figure>`;
+    case 'video': return `<a class="video" href="${b.url}">${ms('play_circle')}<span><b>${esc(b.title)}</b><small>Video · ${esc(b.channel)} · opens on YouTube</small></span></a>`;
+    case 'external-link': return `<a class="extlink" href="${b.url}"><b>${ms('open_in_new')} ${esc(b.title)}</b><span>${esc(b.description)}</span></a>`;
+    case 'next-page': return `<a class="nextpage" href="${b.url}"><span class="sc">${esc(b.text)}</span><b>${esc(b.title)}</b><span>${esc(b.teaser)}</span></a>`;
+    default: return '';
+  }
+}
+function guide(site, ctx){
+  const g = site.guide, a = site.award;
+  let first = true;
+  const body = g.blocks.map(b=>{ if(b.type==='p' && first){ first=false; return `<p class="dc">${b.html}</p>`; } return block(b); }).join('');
+  const sidenotes = g.blocks.filter(b=>b.type==='tip'||b.type==='safety').slice(0,3).map(b=>`<p><span class="sc">${b.type==='tip'?'Tip':'Safety'}</span>${b.html.replace(/<[^>]+>/g,'').slice(0,140)}…</p>`).join('');
+  return header(site, ctx) + `<main id="main" class="wrap">${breadcrumbs(site,'guide')}
+  <div class="book book--guide">${marginNav(site, ctx, null, a.guideNav)}
+  <article class="page gp">
+    <div class="gp__kicker"><span class="sc sc--red">${esc(g.kicker)}</span><span class="sc">${esc(site.guideLabel)} · ${esc(a.title)}</span></div>
+    <h1>${esc(g.title)}</h1>
+    <blockquote class="epigraph"><small>Requirement ${esc(g.requirement.number)} · official text</small><span class="num">${esc(g.requirement.number)}.</span><p>${esc(g.requirement.text)}</p></blockquote>
+    <div class="prose">${body}</div>
+    <nav class="turn" aria-label="Pagination">
+      <a href="${g.prev.url}"><span class="sc">${ms('arrow_back')} Previous page</span><b>${esc(g.prev.title)}</b></a>
+      <a href="${g.next.url}"><span class="sc">Next page ${ms('arrow_forward')}</span><b>${esc(g.next.title)}</b></a>
+    </nav>
+  </article>
+  <aside class="sidenotes" aria-hidden="true"><span class="sc" style="color:var(--ink-3)">Margin notes</span>${sidenotes}</aside>
+  </div></main>` + footer(site);
+}
+
+/* ---------- SEARCH (concordance) ---------- */
+function search(site, ctx){
+  const s = site.search, q = s.query, mbu = isMBU(site);
+  const hl = t => esc(t).replace(new RegExp(`(${q}s?)`,'ig'), '<mark>$1</mark>');
+  const entries = s.results.map(r=>`<section class="entry">
+    <div class="entry__award"><a href="${r.url}">${r.emblem ? `<img src="${r.emblem}" alt="" loading="lazy">` : `<span class="lvl" aria-hidden="true">${r.level}</span>`}<span><h3>${esc(r.title)} ${esc(site.awardLabel)}</h3><small>${r.hits.length} ${r.hits.length===1?'entry':'entries'}${r.level?` · rank ${r.level} of 7`:''}</small></span></a></div>
+    <ol class="hits">${r.hits.map(h=>`<li class="hit"><span class="num">${esc(h.path)}</span><a href="${r.url}requirements/#${h.path}">${h.title?`<b>${esc(h.title)}</b> `:''}<p>${hl(h.excerpt)}</p></a></li>`).join('')}</ol>
+  </section>`).join('');
+  return header(site, ctx) + `<main id="main" class="wrap">${breadcrumbs(site,'search')}
+  <div class="conc-head"><h1>Index of requirements</h1><p style="color:var(--ink-2)">${esc(s.description)}</p>${indexBox(site, q)}</div>
+  <div class="headword"><h2>${esc(q)}</h2><span class="sc">${s.total} ${esc(site.awardPlural)} · ${s.results.reduce((n,r)=>n+r.hits.length,0)} entries</span></div>
+  ${entries}
+  ${mbu ? `<a class="conc-more" href="/search/">Load more entries ${ms('expand_more')}</a>`:''}
+  </main>` + footer(site);
+}
+
+window.OPTION = {
+  key:'A', name:'Handbook', thesis:'The site reads like the printed Scout handbook: contents, chapter openers, hanging numbers, marginalia.',
+  render:{ home, award, requirements, guide, search },
+  mount(ctx, app){
+    app.querySelector('[data-toggle-theme]')?.addEventListener('click', ()=> window.PROTO.go({ theme: ctx.dark ? 'light' : 'dark' }));
+    app.querySelectorAll('form.index-box').forEach(f=>f.addEventListener('submit', e=>{ e.preventDefault(); window.PROTO.go({page:'search'}); }));
+  }
+};
+})();
+</script>
+<script src="proto.js"></script>
+</body>
+</html>

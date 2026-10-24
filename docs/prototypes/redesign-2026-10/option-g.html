@@ -1,0 +1,885 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Option G · Atlas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300..800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="proto.css">
+<script src="data.js"></script>
+<style>
+/* DESIGN PLAN — Option G “Atlas”
+   A spatial reference instrument. Tokens: --bone (surfaces 0/1/2), --ink (graphite, 3 steps), --green (deep Scouting
+   green, primary), --gold (brass ticks/fills) + --gold-ink (gold as text), --line (hairline). Dark = black-green
+   instrument glass, luminous gold ticks. Type: --display Sora (titles, labels, numerals) · --body Atkinson Hyperlegible
+   (prose and all verbatim requirement text). Verbatim text = body font on a green left rule with an OFFICIAL tag;
+   curated titles = Sora semibold. No third face.
+   Home: MBU radial atlas of 14 categories (spoke length ∝ count) with 17 Eagle emblems in orbit; SU 7-segment rank dial
+   climbing to Eagle at the summit, phases as inner ring. Award: requirement wheel, instrument readouts, resource toolbar.
+   Requirements: split instrument (tracklist + detail panes, all rendered, :target/no-JS). Guide: chapter dial + sticky
+   requirement card + scrolling prose, <dialog> lightbox. Search: palette expanded — chips + two-pane finder.
+   Chrome: thin instrument bar, ⌘K palette <dialog> on every page, sticky dial strip on award/requirements/guide. */
+:root{
+  --bone:oklch(0.965 0.006 95); --bone-1:oklch(0.935 0.008 95); --bone-2:oklch(0.90 0.01 95);
+  --ink:oklch(0.23 0.012 230); --ink-2:oklch(0.44 0.012 230); --ink-3:oklch(0.56 0.012 230);
+  --green:oklch(0.40 0.085 155); --green-2:oklch(0.52 0.09 155); --green-wash:oklch(0.92 0.03 155);
+  --gold:oklch(0.76 0.13 85); --gold-ink:oklch(0.46 0.11 80); --gold-wash:oklch(0.94 0.05 90);
+  --line:oklch(0.84 0.01 95); --line-2:oklch(0.74 0.012 95);
+  --safety:oklch(0.50 0.17 28); --safety-wash:oklch(0.95 0.03 28); --mark:oklch(0.90 0.12 95);
+  --glass:oklch(0.99 0.003 95);
+  --display:"Sora",ui-sans-serif,system-ui,sans-serif; --body:"Atkinson Hyperlegible",ui-sans-serif,system-ui,sans-serif;
+  --gutter:max(16px,env(safe-area-inset-left,0px)); --measure:68ch; --r:6px;
+  --shadow:0 1px 2px oklch(0 0 0/.06),0 8px 24px -12px oklch(0 0 0/.18);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bone:oklch(0.17 0.014 165); --bone-1:oklch(0.21 0.016 165); --bone-2:oklch(0.26 0.018 165);
+  --ink:oklch(0.93 0.01 95); --ink-2:oklch(0.76 0.012 95); --ink-3:oklch(0.64 0.012 95);
+  --green:oklch(0.74 0.10 155); --green-2:oklch(0.62 0.09 155); --green-wash:oklch(0.27 0.035 160);
+  --gold:oklch(0.82 0.14 88); --gold-ink:oklch(0.84 0.13 88); --gold-wash:oklch(0.30 0.05 85);
+  --line:oklch(0.31 0.016 165); --line-2:oklch(0.40 0.018 165);
+  --safety:oklch(0.78 0.13 30); --safety-wash:oklch(0.28 0.04 28); --mark:oklch(0.45 0.10 85);
+  --glass:oklch(0.20 0.015 165);
+  --shadow:0 1px 2px oklch(0 0 0/.4),0 10px 30px -12px oklch(0 0 0/.7);
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bone:oklch(0.17 0.014 165); --bone-1:oklch(0.21 0.016 165); --bone-2:oklch(0.26 0.018 165);
+  --ink:oklch(0.93 0.01 95); --ink-2:oklch(0.76 0.012 95); --ink-3:oklch(0.64 0.012 95);
+  --green:oklch(0.74 0.10 155); --green-2:oklch(0.62 0.09 155); --green-wash:oklch(0.27 0.035 160);
+  --gold:oklch(0.82 0.14 88); --gold-ink:oklch(0.84 0.13 88); --gold-wash:oklch(0.30 0.05 85);
+  --line:oklch(0.31 0.016 165); --line-2:oklch(0.40 0.018 165);
+  --safety:oklch(0.78 0.13 30); --safety-wash:oklch(0.28 0.04 28); --mark:oklch(0.45 0.10 85);
+  --glass:oklch(0.20 0.015 165);
+  --shadow:0 1px 2px oklch(0 0 0/.4),0 10px 30px -12px oklch(0 0 0/.7);
+  color-scheme:dark}
+
+/* ---------- base ---------- */
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bone);color:var(--ink);font:400 1rem/1.55 var(--body);font-variant-numeric:tabular-nums;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:48px 48px;background-attachment:fixed;background-position:center top}
+body::before{content:"";position:fixed;inset:0;z-index:-1;background:radial-gradient(ellipse at 50% 0%,transparent 0%,var(--bone) 70%);pointer-events:none}
+body{background-blend-mode:normal}
+h1,h2,h3,h4{font-family:var(--display);line-height:1.15;margin:0;text-wrap:balance;letter-spacing:-.01em}
+h1{font-size:clamp(1.9rem,1.2rem + 2.6vw,3.2rem);font-weight:700}
+h2{font-size:clamp(1.25rem,1rem + 1vw,1.7rem);font-weight:600}
+h3{font-size:1.1rem;font-weight:600}
+p{margin:0;text-wrap:pretty}
+a{color:var(--green);text-decoration-color:color-mix(in oklch,var(--green) 40%,transparent);text-underline-offset:.15em}
+a:hover{text-decoration-color:currentColor}
+img{max-width:100%;height:auto;display:block}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:3px}
+mark{background:var(--mark);color:var(--ink);padding-inline:.1em;border-radius:2px}
+kbd{font:600 .7rem/1 var(--display);padding:.2em .4em;border:1px solid var(--line-2);border-block-end-width:2px;border-radius:4px;background:var(--glass);color:var(--ink-2)}
+.ms{font-family:'Material Symbols Rounded';font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;font-size:1.25em;line-height:1;display:inline-block;vertical-align:-.2em;flex:none}
+.ms.fill{font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24}
+.wrap{max-width:1240px;margin-inline:auto;padding-inline:var(--gutter)}
+.lbl{font:600 .68rem/1 var(--display);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.lbl.gold{color:var(--gold-ink)} .lbl.green{color:var(--green)}
+.num{font-family:var(--display);font-weight:600;font-variant-numeric:tabular-nums}
+.panel{background:var(--glass);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
+.vt{view-transition-name:award-id}
+.vh{position:absolute!important;clip:rect(0 0 0 0);width:1px;height:1px;overflow:hidden;white-space:nowrap}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+::view-transition-old(award-id),::view-transition-new(award-id){animation-duration:.35s}
+
+/* ---------- instrument bar (header) ---------- */
+.bar{position:sticky;top:0;z-index:40;background:color-mix(in oklch,var(--glass) 88%,transparent);backdrop-filter:blur(10px);border-block-end:1px solid var(--line)}
+.bar__in{display:flex;align-items:center;gap:8px;min-height:52px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);font:600 1rem/1 var(--display);letter-spacing:-.01em;min-width:0}
+.brand svg{flex:none}
+.brand b{font-weight:700;white-space:nowrap}
+.brand small{display:block;font:500 .66rem/1.2 var(--display);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-block-start:3px}
+.bar__nav{display:flex;align-items:center;gap:2px;margin-inline-start:12px}
+.bar__nav a{color:var(--ink-2);text-decoration:none;font:500 .85rem/1 var(--display);padding:8px 10px;border-radius:4px}
+.bar__nav a:hover{background:var(--bone-1);color:var(--ink)}
+.bar__sp{flex:1}
+.btn{display:inline-flex;align-items:center;gap:8px;min-height:36px;padding:0 12px;border:1px solid var(--line-2);border-radius:var(--r);background:var(--glass);color:var(--ink);font:500 .85rem/1 var(--display);text-decoration:none;cursor:pointer;white-space:nowrap}
+.btn:hover{border-color:var(--ink-3)}
+.btn.pri{background:var(--green);border-color:var(--green);color:oklch(0.98 0.005 95)}
+:root[data-theme="dark"] .btn.pri{color:oklch(0.15 0.02 160)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn.pri{color:oklch(0.15 0.02 160)}}
+.btn.pri:hover{filter:brightness(1.08)}
+.btn.ico{padding:0;inline-size:36px;justify-content:center}
+.btn.k{color:var(--ink-2);min-width:220px;justify-content:flex-start}
+.btn.k kbd{margin-inline-start:auto}
+.bar details{position:relative}
+.bar summary{list-style:none;cursor:pointer}
+.bar summary::-webkit-details-marker{display:none}
+.bar .menu{position:absolute;inset-inline-end:0;top:calc(100% + 6px);min-width:220px;padding:6px;display:grid;gap:2px;z-index:50}
+.bar .menu a{display:block;padding:8px 10px;color:var(--ink);text-decoration:none;border-radius:4px;font:500 .9rem/1.2 var(--display)}
+.bar .menu a:hover{background:var(--bone-1)}
+.only-m{display:none}
+@media (max-width:760px){.bar__nav,.btn.k,.bar .cta{display:none}.only-m{display:inline-flex}.brand small{display:none}}
+
+/* ---------- command palette ---------- */
+.pal{inset:0;margin:auto;margin-block-start:min(12vh,96px);inline-size:min(680px,calc(100% - 32px));padding:0;border:1px solid var(--line-2);border-radius:10px;background:var(--glass);color:var(--ink);box-shadow:0 30px 80px -20px oklch(0 0 0/.5)}
+.pal::backdrop{background:oklch(0.15 0.02 165/.55);backdrop-filter:blur(2px)}
+.pal__in{display:flex;align-items:center;gap:10px;padding:12px 14px;border-block-end:1px solid var(--line)}
+.pal__in input{flex:1;min-width:0;border:0;background:transparent;font:500 1.05rem/1.3 var(--display);color:var(--ink);outline:none}
+.pal__in input::placeholder{color:var(--ink-3)}
+.pal__list{list-style:none;margin:0;padding:6px;max-block-size:min(56vh,480px);overflow:auto}
+.pal__grp{padding:10px 10px 4px;font:600 .66rem/1 var(--display);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.pal__it a{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px;padding:8px 10px;border-radius:6px;color:var(--ink);text-decoration:none;min-width:0}
+.pal__it a .t{font:500 .92rem/1.25 var(--display);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pal__it a .t small{display:block;font:400 .8rem/1.3 var(--body);color:var(--ink-2);overflow:hidden;text-overflow:ellipsis}
+.pal__it a .p{font:600 .72rem/1 var(--display);color:var(--gold-ink);min-width:2.2em;text-align:end}
+.pal__it a .k{font:500 .68rem/1 var(--display);color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase}
+.pal__it[aria-selected="true"] a{background:var(--green-wash);color:var(--ink)}
+.pal__it a .ms{color:var(--ink-3)}
+.pal__empty{padding:28px 14px;text-align:center;color:var(--ink-2)}
+.pal__foot{display:flex;gap:14px;flex-wrap:wrap;padding:8px 14px;border-block-start:1px solid var(--line);font:500 .72rem/1 var(--display);color:var(--ink-3)}
+.pal__foot span{display:inline-flex;align-items:center;gap:5px}
+
+/* ---------- dial strip ---------- */
+.dial{position:sticky;top:52px;z-index:30;background:color-mix(in oklch,var(--bone-1) 92%,transparent);backdrop-filter:blur(8px);border-block-end:1px solid var(--line)}
+.dial__in{display:flex;align-items:center;gap:14px;min-height:56px;overflow-x:auto;scrollbar-width:none}
+.dial__in::-webkit-scrollbar{display:none}
+.dial__id{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);flex:none}
+.dial__id .t{font:600 .95rem/1.1 var(--display);white-space:nowrap}
+.dial__id .t small{display:block;font:500 .64rem/1.3 var(--display);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-block-start:2px}
+.emb{inline-size:36px;block-size:36px;border-radius:50%;object-fit:cover;flex:none;border:1px solid var(--line-2)}
+.lvl{inline-size:36px;block-size:36px;flex:none;position:relative;display:grid;place-items:center;font:700 .95rem/1 var(--display);color:var(--ink)}
+.lvl svg{position:absolute;inset:0}
+.seg{display:flex;align-items:center;gap:2px;padding:3px;border:1px solid var(--line-2);border-radius:999px;background:var(--glass);flex:none}
+.seg a{text-decoration:none;color:var(--ink-2);font:500 .8rem/1 var(--display);padding:7px 12px;border-radius:999px;white-space:nowrap}
+.seg a:hover{color:var(--ink)}
+.seg a[aria-current]{background:var(--green);color:oklch(0.98 0.005 95)}
+:root[data-theme="dark"] .seg a[aria-current]{color:oklch(0.15 0.02 160)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .seg a[aria-current]{color:oklch(0.15 0.02 160)}}
+.dial__pos{margin-inline-start:auto;display:flex;align-items:center;gap:8px;flex:none;color:var(--ink-2);font:500 .78rem/1 var(--display);white-space:nowrap}
+.dial__pos b{color:var(--ink);font-weight:600}
+.ticks{display:inline-flex;gap:3px;align-items:flex-end;block-size:14px}
+.ticks i{display:block;inline-size:2px;block-size:8px;background:var(--line-2);border-radius:1px}
+.ticks i.on{background:var(--gold);block-size:14px}
+
+/* ---------- crumbs / page head ---------- */
+.crumbs{display:flex;flex-wrap:wrap;gap:6px;align-items:center;list-style:none;margin:0;padding:14px 0 0;font:500 .74rem/1 var(--display);letter-spacing:.04em;color:var(--ink-3)}
+.crumbs a{color:var(--ink-3);text-decoration:none}
+.crumbs a:hover{color:var(--ink)}
+.crumbs li+li::before{content:"/";margin-inline-end:6px;color:var(--line-2)}
+.crumbs li[aria-current]{color:var(--ink)}
+.read{display:grid;gap:2px;padding:10px 12px;border-inline-start:2px solid var(--gold);background:var(--glass);min-width:0}
+.read .lbl{font-size:.62rem}
+.read b{font:600 1.05rem/1.2 var(--display);color:var(--ink)}
+.read b small{font:500 .74rem/1 var(--display);color:var(--ink-2);margin-inline-start:4px}
+.reads{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:6px;min-height:30px;padding:0 10px;border:1px solid var(--line-2);border-radius:999px;background:var(--glass);color:var(--ink-2);font:500 .76rem/1 var(--display);text-decoration:none;white-space:nowrap;cursor:pointer}
+.chip:hover{color:var(--ink);border-color:var(--ink-3)}
+.chip.on{background:var(--green-wash);color:var(--green);border-color:transparent}
+.chip.gold{background:var(--gold-wash);color:var(--gold-ink);border-color:transparent}
+.eagle{display:inline-flex;align-items:center;gap:5px;color:var(--gold-ink);font:600 .68rem/1 var(--display);letter-spacing:.08em;text-transform:uppercase}
+.eagle .ms{font-size:1rem;color:var(--gold)}
+
+/* ---------- mode ring + verbatim ---------- */
+.ring{inline-size:22px;block-size:22px;flex:none;vertical-align:middle}
+.ring text{font:700 9px var(--display);fill:var(--ink)}
+.mode{display:inline-flex;align-items:center;gap:7px;color:var(--ink-2);font:600 .7rem/1 var(--display);letter-spacing:.08em;text-transform:uppercase}
+.mode.sel{color:var(--gold-ink)}
+.vb{position:relative;border-inline-start:2px solid var(--green);padding-inline-start:14px;max-inline-size:var(--measure);color:var(--ink);font-size:1rem;line-height:1.6}
+.vb::before{content:"Official";position:absolute;inset-inline-start:-2px;top:-1.2rem;font:600 .58rem/1 var(--display);letter-spacing:.14em;text-transform:uppercase;color:var(--green)}
+.vb.q::before{content:"Official wording"}
+.vb ul{margin:.5em 0 0;padding-inline-start:1.1em}
+.vb li{margin-block:.2em}
+.vb strong{font-weight:700}
+.vb br+br{display:none}
+
+/* ---------- popovers (anchored) ---------- */
+[popover].pop{position:fixed;inset:auto;margin:0;padding:0;border:1px solid var(--line-2);border-radius:8px;background:var(--glass);color:var(--ink);box-shadow:0 20px 50px -18px oklch(0 0 0/.5);inline-size:min(340px,calc(100vw - 32px));z-index:60}
+[popover].pop::backdrop{background:transparent}
+.pop__in{padding:12px 14px;display:grid;gap:8px}
+.pop__in .lbl{font-size:.6rem}
+.pop__in h4{font:600 .95rem/1.25 var(--display)}
+.pop__in p{font-size:.9rem;color:var(--ink-2);line-height:1.5}
+.pop__in a.btn{justify-self:start}
+.pop__links{display:grid;gap:4px;margin:0;padding:0;list-style:none}
+.pop__links a{display:flex;gap:8px;align-items:center;padding:6px 8px;border-radius:4px;text-decoration:none;color:var(--ink);font:500 .88rem/1.3 var(--display)}
+.pop__links a:hover{background:var(--bone-1)}
+.pop__links .p{color:var(--gold-ink);font:600 .72rem/1 var(--display);min-width:2em}
+/* fallback: centred in viewport; anchored when supported */
+[popover].pop{inset-inline-start:50%;inset-block-start:50%;translate:-50% -50%}
+@supports (anchor-name:--a){
+  [popover].pop[data-anchor]{inset:auto;translate:none;position-anchor:var(--anchor);position-area:block-end span-inline-end;margin-block-start:6px;position-try-fallbacks:flip-block,flip-inline,flip-block flip-inline}
+}
+.pbtn{appearance:none;border:1px solid var(--line-2);background:var(--glass);border-radius:999px;display:inline-flex;align-items:center;gap:6px;min-height:28px;padding:0 10px;font:500 .74rem/1 var(--display);color:var(--green);cursor:pointer;white-space:nowrap}
+.pbtn:hover{border-color:var(--green)}
+.pbtn .ms{font-size:1rem}
+
+/* ---------- home ---------- */
+.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:clamp(20px,4vw,56px);align-items:center;padding-block:clamp(28px,5vw,64px) 24px}
+.hero__txt{display:grid;gap:18px;min-width:0}
+.hero__txt p.lead{font-size:clamp(1.05rem,1rem + .4vw,1.25rem);color:var(--ink-2);max-inline-size:52ch}
+.hero__txt .btn.k{min-width:min(420px,100%);min-height:48px;font-size:.95rem}
+.hero__txt .reads{max-inline-size:520px}
+.map{position:relative;container-type:inline-size;inline-size:100%;overflow:hidden}
+.map>svg{display:block;inline-size:100%;block-size:auto}
+.map>svg text{font-family:var(--display)}
+.map .lab{position:absolute;translate:-50% -50%;display:inline-flex;flex-direction:column;align-items:center;gap:1px;padding:4px 7px;border:1px solid transparent;border-radius:6px;background:color-mix(in oklch,var(--glass) 80%,transparent);color:var(--ink);text-decoration:none;font:600 .72rem/1.15 var(--display);text-align:center;cursor:pointer;white-space:nowrap;anchor-name:var(--anchor)}
+.map .lab small{font:500 .62rem/1 var(--display);color:var(--ink-3)}
+.map .lab:hover,.map .lab:focus-visible{border-color:var(--gold);background:var(--glass)}
+.map .orb{position:absolute;translate:-50% -50%;inline-size:34px;block-size:34px;border-radius:50%;overflow:hidden;border:2px solid var(--gold);box-shadow:var(--shadow);background:var(--bone-1)}
+.map .orb img{inline-size:100%;block-size:100%;object-fit:cover}
+.map .orb:hover,.map .orb:focus-visible{scale:1.15;z-index:2}
+.map .labs,.map .orbs{display:contents}
+@container (max-width:560px){
+  .map .lab,.map .orb{position:static;translate:none}
+  .map .labs{display:flex;flex-wrap:wrap;gap:6px;padding-block-start:10px}
+  .map .lab{border-color:var(--line-2);flex-direction:row;gap:6px}
+  .map .orbs{display:flex;flex-wrap:wrap;gap:6px;padding-block-start:10px}
+  .map .orb{inline-size:30px;block-size:30px}
+  .map .hide-s{display:none}
+}
+.sec{padding-block:clamp(28px,4vw,48px);border-block-start:1px solid var(--line)}
+.sec__h{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px 16px;margin-block-end:18px}
+.sec__h p{color:var(--ink-2);max-inline-size:60ch}
+.sec__h a.more{font:500 .85rem/1 var(--display);text-decoration:none;display:inline-flex;align-items:center;gap:4px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.card{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:center;padding:12px;text-decoration:none;color:var(--ink);min-width:0;transition:border-color .15s}
+.card:hover{border-color:var(--green)}
+.card .emb{inline-size:48px;block-size:48px}
+.card .lvl{inline-size:48px;block-size:48px;font-size:1.2rem}
+.card .t{font:600 .95rem/1.2 var(--display);min-width:0}
+.card .t small{display:block;font:400 .78rem/1.3 var(--body);color:var(--ink-2);margin-block-start:3px}
+.card .t .eagle{margin-block-start:5px}
+.cats{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.cat{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:12px 14px;background:var(--glass);text-decoration:none;color:var(--ink);font:600 .85rem/1.2 var(--display);min-width:0}
+.cat:hover{background:var(--green-wash)}
+.cat .ms{color:var(--green)}
+.cat .n{color:var(--ink-3);font-weight:500;font-size:.8rem}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.step{padding:16px;display:grid;gap:8px;grid-template-columns:auto 1fr;align-items:start}
+.step .ms{font-size:1.6rem;color:var(--green)}
+.step h3{font-size:1rem}
+.step p{grid-column:2;color:var(--ink-2);font-size:.92rem}
+.step .n{grid-column:2;grid-row:1;justify-self:end;font:700 .7rem/1 var(--display);color:var(--gold-ink);letter-spacing:.1em}
+.field{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,3fr);gap:14px;align-items:stretch}
+.field figure{margin:0;overflow:hidden;border-radius:var(--r);border:1px solid var(--line);min-block-size:200px}
+.field figure img{inline-size:100%;block-size:100%;object-fit:cover}
+.ranks{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.rank{padding:14px;display:grid;gap:10px;grid-template-columns:auto 1fr;text-decoration:none;color:var(--ink);min-width:0}
+.rank:hover{border-color:var(--green)}
+.rank .t{font:600 1rem/1.2 var(--display)}
+.rank .t small{display:block;font:500 .66rem/1 var(--display);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-block-start:4px}
+.rank p{grid-column:1/-1;font-size:.88rem;color:var(--ink-2)}
+.rank .meta{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px}
+.phases{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.phase{padding:16px;display:grid;gap:8px;border-inline-start:3px solid var(--green)}
+.phase.g{border-inline-start-color:var(--gold)}
+.phase p{color:var(--ink-2);font-size:.92rem}
+@media (max-width:860px){.hero{grid-template-columns:1fr}.field{grid-template-columns:1fr}}
+
+/* ---------- award ---------- */
+.ahead{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:clamp(20px,4vw,48px);align-items:center;padding-block:clamp(20px,3vw,40px) 16px}
+.aid{display:flex;gap:16px;align-items:center;min-width:0}
+.aid .emb{inline-size:88px;block-size:88px;border:2px solid var(--gold)}
+.aid .lvl{inline-size:88px;block-size:88px;font-size:2rem}
+.aid h1{font-size:clamp(1.8rem,1.2rem + 2.2vw,2.8rem)}
+.aid .kick{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin-block-end:6px}
+.ahead p.lead{color:var(--ink-2);font-size:1.05rem;max-inline-size:56ch;margin-block:14px 18px}
+.trail{display:flex;gap:8px;flex-wrap:wrap}
+.trail a{display:inline-flex;align-items:center;gap:6px;text-decoration:none;color:var(--ink-2);font:500 .82rem/1 var(--display);padding:6px 10px;border:1px dashed var(--line-2);border-radius:999px}
+.trail a:hover{color:var(--ink);border-style:solid}
+.wheel .lab{max-inline-size:140px;white-space:normal;line-height:1.1}
+.wheel .lab .p{font:700 .78rem/1 var(--display);color:var(--gold-ink)}
+.wheel .lab span.t{font:600 .7rem/1.15 var(--display)}
+.ovw{display:grid;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;margin:0;padding:0;list-style:none}
+.ovw li a{display:grid;grid-template-columns:2.4em auto 1fr auto;gap:12px;align-items:center;padding:10px 14px;background:var(--glass);text-decoration:none;color:var(--ink);min-width:0}
+.ovw li a:hover{background:var(--green-wash)}
+.ovw .p{color:var(--gold-ink);font:700 .9rem/1 var(--display)}
+.ovw .t{font:600 .92rem/1.25 var(--display);min-width:0}
+.ovw .t small{display:block;font:400 .8rem/1.35 var(--body);color:var(--ink-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ovw .c{font:500 .72rem/1 var(--display);color:var(--ink-3);white-space:nowrap}
+.note{padding:14px 16px;border-inline-start:3px solid var(--gold);font-size:.92rem;color:var(--ink-2);max-inline-size:var(--measure)}
+.note strong{color:var(--ink)}
+@media (max-width:860px){.ahead{grid-template-columns:1fr}}
+
+/* ---------- requirements: split instrument ---------- */
+.split{display:grid;grid-template-columns:minmax(260px,320px) minmax(0,1fr);gap:20px;align-items:start;padding-block:20px 40px}
+.track{position:sticky;top:124px;display:grid;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;margin:0;padding:0;list-style:none;max-block-size:calc(100vh - 140px);overflow-y:auto}
+.track a{display:grid;grid-template-columns:2.2em 1fr auto;gap:10px;align-items:center;padding:10px 12px;background:var(--glass);text-decoration:none;color:var(--ink);min-width:0;border-inline-start:3px solid transparent}
+.track a:hover{background:var(--bone-1)}
+.track a[aria-current]{border-inline-start-color:var(--gold);background:var(--green-wash)}
+.track .p{font:700 .88rem/1 var(--display);color:var(--gold-ink)}
+.track .t{font:500 .86rem/1.25 var(--display);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.track .t small{display:block;font:500 .66rem/1 var(--display);color:var(--ink-3);margin-block-start:3px;letter-spacing:.04em}
+.panes{min-width:0;display:grid}
+.split>nav,.finder>nav,.gtop>*{min-width:0}
+.pane{display:none;min-width:0}
+.pane:target,.pane.is-current{display:block}
+.panes:has(.pane:target) .pane.is-current:not(:target){display:none}
+.pane__h{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;align-items:center;padding:18px 20px;border-block-end:1px solid var(--line)}
+.pane__h .big{font:700 clamp(1.8rem,1.4rem + 1vw,2.4rem)/1 var(--display);color:var(--gold-ink);grid-row:1/3;align-self:center}
+.pane__h h2{font-size:1.4rem}
+.pane__h .meta{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center}
+.pane__b{padding:28px 20px 20px;display:grid;gap:22px}
+.node{display:grid;grid-template-columns:2.2em minmax(0,1fr);gap:4px 12px;align-items:start}
+.node>.mk{font:700 .9rem/1.6 var(--display);color:var(--gold-ink);text-align:end}
+.node>.mk.dim{color:var(--ink-3);font-weight:600;font-size:.82rem}
+.node .nb{min-width:0;display:grid;gap:8px}
+.node .nh{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center}
+.node .nh h3{font-size:1rem}
+.node .nh h4{font:600 .92rem/1.25 var(--display)}
+.node .kids{display:grid;gap:14px;margin-block-start:6px}
+.node .kids.sel{border-inline-start:1px dashed var(--gold);padding-inline-start:12px}
+.node .kids .node{grid-template-columns:1.8em minmax(0,1fr)}
+.node .vb{margin-block-start:14px}
+.node .vb.nolab::before{content:none}
+.node .vb.nolab{margin-block-start:0}
+.res{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.res .lbl{margin-inline-end:4px}
+.res a{display:inline-flex;align-items:center;gap:5px;font:500 .76rem/1 var(--display);color:var(--ink-2);text-decoration:none;padding:5px 9px;border:1px solid var(--line);border-radius:4px;background:var(--glass)}
+.res a:hover{color:var(--green);border-color:var(--green)}
+.res a .ms{font-size:.95rem;color:var(--green)}
+.pane__f{display:flex;justify-content:space-between;gap:10px;padding:14px 20px;border-block-start:1px solid var(--line);flex-wrap:wrap}
+.pane__f a{text-decoration:none;font:500 .85rem/1 var(--display);display:inline-flex;gap:6px;align-items:center}
+@media (max-width:900px){
+  .split{grid-template-columns:1fr;gap:14px}
+  .track{position:static;max-block-size:none;display:flex;overflow-x:auto;gap:6px;background:transparent;border:0;padding:2px;scrollbar-width:thin}
+  .track a{flex:none;display:flex;align-items:center;gap:8px;border:1px solid var(--line-2);border-radius:999px;padding:7px 12px}
+  .track a[aria-current]{border-color:var(--gold)}
+  .track .t small,.track .ring{display:none}
+  .track .t{overflow:visible;max-inline-size:none}
+}
+
+/* ---------- guide ---------- */
+.gtop{display:grid;grid-template-columns:minmax(220px,300px) minmax(0,1fr);gap:20px;align-items:start;padding-block:20px}
+.cdial{container-type:inline-size;position:relative}
+.cdial svg{inline-size:100%;block-size:auto;display:block}
+.cdial text{font-family:var(--display)}
+.gnav{display:grid;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.gnav details{background:var(--glass)}
+.gnav summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:9px 12px;font:600 .84rem/1.2 var(--display);min-width:0}
+.gnav summary::-webkit-details-marker{display:none}
+.gnav summary .i{inline-size:10px;block-size:10px;border-radius:50%;border:2px solid var(--line-2)}
+.gnav details[open] summary .i,.gnav details.cur summary .i{border-color:var(--gold);background:var(--gold)}
+.gnav summary .c{font:500 .7rem/1 var(--display);color:var(--ink-3)}
+.gnav ol{list-style:none;margin:0;padding:0 8px 8px 30px;display:grid;gap:2px}
+.gnav ol a{display:grid;grid-template-columns:1.6em 1fr;gap:6px;padding:5px 8px;border-radius:4px;text-decoration:none;color:var(--ink-2);font:400 .86rem/1.3 var(--body)}
+.gnav ol a:hover{background:var(--bone-1);color:var(--ink)}
+.gnav ol a[aria-current]{background:var(--green-wash);color:var(--ink);font-weight:700}
+.gnav ol a .p{font:600 .72rem/1.6 var(--display);color:var(--gold-ink)}
+.gsplit{display:grid;grid-template-columns:minmax(240px,320px) minmax(0,1fr);gap:28px;align-items:start;padding-block:10px 40px}
+.gcard{position:sticky;top:124px;display:grid;gap:14px;padding:18px}
+.gcard .big{font:700 2rem/1 var(--display);color:var(--gold-ink)}
+.gcard .vb{font-size:.95rem;margin-block-start:10px}
+.gcard .nav2{display:grid;gap:6px;border-block-start:1px solid var(--line);padding-block-start:12px}
+.gcard .nav2 a{display:grid;grid-template-columns:auto 1fr;gap:8px;align-items:center;text-decoration:none;color:var(--ink);font:500 .84rem/1.3 var(--display)}
+.gcard .nav2 a small{display:block;font:500 .62rem/1 var(--display);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.prose{min-width:0;max-inline-size:var(--measure);display:grid;gap:18px;font-size:1.03rem;line-height:1.65}
+.prose h1{margin-block-end:4px}
+.prose .kick{display:flex;align-items:center;gap:10px}
+.prose h2{margin-block-start:16px;padding-block-start:16px;border-block-start:1px solid var(--line)}
+.prose h3{margin-block-start:6px;color:var(--ink)}
+.prose ul,.prose ol{margin:0;padding-inline-start:1.3em;display:grid;gap:6px}
+.prose li::marker{color:var(--gold-ink);font-weight:700}
+.call{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;padding:14px 16px;border:1px solid var(--line);border-inline-start:3px solid var(--green);border-radius:var(--r);background:var(--green-wash)}
+.call.safety{border-inline-start-color:var(--safety);background:var(--safety-wash)}
+.call .ms{font-size:1.5rem;color:var(--green);grid-row:1/3}
+.call.safety .ms{color:var(--safety)}
+.call .lbl{font-size:.62rem;color:var(--ink-2)}
+.call p,.call ul{font-size:.97rem}
+.call h4{font:600 1rem/1.3 var(--display)}
+.call ul{grid-column:2}
+.figbtn{appearance:none;border:1px solid var(--line);border-radius:var(--r);padding:0;background:var(--bone-1);cursor:zoom-in;overflow:hidden;display:block;inline-size:100%}
+.figbtn img{inline-size:100%;block-size:auto}
+figure{margin:0;display:grid;gap:8px}
+figcaption{font-size:.84rem;color:var(--ink-2)}
+.vid{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;padding:14px 16px;border:1px solid var(--line-2);border-radius:var(--r);background:var(--glass);text-decoration:none;color:var(--ink)}
+.vid .play{inline-size:48px;block-size:48px;border-radius:50%;background:var(--green);display:grid;place-items:center;color:var(--bone)}
+.vid .t{font:600 .95rem/1.3 var(--display);min-width:0}
+.vid .t small{display:block;font:500 .66rem/1 var(--display);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-block-start:4px}
+.vid .ms.out{color:var(--ink-3)}
+.vid.ext .play{background:var(--gold-wash);color:var(--gold-ink)}
+.vid p{grid-column:2/-1;font-size:.9rem;color:var(--ink-2)}
+.nextp{display:grid;gap:6px;padding:18px 20px;border:1px solid var(--green);border-radius:var(--r);background:var(--glass);text-decoration:none;color:var(--ink);margin-block-start:10px}
+.nextp .lbl{color:var(--green)}
+.nextp b{font:600 1.1rem/1.3 var(--display)}
+.nextp p{color:var(--ink-2);font-size:.92rem}
+.lb{padding:0;border:0;background:transparent;max-inline-size:min(96vw,1100px);max-block-size:96vh}
+.lb::backdrop{background:oklch(0.1 0.01 165/.85)}
+.lb img{max-inline-size:min(96vw,1100px);max-block-size:88vh;object-fit:contain;border-radius:6px}
+.lb figcaption{color:oklch(0.9 0.01 95);text-align:center;padding:10px}
+.lb form{display:flex;justify-content:center}
+.lb form button{appearance:none;border:1px solid oklch(0.6 0.01 95);background:oklch(0.2 0.01 165);color:oklch(0.95 0.01 95);border-radius:999px;padding:8px 16px;font:500 .85rem/1 var(--display);cursor:pointer}
+@media (max-width:900px){.gtop,.gsplit{grid-template-columns:1fr}.gcard{position:static}.cdial{max-inline-size:280px}}
+
+/* ---------- search: palette expanded ---------- */
+.shead{padding-block:24px 16px;display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
+.shead p{color:var(--ink-2)}
+.sform{display:flex;align-items:center;gap:10px;padding:10px 14px;border:1px solid var(--line-2);border-radius:10px;background:var(--glass);box-shadow:var(--shadow)}
+.sform input{flex:1;min-width:0;border:0;background:transparent;font:500 1.15rem/1.3 var(--display);color:var(--ink);outline:none}
+.sform .ms{color:var(--ink-3)}
+.sform button{appearance:none;border:0;background:var(--green);color:var(--bone);border-radius:6px;padding:8px 14px;font:600 .85rem/1 var(--display);cursor:pointer}
+.finder{display:grid;grid-template-columns:minmax(240px,320px) minmax(0,1fr);gap:16px;align-items:start;padding-block:8px 40px}
+.flist{display:grid;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;margin:0;padding:0;list-style:none;position:sticky;top:64px}
+.flist a{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:9px 12px;background:var(--glass);text-decoration:none;color:var(--ink);min-width:0;border-inline-start:3px solid transparent}
+.flist a:hover{background:var(--bone-1)}
+.flist a[aria-current]{background:var(--green-wash);border-inline-start-color:var(--gold)}
+.flist .emb{inline-size:30px;block-size:30px}
+.flist .lvl{inline-size:30px;block-size:30px;font-size:.8rem}
+.flist .t{font:600 .88rem/1.25 var(--display);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.flist .t small{display:block;font:400 .74rem/1.3 var(--body);color:var(--ink-2)}
+.flist .hc{font:600 .72rem/1 var(--display);color:var(--ink-2);background:var(--bone-1);border-radius:999px;padding:4px 8px;min-width:2em;text-align:center}
+.flist a[aria-current] .hc{background:var(--gold);color:oklch(0.2 0.03 85)}
+.hits{display:grid;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;margin:0;padding:0;list-style:none}
+.hits li a{display:grid;grid-template-columns:3.2em 1fr auto;gap:12px;align-items:start;padding:12px 14px;background:var(--glass);text-decoration:none;color:var(--ink);min-width:0}
+.hits li a:hover{background:var(--bone-1)}
+.hits .p{font:700 .88rem/1.5 var(--display);color:var(--gold-ink)}
+.hits .t{min-width:0;display:grid;gap:3px}
+.hits .t b{font:600 .95rem/1.3 var(--display)}
+.hits .t p{font-size:.92rem;color:var(--ink-2);line-height:1.5}
+.hits .ms{color:var(--ink-3);align-self:center}
+.pane__h.s{grid-template-columns:auto 1fr}
+.pane__h.s .emb{inline-size:56px;block-size:56px}
+.pane__h.s .lvl{inline-size:56px;block-size:56px;font-size:1.3rem}
+@media (max-width:900px){.finder{grid-template-columns:1fr}.flist{position:static;display:flex;overflow-x:auto;gap:6px;background:transparent;border:0;padding:2px;scrollbar-width:thin}.flist a{flex:none;display:flex;align-items:center;gap:8px;border:1px solid var(--line-2);border-radius:999px;padding:6px 10px 6px 6px}.flist a[aria-current]{border-color:var(--gold)}.flist .t small{display:none}.flist .t{overflow:visible}}
+
+/* ---------- footer ---------- */
+.foot{border-block-start:1px solid var(--line);background:var(--bone-1);margin-block-start:20px}
+.foot__in{display:grid;grid-template-columns:minmax(0,1.4fr) repeat(auto-fit,minmax(150px,1fr));gap:24px;padding-block:32px 24px}
+.foot .brand{align-self:start}
+.foot p{color:var(--ink-2);font-size:.9rem;max-inline-size:34ch;margin-block-start:10px}
+.foot h4{font:600 .68rem/1 var(--display);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin-block-end:10px}
+.foot ul{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.foot ul a{color:var(--ink);text-decoration:none;font:500 .88rem/1.3 var(--display)}
+.foot ul a:hover{color:var(--green)}
+.foot__b{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;padding-block:14px;border-block-start:1px solid var(--line);font:500 .74rem/1 var(--display);color:var(--ink-3)}
+.foot__b .ticks i{block-size:6px}.foot__b .ticks i.on{block-size:10px}
+@media (max-width:640px){.foot__in{grid-template-columns:1fr 1fr}.foot .brand{grid-column:1/-1}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+(function(){
+'use strict';
+/* ================= helpers ================= */
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const id = s => String(s).replace(/[^a-z0-9]+/gi,'-');
+const ms = (n, cls='') => `<span class="ms ${cls}" aria-hidden="true">${n}</span>`;
+const isMBU = site => site.key==='mbu';
+const ICON = {tractor:'agriculture','paint-brush-household':'palette',factory:'factory',broadcast:'cell_tower',recycle:'recycling','puzzle-piece':'extension',binoculars:'nature',compass:'explore',atom:'science',briefcase:'work','hand-heart':'volunteer_activism','soccer-ball':'sports_soccer',wrench:'build','car-simple':'directions_car','list-checks':'checklist',book:'menu_book',trophy:'picture_as_pdf'};
+const icon = n => ICON[n] || 'circle';
+const DEG = Math.PI/180;
+const polar = (cx,cy,r,a) => [cx + r*Math.cos(a*DEG), cy + r*Math.sin(a*DEG)];
+const f = n => Math.round(n*100)/100;
+function arcPath(cx,cy,r,a0,a1){ const [x0,y0]=polar(cx,cy,r,a0), [x1,y1]=polar(cx,cy,r,a1); const big = (a1-a0)%360 > 180 ? 1 : 0; return `M${f(x0)} ${f(y0)} A${r} ${r} 0 ${big} 1 ${f(x1)} ${f(y1)}`; }
+function text(node){ return node.textFormat==='html' ? node.text : esc(node.text); }
+function flatReqs(reqs){ const out=[]; const walk=n=>{ out.push(n); n.children.forEach(walk) }; reqs.forEach(walk); return out; }
+function flatGuide(nav){ return nav.flatMap(s=>s.items.map(i=>({...i,section:s.title}))); }
+const total = site => isMBU(site) ? site.counts.badges : site.counts.ranks;
+
+/* mode ring glyph: select → N segments with count in centre; all → filled ring; null → tick ring */
+function ring(mode, n, size=22){
+  const r=9, cx=11, cy=11, segs=[];
+  if (mode && mode.type==='select' && n>0){
+    const gap=14, span=360/n;
+    for(let i=0;i<n;i++){ const a0=-90+i*span+gap/2, a1=-90+(i+1)*span-gap/2; segs.push(`<path d="${arcPath(cx,cy,r,a0,a1)}" stroke="var(--gold)" stroke-width="2.5" fill="none" stroke-linecap="round"/>`); }
+    segs.push(`<text x="${cx}" y="${cy+3.2}" text-anchor="middle">${mode.count}</text>`);
+    return `<svg class="ring" viewBox="0 0 22 22" role="img" aria-label="Choose ${mode.count} of ${n}">${segs.join('')}</svg>`;
+  }
+  if (mode && mode.type==='all'){
+    return `<svg class="ring" viewBox="0 0 22 22" role="img" aria-label="Do all ${n}"><circle cx="${cx}" cy="${cy}" r="${r}" stroke="var(--green)" stroke-width="2.5" fill="none"/><circle cx="${cx}" cy="${cy}" r="4" fill="var(--green)"/></svg>`;
+  }
+  for(let i=0;i<Math.max(n,1);i++){ const a=-90+i*(360/Math.max(n,1)); const [x0,y0]=polar(cx,cy,r-2,a),[x1,y1]=polar(cx,cy,r+1.5,a); segs.push(`<line x1="${f(x0)}" y1="${f(y0)}" x2="${f(x1)}" y2="${f(y1)}" stroke="var(--ink-3)" stroke-width="1.8" stroke-linecap="round"/>`); }
+  return `<svg class="ring" viewBox="0 0 22 22" role="img" aria-label="${n} parts"><circle cx="${cx}" cy="${cy}" r="${r-4}" stroke="var(--line-2)" stroke-width="1.2" fill="none"/>${segs.join('')}</svg>`;
+}
+function modeLabel(mode, n){
+  if (!mode || n===0) return '';
+  if (mode.type==='select') return `<span class="mode sel">${ring(mode,n)} Do ${['one','two','three','four'][mode.count-1]||mode.count} of ${n}</span>`;
+  return `<span class="mode">${ring(mode,n)} Do all ${n}</span>`;
+}
+/* level glyph for SU (no emblem): N-of-total tick circle with the level number */
+function lvlGlyph(level, totalLevels, cls=''){
+  const ticks=[]; for(let i=0;i<totalLevels;i++){ const a=-90+i*(360/totalLevels); const [x0,y0]=polar(20,20,15,a),[x1,y1]=polar(20,20,18.5,a); ticks.push(`<line x1="${f(x0)}" y1="${f(y0)}" x2="${f(x1)}" y2="${f(y1)}" stroke="${i<level?'var(--gold)':'var(--line-2)'}" stroke-width="2.2" stroke-linecap="round"/>`); }
+  return `<span class="lvl ${cls}" role="img" aria-label="Rank ${level} of ${totalLevels}"><svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="12" fill="none" stroke="var(--line)" stroke-width="1"/>${ticks.join('')}</svg>${level}</span>`;
+}
+function identity(site, cls=''){
+  const a = site.award;
+  return a.emblem ? `<img class="emb ${cls}" src="${a.emblem}" alt="${esc(a.title)} ${esc(a.label)} emblem">` : lvlGlyph(a.level, a.totalLevels, cls);
+}
+const brandMark = () => `<svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><circle cx="14" cy="14" r="12" fill="none" stroke="var(--green)" stroke-width="1.5"/><circle cx="14" cy="14" r="6.5" fill="none" stroke="var(--line-2)" stroke-width="1"/><path d="M14 2v5M14 21v5M2 14h5M21 14h5" stroke="var(--gold)" stroke-width="2" stroke-linecap="round"/><circle cx="14" cy="14" r="2" fill="var(--green)"/></svg>`;
+const ticks = (n,on) => `<span class="ticks" aria-hidden="true">${Array.from({length:n},(_,i)=>`<i${i<on?' class="on"':''}></i>`).join('')}</span>`;
+
+/* ================= chrome ================= */
+function header(site, ctx){
+  const nav = site.nav.map(n=>`<a href="${n.url}">${esc(n.name)}</a>`).join('');
+  const menu = [...site.nav.map(n=>({label:n.name,href:n.url})), {label:site.cta.label,href:site.cta.href}, {label:'Search requirements',href:'/search/'}];
+  return `<header class="bar"><div class="wrap bar__in">
+    <a class="brand" href="/" aria-label="${esc(site.name)} home">${brandMark()}<span><b>${esc(site.name)}</b><small>${esc(site.domain)}</small></span></a>
+    <nav class="bar__nav" aria-label="Primary">${nav}</nav>
+    <span class="bar__sp"></span>
+    <button class="btn k" type="button" data-palette-open>${ms('search')}<span>Search ${esc(site.awardPlural)} and requirements…</span><kbd>⌘K</kbd></button>
+    <button class="btn ico only-m" type="button" data-palette-open aria-label="Search">${ms('search')}</button>
+    <button class="btn ico" type="button" data-toggle-theme aria-label="Switch to ${ctx.dark?'light':'dark'} theme" title="Theme">${ms(ctx.dark?'light_mode':'dark_mode')}</button>
+    <a class="btn pri cta" href="${site.cta.href}">${esc(site.cta.label)}</a>
+    <details class="only-m"><summary class="btn ico" aria-label="Menu">${ms('menu')}</summary><nav class="menu panel" aria-label="Mobile">${menu.map(m=>`<a href="${m.href}">${esc(m.label)}</a>`).join('')}</nav></details>
+  </div></header>` + palette(site);
+}
+function palette(site){
+  const a = site.award;
+  const awards = isMBU(site) ? [...site.featured,...site.eagle,...site.more].filter((b,i,arr)=>arr.findIndex(x=>x.slug===b.slug)===i) : site.ranks;
+  const items = [
+    {g:'Pages', k:'page', t:'Home', s:site.tagline, u:'/', i:'home'},
+    {g:'Pages', k:'page', t:'Search requirements', s:site.search.description, u:'/search/', i:'manage_search'},
+    {g:'Pages', k:'page', t:`${a.title} ${a.label}`, s:a.description, u:a.url, i:isMBU(site)?'workspace_premium':'military_tech'},
+    ...awards.map(b=>({g:site.awardPlural, k:'award', t:`${b.title} ${site.awardLabel}`, s:isMBU(site)?`${b.category}${b.eagle?' · Eagle-required':''} · ${b.reqCount} requirements`:`Rank ${b.level} of ${site.counts.ranks} · ${b.leafCount} requirements`, u:b.url, i:isMBU(site)?'workspace_premium':'military_tech'})),
+    ...flatReqs(a.requirements).filter(n=>n.text||n.title).map(n=>({g:`${a.title} requirements`, k:'req', p:n.path, t:n.title||n.text.replace(/<[^>]+>/g,'').slice(0,80), s:n.title?n.text.replace(/<[^>]+>/g,''):'', u:`${a.requirementsUrl}#req-${id(n.path)}`, i:'format_list_numbered'})),
+    ...flatGuide(a.guideNav).map(g=>({g:site.guideLabel, k:'guide', p:g.path||'', t:g.title, s:g.section, u:g.url, i:'menu_book'})),
+  ];
+  const li = items.map((it,n)=>`<li class="pal__it" role="option" data-group="${esc(it.g)}" data-q="${esc((it.t+' '+(it.s||'')+' '+(it.p||'')).toLowerCase())}"><a href="${it.u}">${ms(it.i)}<span class="t">${esc(it.t)}${it.s?`<small>${esc(it.s)}</small>`:''}</span>${it.p?`<span class="p">${esc(it.p)}</span>`:`<span class="k">${esc(it.k)}</span>`}</a></li>`).join('');
+  return `<dialog class="pal" id="palette" aria-label="Command palette">
+    <form class="pal__in" method="dialog">${ms('search')}<input type="search" id="pal-q" placeholder="Jump to a ${esc(site.awardLabel.toLowerCase())}, requirement or guide page…" autocomplete="off" aria-controls="pal-list" aria-label="Filter"><kbd>esc</kbd></form>
+    <ul class="pal__list" id="pal-list" role="listbox" aria-label="Results">${li}</ul>
+    <p class="pal__empty" hidden>No matches in the loaded ${esc(site.short)} data. Press Enter to run a full search.</p>
+    <div class="pal__foot"><span><kbd>↑</kbd><kbd>↓</kbd> move</span><span><kbd>↵</kbd> open</span><span><kbd>esc</kbd> close</span><span>${items.length} entries indexed</span></div>
+  </dialog>`;
+}
+function crumbs(site, page){
+  const list = site.breadcrumbs[page]; const a = site.award;
+  const hrefs = { Home:'/', 'Merit Badges':'/merit-badges/', 'Scouts BSA':'/scouts-bsa/', 'Rank Advancement':'/scouts-bsa/ranks/', [`${a.title} ${a.label}`]:a.url, [a.title]:a.url, Requirements:a.requirementsUrl, [site.guideLabel]:a.guideUrl };
+  return `<nav aria-label="Breadcrumb"><ol class="crumbs">${list.map((c,i)=> i===list.length-1 ? `<li aria-current="page">${esc(c)}</li>` : `<li><a href="${hrefs[c]||'/'}">${esc(c)}</a></li>`).join('')}</ol></nav>`;
+}
+function dialStrip(site, page, pos){
+  const a = site.award, cur = p => p===page ? ' aria-current="page"' : '';
+  return `<div class="dial"><div class="wrap dial__in">
+    <a class="dial__id" href="${a.url}">${identity(site, page==='award'?'':'vt')}<span class="t">${esc(a.title)}<small>${isMBU(site)?esc(a.category)+' · '+esc(a.label):esc(a.program)+' · Rank '+a.level+' of '+a.totalLevels}</small></span></a>
+    <nav class="seg" aria-label="${esc(a.title)} sections"><a href="${a.url}"${cur('award')}>Overview</a><a href="${a.requirementsUrl}"${cur('requirements')}>Requirements</a><a href="${a.guideUrl}"${cur('guide')}>${isMBU(site)?'Resource Guide':'Requirements Guide'}</a></nav>
+    <span class="dial__pos">${pos}</span>
+  </div></div>`;
+}
+function footer(site){
+  return `<footer class="foot"><div class="wrap foot__in">
+    <div><a class="brand" href="/">${brandMark()}<span><b>${esc(site.name)}</b><small>${esc(site.domain)}</small></span></a><p>${esc(site.tagline)}</p></div>
+    ${site.footer.map(col=>`<div><h4>${esc(col.title)}</h4><ul>${col.links.map(l=>`<li><a href="${l.href}">${esc(l.label)}</a></li>`).join('')}</ul></div>`).join('')}
+  </div><div class="wrap foot__b"><span>© 2026 ${esc(site.name)}</span>${ticks(12,7)}<span>Requirement text © Scouting America</span></div></footer>`;
+}
+
+/* ================= requirements ================= */
+const resIcon = t => /video/i.test(t) ? 'play_circle' : /pdf/i.test(t) ? 'picture_as_pdf' : 'link';
+function resources(list){
+  if (!list.length) return '';
+  return `<div class="res"><span class="lbl">Resources</span>${list.map(r=>`<a href="${r.url}">${ms(resIcon(r.title))}${esc(r.title.replace(/\s*\((video|website|PDF)\)\s*$/i,''))}</a>`).join('')}</div>`;
+}
+function guidePop(site, node){
+  const pages = flatGuide(site.award.guideNav);
+  const own = node.guide ? pages.find(p=>p.url===node.guide) : null;
+  const kids = node.children.filter(c=>c.guide).map(c=>({...c, page:pages.find(p=>p.url===c.guide)}));
+  if (!own && !kids.length) return '';
+  const pid = `pg-${id(node.path)}`;
+  const body = own
+    ? `<h4>${esc(own.title)}</h4><p>${esc(own.section)} · one page of the ${esc(site.guideLabel)}</p><a class="btn" href="${own.url}">${ms('menu_book')}Open guide page</a>`
+    : `<h4>${kids.length} guide pages</h4><ul class="pop__links">${kids.map(c=>`<li><a href="${c.guide}"><span class="p">${esc(c.path)}</span>${esc(c.page?c.page.title:c.title||'')}</a></li>`).join('')}</ul>`;
+  return `<button class="pbtn" type="button" popovertarget="pop-${pid}" style="anchor-name:--${pid}">${ms('menu_book')}Guide${own?'':' ('+kids.length+')'}</button>
+  <div popover class="pop" id="pop-${pid}" data-anchor style="--anchor:--${pid}"><div class="pop__in"><span class="lbl green">${esc(site.guideLabel)}</span>${body}</div></div>`;
+}
+function reqNode(site, node, depth){
+  const n = node.children.length, hasText = !!(node.text && node.text.trim());
+  const head = (node.title || node.mode || node.guide) ? `<div class="nh">${node.title ? (depth===1?`<h3>${esc(node.title)}</h3>`:`<h4>${esc(node.title)}</h4>`) : ''}${modeLabel(node.mode,n)}${guidePop(site,node)}</div>` : '';
+  const body = hasText ? `<div class="vb nolab">${text(node)}${node.list?`<ul>${node.list.items.map(i=>`<li>${esc(i)}</li>`).join('')}</ul>`:''}</div>` : '';
+  const kids = n ? `<div class="kids ${node.mode&&node.mode.type==='select'?'sel':''}">${node.children.map(c=>reqNode(site,c,depth+1)).join('')}</div>` : '';
+  return `<div class="node" id="req-${id(node.path)}"><span class="mk ${depth>1?'dim':''}">${esc(node.marker)}</span><div class="nb">${head}${body}${resources(node.resources)}${kids}</div></div>`;
+}
+function reqPane(site, r, i, all){
+  const n = r.children.length, hasText = !!(r.text && r.text.trim());
+  const prev = all[i-1], next = all[i+1];
+  const title = r.title || `Requirement ${r.path}`;
+  return `<section class="pane panel ${i===0?'is-current':''}" id="req-${id(r.path)}" aria-labelledby="req-${id(r.path)}-h">
+    <header class="pane__h"><span class="big" aria-hidden="true">${esc(r.path)}</span><h2 id="req-${id(r.path)}-h">${esc(title)}</h2>
+      <div class="meta">${modeLabel(r.mode,n)}${n?`<span class="lbl">${n} ${n===1?'part':'parts'}</span>`:''}${guidePop(site,r)}</div></header>
+    <div class="pane__b">
+      ${hasText?`<div class="vb q">${text(r)}${r.list?`<ul>${r.list.items.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:''}</div>`:''}
+      ${resources(r.resources)}
+      ${n?`<div class="kids ${r.mode&&r.mode.type==='select'?'sel':''}">${r.children.map(c=>reqNode(site,c,2)).join('')}</div>`:''}
+    </div>
+    <footer class="pane__f">${prev?`<a href="#req-${id(prev.path)}" data-track-go>${ms('arrow_back')}${esc(prev.path)} ${esc(prev.title||'')}</a>`:'<span></span>'}${next?`<a href="#req-${id(next.path)}" data-track-go>${esc(next.path)} ${esc(next.title||'')}${ms('arrow_forward')}</a>`:`<a href="${site.award.guideUrl}">${ms('menu_book')}Open the ${esc(site.guideLabel)}</a>`}</footer>
+  </section>`;
+}
+function requirements(site, ctx){
+  const a = site.award, reqs = a.requirements;
+  const pos = isMBU(site) ? `<b>${a.reqCount}</b> requirements` : `<b>${a.groupCount}</b> groups · <b>${a.reqCount}</b> requirements`;
+  const track = reqs.map((r,i)=>`<li><a href="#req-${id(r.path)}" data-track-go ${i===0?'aria-current="true"':''}><span class="p">${esc(r.path)}</span><span class="t">${esc(r.title||r.text.replace(/<[^>]+>/g,''))}<small>${r.children.length?`${r.children.length} parts`:'single'}${r.guide||r.children.some(c=>c.guide)?' · guide':''}</small></span>${ring(r.mode,r.children.length)}</a></li>`).join('');
+  return header(site,ctx) + dialStrip(site,'requirements',pos) + `<main id="main" class="wrap">${crumbs(site,'requirements')}
+    <div class="shead" style="padding-block-end:4px"><h1>${esc(a.title)} ${esc(a.label)} requirements</h1>
+      <div class="toolbar">${isMBU(site)&&a.eagle?`<span class="chip gold">${ms('star','fill')}Eagle-required</span>`:''}${!isMBU(site)?`<span class="chip">${ms('military_tech')}Rank ${a.level} of ${a.totalLevels}</span>`:''}<span class="chip">${ms('update')}Updated ${esc(a.updated)}</span>${a.officialUrl?`<a class="chip" href="${a.officialUrl}">${ms('open_in_new')}Official text at scouting.org</a>`:''}<a class="chip" href="${a.guidePrintUrl}">${ms('print')}Print the ${esc(site.guideLabel)}</a></div></div>
+    <div class="split">
+      <nav aria-label="Requirements"><ol class="track" data-track>${track}</ol></nav>
+      <div class="panes" data-panes>${reqs.map((r,i)=>reqPane(site,r,i,reqs)).join('')}</div>
+    </div>
+    ${a.footerNote?`<aside class="note panel" aria-label="Notes">${a.footerNote}</aside>`:''}
+  </main>` + footer(site);
+}
+
+/* ================= award ================= */
+/* label placement around a ring: outward-anchored HTML labels at polar coords (percent of the box) */
+function labAt(a, r, cls, inner, extra='', vb){
+  const c = Math.cos(a*DEG), s = Math.sin(a*DEG);
+  const x = (vb.cx + r*c - vb.x)/vb.w*100, y = (vb.cy + r*s - vb.y)/vb.h*100;
+  const tx = Math.abs(c) < .3 ? '-50%' : c > 0 ? '0' : '-100%';
+  return `style="left:${f(x)}%;top:${f(y)}%;translate:${tx} -50%;${extra}" class="${cls}"` + inner;
+}
+function wheel(site){
+  const a = site.award, reqs = a.requirements, N = reqs.length, S=520, cx=260, cy=260, VB={x:-170,y:-30,w:860,h:600,cx,cy};
+  const parts = [];
+  parts.push(`<circle cx="${cx}" cy="${cy}" r="196" fill="none" stroke="var(--line)" stroke-width="1"/>`);
+  parts.push(`<circle cx="${cx}" cy="${cy}" r="62" fill="var(--glass)" stroke="var(--line-2)" stroke-width="1"/>`);
+  for(let i=0;i<72;i++){ const [x0,y0]=polar(cx,cy,196,i*5),[x1,y1]=polar(cx,cy,i%6?200:206,i*5); parts.push(`<line x1="${f(x0)}" y1="${f(y0)}" x2="${f(x1)}" y2="${f(y1)}" stroke="${i%6?'var(--line-2)':'var(--gold)'}" stroke-width="1"/>`); }
+  const labs = [];
+  reqs.forEach((r,i)=>{
+    const ang = -90 + i*(360/N), n=r.children.length;
+    const [x0,y0]=polar(cx,cy,70,ang),[x1,y1]=polar(cx,cy,160,ang),[nx,ny]=polar(cx,cy,176,ang);
+    parts.push(`<line x1="${f(x0)}" y1="${f(y0)}" x2="${f(x1)}" y2="${f(y1)}" stroke="var(--ink-3)" stroke-width="1.2"/>`);
+    for(let k=0;k<n;k++){ const rr = 84 + (k/(Math.max(n,2)-1))*64; const [px,py]=polar(cx,cy,rr,ang); parts.push(`<circle cx="${f(px)}" cy="${f(py)}" r="3" fill="${r.mode&&r.mode.type==='select'?'var(--gold)':'var(--green)'}"/>`); }
+    const sel = r.mode&&r.mode.type==='select';
+    parts.push(`<circle cx="${f(nx)}" cy="${f(ny)}" r="15" fill="var(--glass)" stroke="${sel?'var(--gold)':r.mode?'var(--green)':'var(--line-2)'}" stroke-width="2.5" ${sel?'stroke-dasharray="6 4"':''}/>`);
+    parts.push(`<text x="${f(nx)}" y="${f(ny)+4.5}" text-anchor="middle" font-size="13" font-weight="700" fill="var(--ink)">${esc(r.path)}</text>`);
+    const pid = `pw-${id(r.path)}`, snippet = (r.text||'').replace(/<[^>]+>/g,'');
+    labs.push(`<button type="button" popovertarget="pop-${pid}" ${labAt(ang,232,'lab',`><span class="p">${esc(r.path)}</span><span class="t">${esc(r.title||snippet.slice(0,40)||'Requirement '+r.path)}</span>`,`anchor-name:--${pid}`,VB)}</button>
+      <div popover class="pop" id="pop-${pid}" data-anchor style="--anchor:--${pid}"><div class="pop__in"><span class="lbl gold">Requirement ${esc(r.path)} · ${n?n+' parts':'single'}</span>${r.title?`<h4>${esc(r.title)}</h4>`:''}${modeLabel(r.mode,n)}${snippet?`<div class="vb nolab" style="margin-block-start:4px">${text(r)}</div>`:`<p>${n} parts — open the requirement for the full wording.</p>`}<a class="btn" href="${a.requirementsUrl}#req-${id(r.path)}">${ms('format_list_numbered')}Open requirement ${esc(r.path)}</a></div></div>`);
+  });
+  const centre = `<text x="${cx}" y="${cy-6}" text-anchor="middle" font-size="30" font-weight="700" fill="var(--ink)">${isMBU(site)?a.reqCount:a.groupCount}</text><text x="${cx}" y="${cy+16}" text-anchor="middle" font-size="9" font-weight="600" letter-spacing="1.5" fill="var(--ink-3)">${isMBU(site)?'REQUIREMENTS':'GROUPS · '+a.reqCount+' REQS'}</text>`;
+  const legend = `<div class="toolbar hide-s" style="justify-content:center;margin-block-start:36px"><span class="chip">${ring({type:'all'},3)} Do all</span><span class="chip">${ring({type:'select',count:1},3)} Choose</span><span class="chip">${ring(null,3)} Group</span></div>`;
+  return `<div class="map wheel" aria-label="Requirement wheel"><svg viewBox="${VB.x} ${VB.y} ${VB.w} ${VB.h}" role="img" aria-label="${N} top-level requirements of ${esc(a.title)} arranged as a wheel">${parts.join('')}${centre}</svg><div class="labs">${labs.join('')}</div>${legend}</div>`;
+}
+function award(site, ctx){
+  const a = site.award, mbu = isMBU(site);
+  const kick = mbu
+    ? `<span class="lbl">${esc(a.label)}</span><a class="chip" href="/categories/${id(a.category).toLowerCase()}/">${ms(icon(a.categoryIcon))}${esc(a.category)}</a>${a.eagle?`<span class="chip gold">${ms('star','fill')}Eagle-required</span>`:''}`
+    : `<span class="lbl">${esc(a.program)} ${esc(a.label)}</span><span class="chip gold">${ms('military_tech')}Rank ${a.level} of ${a.totalLevels}</span>`;
+  const tools = mbu
+    ? `<a class="btn pri" href="${a.requirementsUrl}">${ms('format_list_numbered')}Requirements</a><a class="btn" href="${a.guideUrl}">${ms('menu_book')}${esc(site.guideLabel)}</a><a class="btn" href="${a.officialUrl}">${ms('open_in_new')}Official page</a><a class="btn" href="${a.pamphletUrl}">${ms('picture_as_pdf')}Pamphlet</a><a class="btn" href="${a.worksheetUrl}">${ms('edit_document')}Worksheet</a><a class="btn" href="${a.guidePrintUrl}">${ms('print')}Print guide</a>`
+    : `<a class="btn pri" href="${a.requirementsUrl}">${ms('format_list_numbered')}Requirements</a><a class="btn" href="${a.guideUrl}">${ms('menu_book')}${esc(site.guideLabel)}</a><a class="btn" href="${a.guidePrintUrl}">${ms('print')}Print guide</a>`;
+  const trail = mbu
+    ? `<a href="/merit-badges/eagle-required/">${ms('star')}All ${site.counts.eagleBadges} Eagle-required badges</a><a href="/merit-badges/">${ms('grid_view')}All ${site.counts.badges} merit badges</a>`
+    : `${a.prev?`<a href="${a.prev.url}">${ms('arrow_back')}${esc(a.prev.title)} · rank ${a.level-1}</a>`:''}${a.next?`<a href="${a.next.url}">Next: ${esc(a.next.title)} · rank ${a.level+1}${ms('arrow_forward')}</a>`:''}`;
+  const reads = mbu
+    ? [['Requirements',a.reqCount,''],['Guide pages',a.guidePages,''],['Category',a.category,''],['Updated',a.updated,'']]
+    : [['Requirements',a.reqCount,`in ${a.groupCount} groups`],['Guide pages',a.guidePages,''],['Rank',`${a.level}<small>of ${a.totalLevels}</small>`,''],['Requirements version',a.updated,'']];
+  const ovw = a.requirements.map(r=>`<li><a href="${a.requirementsUrl}#req-${id(r.path)}"><span class="p">${esc(r.path)}</span>${ring(r.mode,r.children.length)}<span class="t">${esc(r.title||'Requirement '+r.path)}<small>${esc((r.text||'').replace(/<[^>]+>/g,'')||r.children.map(c=>c.title||c.text).join(' · '))}</small></span><span class="c">${r.children.length?r.children.length+' parts':'single'}</span></a></li>`).join('');
+  return header(site,ctx) + dialStrip(site,'award',`<b>${a.guidePages}</b> guide pages ${ticks(7,mbu?7:a.level)}`) + `<main id="main" class="wrap">${crumbs(site,'award')}
+    <div class="ahead">
+      <div>
+        <div class="aid">${identity(site,'vt')}<div><div class="kick">${kick}</div><h1>${esc(a.title)}</h1></div></div>
+        <p class="lead">${esc(a.description)}</p>
+        <div class="toolbar" style="margin-block-end:14px">${tools}</div>
+        <div class="trail">${trail}</div>
+      </div>
+      ${wheel(site)}
+    </div>
+    <div class="reads">${reads.map(([k,v,s])=>`<div class="read"><span class="lbl">${k}</span><b>${v}${s?`<small>${s}</small>`:''}</b></div>`).join('')}</div>
+    <section class="sec" aria-labelledby="ovw-h"><div class="sec__h"><h2 id="ovw-h">Requirements at a glance</h2><a class="more" href="${a.requirementsUrl}">Full verbatim list ${ms('arrow_forward')}</a></div><ol class="ovw">${ovw}</ol></section>
+    ${a.footerNote?`<aside class="note panel" aria-label="Notes" style="margin-block-end:24px">${a.footerNote}</aside>`:''}
+  </main>` + footer(site);
+}
+
+/* ================= guide ================= */
+function chapterDial(site){
+  const a = site.award, g = site.guide, nav = a.guideNav, S=300, cx=150, cy=150;
+  const totalItems = nav.reduce((n,s)=>n+s.items.length,0);
+  const flat = flatGuide(nav), idx = flat.findIndex(p=>p.url===g.url);
+  let ang = -90; const parts = [];
+  parts.push(`<circle cx="${cx}" cy="${cy}" r="112" fill="none" stroke="var(--line)" stroke-width="1"/>`);
+  nav.forEach((s,i)=>{
+    const span = 360*s.items.length/totalItems, a0=ang+1.2, a1=ang+span-1.2, cur = s.items.some(it=>it.url===g.url);
+    parts.push(`<a href="${s.items[0].url}"><title>${esc(s.title)} · ${s.items.length} ${s.items.length===1?'page':'pages'}</title><path d="${arcPath(cx,cy,100,a0,a1)}" fill="none" stroke="${cur?'var(--gold)':'var(--green)'}" stroke-opacity="${cur?1:.45}" stroke-width="${cur?16:10}" stroke-linecap="butt"/></a>`);
+    s.items.forEach((it,k)=>{ const ta = ang + span*(k+.5)/s.items.length; const [x0,y0]=polar(cx,cy,118,ta),[x1,y1]=polar(cx,cy,it.url===g.url?130:124,ta); parts.push(`<line x1="${f(x0)}" y1="${f(y0)}" x2="${f(x1)}" y2="${f(y1)}" stroke="${it.url===g.url?'var(--gold)':'var(--line-2)'}" stroke-width="${it.url===g.url?2.5:1.2}" stroke-linecap="round"/>`); });
+    const [lx,ly]=polar(cx,cy,80,ang+span/2); const lbl = s.title.match(/^\d+/) ? s.title.match(/^\d+/)[0] : '·';
+    parts.push(`<text x="${f(lx)}" y="${f(ly)+3}" text-anchor="middle" font-size="9" font-weight="600" fill="${cur?'var(--gold-ink)':'var(--ink-3)'}">${esc(lbl)}</text>`);
+    ang += span;
+  });
+  parts.push(`<text x="${cx}" y="${cy-4}" text-anchor="middle" font-size="26" font-weight="700" fill="var(--ink)">${idx+1}</text><text x="${cx}" y="${cy+14}" text-anchor="middle" font-size="8.5" font-weight="600" letter-spacing="1.5" fill="var(--ink-3)">OF ${a.guidePages} PAGES</text>`);
+  return `<div class="cdial"><svg viewBox="0 0 ${S} ${S}" role="img" aria-label="Chapter dial: ${nav.length} sections, page ${idx+1} of ${a.guidePages}">${parts.join('')}</svg></div>`;
+}
+function guideNav(site){
+  const g = site.guide;
+  return `<nav class="gnav" aria-label="${esc(site.guideLabel)} contents">${site.award.guideNav.map(s=>{ const cur = s.items.some(it=>it.url===g.url);
+    return `<details ${cur?'open class="cur"':''}><summary><span class="i" aria-hidden="true"></span><span>${esc(s.title)}</span><span class="c">${s.items.length}</span></summary><ol>${s.items.map(it=>`<li><a href="${it.url}" ${it.url===g.url?'aria-current="page"':''}><span class="p">${esc(it.marker||'•')}</span><span>${esc(it.title)}</span></a></li>`).join('')}</ol></details>`; }).join('')}</nav>`;
+}
+function call(cls, ico, label, inner){ return `<aside class="call ${cls}">${ms(ico)}<span class="lbl">${label}</span>${inner}</aside>`; }
+function block(b){
+  switch(b.type){
+    case 'p': return `<p>${b.html}</p>`;
+    case 'h2': return `<h2>${esc(b.text)}</h2>`;
+    case 'h3': return `<h3>${esc(b.text)}</h3>`;
+    case 'ul': return `<ul>${b.items.map(i=>`<li>${i}</li>`).join('')}</ul>`;
+    case 'ol': return `<ol>${b.items.map(i=>`<li>${i}</li>`).join('')}</ol>`;
+    case 'tip': return call('tip','lightbulb','Tip',`<p>${b.html}</p>`);
+    case 'safety': return call('safety','emergency_home','Safety first',`<p>${b.html}</p>`);
+    case 'be-prepared': return call(b.safety?'safety':'','health_and_safety','Be prepared',`<h4>${esc(b.title)}</h4><ul>${b.items.map(i=>`<li>${i}</li>`).join('')}</ul>`);
+    case 'checklist': return call('','checklist','Checklist',`<h4>${esc(b.title)}</h4>${b.subtitle?`<p>${esc(b.subtitle)}</p>`:''}<ul>${b.items.map(i=>`<li>${esc(i)}</li>`).join('')}</ul>`);
+    case 'image': return `<figure><button class="figbtn" type="button" data-lightbox="${b.src}" data-alt="${esc(b.alt)}" aria-label="Enlarge image"><img src="${b.src}" width="${b.width}" height="${b.height}" alt="${esc(b.alt)}"></button><figcaption>${esc(b.caption||b.alt)}</figcaption></figure>`;
+    case 'video': return `<a class="vid" href="${b.url}"><span class="play">${ms('play_arrow','fill')}</span><span class="t">${esc(b.title)}<small>Video · ${esc(b.channel)} · opens in a new tab</small></span>${ms('open_in_new','out')}</a>`;
+    case 'external-link': return `<a class="vid ext" href="${b.url}"><span class="play">${ms('link')}</span><span class="t">${esc(b.title)}<small>External resource</small></span>${ms('open_in_new','out')}<p>${esc(b.description)}</p></a>`;
+    case 'next-page': return `<a class="nextp" href="${b.url}"><span class="lbl">${esc(b.text)}</span><b>Next: ${esc(b.title)}</b><p>${esc(b.teaser)}</p></a>`;
+    default: return '';
+  }
+}
+function guide(site, ctx){
+  const a = site.award, g = site.guide, flat = flatGuide(a.guideNav), idx = flat.findIndex(p=>p.url===g.url);
+  const reqNode_ = flatReqs(a.requirements).find(n=>n.path===g.path);
+  const nav2 = `${g.prev?`<a href="${g.prev.url}">${ms('arrow_back')}<span><small>Previous</small>${esc(g.prev.title)}</span></a>`:''}${g.next?`<a href="${g.next.url}">${ms('arrow_forward')}<span><small>Next</small>${esc(g.next.title)}</span></a>`:''}`;
+  return header(site,ctx) + dialStrip(site,'guide',`Page <b>${idx+1}</b> of ${a.guidePages}`) + `<main id="main" class="wrap">${crumbs(site,'guide')}
+    <div class="gtop">${chapterDial(site)}${guideNav(site)}</div>
+    <div class="gsplit">
+      <aside class="gcard panel" aria-label="Requirement ${esc(g.requirement.number)}">
+        <div><span class="lbl gold">Requirement</span><div class="big">${esc(g.path)}</div></div>
+        <div class="vb q">${esc(g.requirement.text)}${reqNode_&&reqNode_.list?`<ul>${reqNode_.list.items.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:''}</div>
+        ${reqNode_&&reqNode_.resources.length?resources(reqNode_.resources):''}
+        <a class="btn" href="${a.requirementsUrl}#req-${id(g.path)}">${ms('format_list_numbered')}See it in the full list</a>
+        <div class="nav2">${nav2}</div>
+      </aside>
+      <article class="prose">
+        <div><div class="kick"><span class="lbl green">${esc(site.guideLabel)}</span><span class="lbl">${esc(g.kicker)}</span></div><h1>${esc(g.title)}</h1></div>
+        ${g.blocks.map(block).join('')}
+      </article>
+    </div>
+  </main>
+  <dialog class="lb" id="lightbox" aria-label="Image"><figure><img src="" alt=""><figcaption></figcaption></figure><form method="dialog"><button type="submit">Close</button></form></dialog>` + footer(site);
+}
+
+/* ================= search ================= */
+function search(site, ctx){
+  const s = site.search, q = s.query, mbu = isMBU(site);
+  const re = new RegExp('('+q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'s?)','ig');
+  const hl = t => esc(t).replace(re,'<mark>$1</mark>');
+  const hits = s.results.reduce((n,r)=>n+r.hits.length,0);
+  const facets = mbu
+    ? Object.entries(s.results.reduce((m,r)=>{ m[r.category]=(m[r.category]||0)+1; return m; },{})).map(([k,v])=>({key:id(k),label:k,n:v}))
+    : s.results.slice().sort((a,b)=>a.level-b.level).map(r=>({key:'lvl-'+r.level,label:`Rank ${r.level} · ${r.title}`,n:r.hits.length}));
+  const fkey = r => mbu ? id(r.category) : 'lvl-'+r.level;
+  const ordered = mbu ? s.results : s.results.slice().sort((a,b)=>a.level-b.level);
+  const list = ordered.map((r,i)=>`<li data-facet="${fkey(r)}"><a href="#hit-${id(r.slug)}" data-track-go ${i===0?'aria-current="true"':''}>${r.emblem?`<img class="emb" src="${r.emblem}" alt="">`:lvlGlyph(r.level,site.counts.ranks)}<span class="t">${esc(r.title)} ${esc(site.awardLabel)}<small>${mbu?esc(r.category)+(r.eagle?' · Eagle-required':''):'Rank '+r.level+' of '+site.counts.ranks}</small></span><span class="hc">${r.hits.length}</span></a></li>`).join('');
+  const panes = ordered.map((r,i)=>`<section class="pane panel ${i===0?'is-current':''}" id="hit-${id(r.slug)}" aria-labelledby="hit-${id(r.slug)}-h">
+    <header class="pane__h s">${r.emblem?`<img class="emb" src="${r.emblem}" alt="${esc(r.title)} emblem">`:lvlGlyph(r.level,site.counts.ranks)}<div><h2 id="hit-${id(r.slug)}-h">${esc(r.title)} ${esc(site.awardLabel)}</h2><div class="meta"><span class="lbl">${r.hits.length} ${r.hits.length===1?'hit':'hits'} for “${esc(q)}”</span>${mbu?`<span class="lbl">${esc(r.category)} · ${r.reqCount} requirements</span>`:`<span class="lbl">Rank ${r.level} of ${site.counts.ranks}</span>`}<a class="chip" href="${r.url}">${ms('open_in_new')}${esc(site.awardLabel)} page</a></div></div></header>
+    <ol class="hits">${r.hits.map(h=>`<li><a href="${r.url}requirements/#req-${id(h.path)}"><span class="p">${esc(h.path)}</span><span class="t">${h.title?`<b>${esc(h.title)}</b>`:''}<p>${hl(h.excerpt)}</p></span>${ms('arrow_forward')}</a></li>`).join('')}</ol>
+  </section>`).join('');
+  return header(site,ctx) + `<main id="main" class="wrap">${crumbs(site,'search')}
+    <div class="shead"><div><h1>Search requirements</h1><p>${esc(s.description)}</p></div>
+      <form class="sform" role="search" data-search-form>${ms('search')}<input type="search" name="q" value="${esc(q)}" aria-label="Search requirements" autocomplete="off"><kbd>/</kbd><button type="submit">Search</button></form>
+      <div class="toolbar" data-facets><span class="lbl" style="align-self:center">${mbu?'Category':'Rank'}</span><button class="chip on" type="button" data-facet="all">All · ${s.results.length}</button>${facets.map(fc=>`<button class="chip" type="button" data-facet="${fc.key}">${esc(fc.label)} · ${fc.n}</button>`).join('')}</div>
+      <p class="lbl" aria-live="polite" data-summary><b style="color:var(--ink)">${s.total}</b> ${esc(site.awardPlural)} · <b style="color:var(--ink)">${hits}</b> requirement hits for “${esc(q)}”</p></div>
+    <div class="finder"><nav aria-label="Matching ${esc(site.awardPlural)}"><ol class="flist" data-track>${list}</ol></nav><div class="panes" data-panes>${panes}</div></div>
+  </main>` + footer(site);
+}
+
+/* ================= home ================= */
+function atlas(site){
+  const cats = site.categories, N = cats.length, S=600, cx=300, cy=300, step=360/N, parts=[], labs=[], orbs=[], VB={x:-120,y:-30,w:840,h:660,cx,cy};
+  parts.push(`<circle cx="${cx}" cy="${cy}" r="72" fill="var(--glass)" stroke="var(--line-2)"/>`);
+  parts.push(`<circle cx="${cx}" cy="${cy}" r="122" fill="none" stroke="var(--gold)" stroke-width="1" stroke-dasharray="2 5"/>`);
+  parts.push(`<circle cx="${cx}" cy="${cy}" r="150" fill="none" stroke="var(--line)" stroke-width="1"/>`);
+  parts.push(`<circle cx="${cx}" cy="${cy}" r="262" fill="none" stroke="var(--line)" stroke-width="1"/>`);
+  cats.forEach((c,i)=>{
+    const ang = -90 + i*step, len = 150 + c.count*4.5, pid = `pc-${id(c.name)}`;
+    const [x0,y0]=polar(cx,cy,150,ang),[x1,y1]=polar(cx,cy,len,ang);
+    parts.push(`<line x1="${f(x0)}" y1="${f(y0)}" x2="${f(x1)}" y2="${f(y1)}" stroke="var(--green)" stroke-width="2"/>`);
+    parts.push(`<path d="${arcPath(cx,cy,len,ang-step/2+3,ang+step/2-3)}" fill="none" stroke="var(--green)" stroke-opacity="${.35+.65*c.count/24}" stroke-width="7" stroke-linecap="round"/>`);
+    parts.push(`<text x="${f(polar(cx,cy,len+14,ang)[0])}" y="${f(polar(cx,cy,len+14,ang)[1])+3.5}" text-anchor="middle" font-size="10" font-weight="700" fill="var(--gold-ink)">${c.count}</text>`);
+    labs.push(`<button type="button" popovertarget="pop-${pid}" ${labAt(ang,288,'lab',`><span>${esc(c.name)}</span><small>${c.count} badges</small>`,`anchor-name:--${pid}`,VB)}</button>
+      <div popover class="pop" id="pop-${pid}" data-anchor style="--anchor:--${pid}"><div class="pop__in"><span class="lbl green">Category</span><h4>${ms(icon(c.icon))} ${esc(c.name)}</h4><p>${c.count} of ${site.counts.badges} merit badges.</p><a class="btn" href="${c.url}">Browse ${esc(c.name)}${ms('arrow_forward')}</a></div></div>`);
+  });
+  site.eagle.forEach((b,i)=>{ const ang = -90 + i*(360/site.eagle.length); const [px,py]=polar(cx,cy,122,ang), x=(px-VB.x)/VB.w*100, y=(py-VB.y)/VB.h*100; orbs.push(`<a class="orb" href="${b.url}" style="left:${f(x)}%;top:${f(y)}%" title="${esc(b.title)} · Eagle-required"><img src="${b.emblem}" alt="${esc(b.title)} merit badge emblem"></a>`); });
+  const centre = `<text x="${cx}" y="${cy-4}" text-anchor="middle" font-size="34" font-weight="700" fill="var(--ink)">${site.counts.badges}</text><text x="${cx}" y="${cy+16}" text-anchor="middle" font-size="9" font-weight="600" letter-spacing="1.6" fill="var(--ink-3)">MERIT BADGES</text><text x="${cx}" y="${cy+34}" text-anchor="middle" font-size="8.5" font-weight="600" letter-spacing="1.4" fill="var(--gold-ink)">${site.counts.eagleBadges} EAGLE-REQUIRED IN ORBIT</text>`;
+  return `<div class="map" aria-label="Atlas of categories"><svg viewBox="${VB.x} ${VB.y} ${VB.w} ${VB.h}" role="img" aria-label="Radial atlas: ${N} categories as spokes, length proportional to badge count; ${site.eagle.length} Eagle-required badges in orbit">${parts.join('')}${centre}</svg><div class="orbs">${orbs.join('')}</div><div class="labs">${labs.join('')}</div></div>`;
+}
+function rankDial(site){
+  const ranks = site.ranks, N = ranks.length, S=600, cx=300, cy=300, total=252, step=total/N, start=270-total+step/2, parts=[], labs=[], VB={x:-120,y:-30,w:840,h:660,cx,cy};
+  parts.push(`<circle cx="${cx}" cy="${cy}" r="72" fill="var(--glass)" stroke="var(--line-2)"/>`);
+  parts.push(`<circle cx="${cx}" cy="${cy}" r="226" fill="none" stroke="var(--line)" stroke-width="1"/>`);
+  site.phases.forEach((ph,i)=>{ const [lo,hi]=ph.ranks.split('–').map(Number); const a0=start+(lo-1)*step+1.5, a1=start+hi*step-1.5; parts.push(`<path d="${arcPath(cx,cy,140,a0,a1)}" fill="none" stroke="${i?'var(--gold)':'var(--green)'}" stroke-opacity=".5" stroke-width="4"/>`); const [tx,ty]=polar(cx,cy,118,(a0+a1)/2); parts.push(`<text x="${f(tx)}" y="${f(ty)+3}" text-anchor="middle" font-size="9" font-weight="600" letter-spacing="1" fill="var(--ink-3)">RANKS ${esc(ph.ranks)}</text>`); });
+  ranks.forEach((r,i)=>{
+    const a0 = start + i*step + 2, a1 = start + (i+1)*step - 2, mid=(a0+a1)/2, gold = r.level>=5;
+    parts.push(`<a href="${r.url}"><title>${esc(r.title)} · rank ${r.level} of ${N}</title><path d="${arcPath(cx,cy,190,a0,a1)}" fill="none" stroke="${gold?'var(--gold)':'var(--green)'}" stroke-opacity="${.45+.55*(i+1)/N}" stroke-width="26"/></a>`);
+    const [tx,ty]=polar(cx,cy,190,mid); parts.push(`<text x="${f(tx)}" y="${f(ty)+5}" text-anchor="middle" font-size="14" font-weight="700" fill="${gold?'oklch(0.2 0.03 85)':'oklch(0.98 0.005 95)'}" pointer-events="none">${r.level}</text>`);
+    for(let k=0;k<r.groups;k++){ const ta = a0 + (a1-a0)*(k+.5)/r.groups; const [x0,y0]=polar(cx,cy,208,ta),[x1,y1]=polar(cx,cy,214,ta); parts.push(`<line x1="${f(x0)}" y1="${f(y0)}" x2="${f(x1)}" y2="${f(y1)}" stroke="var(--line-2)" stroke-width="1.2"/>`); }
+    labs.push(`<a href="${r.url}" ${labAt(mid,246,'lab',`><span>${esc(r.title)}</span><small>${r.leafCount} requirements</small>`,'',VB)}</a>`);
+  });
+  const [sx,sy]=polar(cx,cy,226,start-step/2+2), [ex,ey]=polar(cx,cy,226,270);
+  parts.push(`<text x="${f(sx)}" y="${f(sy)+4}" text-anchor="start" font-size="9" font-weight="600" letter-spacing="1.4" fill="var(--ink-3)">START</text><text x="${f(ex)}" y="${f(ey)-8}" text-anchor="middle" font-size="9" font-weight="600" letter-spacing="1.4" fill="var(--gold-ink)">SUMMIT</text>`);
+  const centre = `<text x="${cx}" y="${cy-4}" text-anchor="middle" font-size="34" font-weight="700" fill="var(--ink)">${N}</text><text x="${cx}" y="${cy+16}" text-anchor="middle" font-size="9" font-weight="600" letter-spacing="1.6" fill="var(--ink-3)">RANKS · SCOUT → EAGLE</text>`;
+  return `<div class="map" aria-label="Rank dial"><svg viewBox="${VB.x} ${VB.y} ${VB.w} ${VB.h}" role="img" aria-label="Rank dial: ${N} ranks as ring segments climbing from Scout to Eagle at the summit; inner ring shows the two phases">${parts.join('')}${centre}</svg><div class="labs">${labs.join('')}</div></div>`;
+}
+const badgeCard = (site,b) => `<a class="card panel" href="${b.url}"><img class="emb" src="${b.emblem}" alt="${esc(b.title)} merit badge emblem" loading="lazy"><span class="t">${esc(b.title)}<small>${esc(b.category)} · ${b.reqCount} requirements</small>${b.eagle?`<span class="eagle">${ms('star','fill')}Eagle-required</span>`:''}</span></a>`;
+const rankCard = (site,r) => `<a class="rank panel" href="${r.url}">${lvlGlyph(r.level,site.counts.ranks)}<span class="t">${esc(r.title)}<small>Rank ${r.level} of ${site.counts.ranks}</small></span><p>${esc(r.description)}</p><span class="meta"><span class="chip">${r.groups} groups</span><span class="chip">${r.leafCount} requirements</span>${r.hasGuide?`<span class="chip on">${ms('menu_book')}Guide</span>`:''}</span><p><span class="lbl">Includes</span> ${r.samples.map(esc).join(' · ')}</p></a>`;
+function home(site, ctx){
+  const mbu = isMBU(site), c = site.counts;
+  const reads = mbu ? [['Merit badges',c.badges],['Categories',c.categories],['Eagle-required',c.eagleBadges]] : [['Ranks',c.ranks],['Phases',site.phases.length],['Field guides',site.fieldGuides.length]];
+  const hero = `<section class="hero"><div class="hero__txt">
+      <span class="lbl green">${mbu?'Scouting America merit badges':'Scouts BSA rank advancement'} · reference atlas</span>
+      <h1>${mbu?'Every merit badge requirement, mapped.':'The trail to Eagle, one dial.'}</h1>
+      <p class="lead">${esc(site.tagline)} ${mbu?'Read the exact official wording, follow a guide for each requirement, and search across all 142 badges.':'Read the exact official wording for each rank, follow a guide page for every requirement, and search across all seven ranks.'}</p>
+      <button class="btn k" type="button" data-palette-open>${ms('search')}<span>Jump to a ${esc(site.awardLabel.toLowerCase())} or requirement…</span><kbd>⌘K</kbd></button>
+      <div class="reads">${reads.map(([k,v])=>`<div class="read"><span class="lbl">${k}</span><b>${v}</b></div>`).join('')}</div>
+      <div class="toolbar"><a class="btn pri" href="${site.cta.href}">${esc(site.cta.label)}${ms('arrow_forward')}</a>${mbu?`<a class="btn" href="/merit-badges/eagle-required/">${ms('star')}Eagle-required list</a>`:`<a class="btn" href="/scouts-bsa/field-guides/">${ms('hiking')}Field guides</a>`}</div>
+    </div>${mbu?atlas(site):rankDial(site)}</section>`;
+  const body = mbu ? `
+    <section class="sec" aria-labelledby="f-h"><div class="sec__h"><h2 id="f-h">Featured badges</h2><a class="more" href="/merit-badges/">All ${c.badges} badges ${ms('arrow_forward')}</a></div><div class="cards">${site.featured.map(b=>badgeCard(site,b)).join('')}</div></section>
+    <section class="sec" aria-labelledby="c-h"><div class="sec__h"><h2 id="c-h">Browse by category</h2><p>${c.categories} fields of interest, the same spokes as the atlas above.</p></div><div class="cats">${site.categories.map(ct=>`<a class="cat" href="${ct.url}">${ms(icon(ct.icon))}<span>${esc(ct.name)}</span><span class="n">${ct.count}</span></a>`).join('')}</div></section>
+    <section class="sec" aria-labelledby="s-h"><div class="sec__h"><h2 id="s-h">What is on a badge page</h2></div><div class="field"><figure><img src="${site.hero.image}" alt="${esc(site.hero.alt)}" loading="lazy"></figure><div class="steps">${site.steps.map((st,i)=>`<div class="step panel">${ms(icon(st.icon))}<h3>${esc(st.title)}</h3><span class="n">0${i+1}</span><p>${esc(st.text)}</p></div>`).join('')}</div></div></section>
+    <section class="sec" aria-labelledby="e-h"><div class="sec__h"><h2 id="e-h">${ms('star','fill')} Eagle-required merit badges</h2><p>${c.eagleBadges} badges across ${c.eagle} categories. The emblems orbiting the atlas hub.</p><a class="more" href="/merit-badges/eagle-required/strategy/">Eagle badge strategy ${ms('arrow_forward')}</a></div><div class="cards">${site.eagle.map(b=>badgeCard(site,b)).join('')}</div></section>
+    <section class="sec" aria-labelledby="m-h"><div class="sec__h"><h2 id="m-h">More badges</h2><a class="more" href="/merit-badges/">Browse all ${ms('arrow_forward')}</a></div><div class="cards">${site.more.map(b=>badgeCard(site,b)).join('')}</div></section>`
+  : `
+    <section class="sec" aria-labelledby="p-h"><div class="sec__h"><h2 id="p-h">Two phases of the trail</h2><p>The inner ring of the dial.</p></div><div class="phases">${site.phases.map((ph,i)=>`<div class="phase panel ${i?'g':''}"><span class="lbl ${i?'gold':'green'}">Ranks ${esc(ph.ranks)}</span><h3>${esc(ph.title)}</h3><p>${esc(ph.text)}</p></div>`).join('')}</div></section>
+    <section class="sec" aria-labelledby="r-h"><div class="sec__h"><h2 id="r-h">The seven ranks</h2><a class="more" href="${site.cta.href}">All ranks ${ms('arrow_forward')}</a></div><div class="ranks">${site.ranks.map(r=>rankCard(site,r)).join('')}</div></section>
+    <section class="sec" aria-labelledby="g-h"><div class="sec__h"><h2 id="g-h">Field guides</h2><p>Skills that span several ranks, in one place.</p></div><div class="field"><figure><img src="${site.hero.image}" alt="${esc(site.hero.alt)}" loading="lazy"></figure><div class="cats" style="align-self:start">${site.fieldGuides.map(g=>`<a class="cat" href="${g.url}">${ms('hiking')}<span>${esc(g.title)}</span><span class="n">${ms('arrow_forward')}</span></a>`).join('')}</div></div></section>`;
+  return header(site,ctx) + `<main id="main" class="wrap">${hero}${body}</main>` + footer(site);
+}
+
+/* ================= mount: behaviour ================= */
+function mount(ctx, app){
+  app.querySelectorAll('[data-toggle-theme]').forEach(b=>b.addEventListener('click', ()=> window.PROTO.go({ theme: ctx.dark ? 'light' : 'dark' })));
+  /* command palette */
+  const pal = app.querySelector('#palette'), q = pal.querySelector('#pal-q'), list = pal.querySelector('#pal-list'), empty = pal.querySelector('.pal__empty');
+  const items = [...list.querySelectorAll('.pal__it')];
+  let cur = 0;
+  function groups(){ let last=null; list.querySelectorAll('.pal__grp').forEach(g=>g.remove()); items.forEach(it=>{ if(it.hidden) return; if(it.dataset.group!==last){ const g=document.createElement('li'); g.className='pal__grp'; g.textContent=it.dataset.group; g.setAttribute('role','presentation'); it.before(g); last=it.dataset.group; } }); }
+  function select(n){ const vis = items.filter(i=>!i.hidden); items.forEach(i=>i.setAttribute('aria-selected','false')); if(!vis.length) return; cur=(n+vis.length)%vis.length; vis[cur].setAttribute('aria-selected','true'); vis[cur].scrollIntoView({block:'nearest'}); }
+  function filter(){ const t=q.value.trim().toLowerCase().split(/\s+/).filter(Boolean); items.forEach(i=>{ i.hidden = !t.every(w=>i.dataset.q.includes(w)); }); const any = items.some(i=>!i.hidden); empty.hidden = any; groups(); select(0); }
+  const open = ()=>{ if(!pal.open){ pal.showModal(); q.value=''; filter(); q.focus(); } };
+  app.querySelectorAll('[data-palette-open]').forEach(b=>b.addEventListener('click', open));
+  q.addEventListener('input', filter);
+  pal.addEventListener('keydown', e=>{
+    e.stopPropagation();
+    if (e.key==='ArrowDown'){ e.preventDefault(); select(cur+1); }
+    else if (e.key==='ArrowUp'){ e.preventDefault(); select(cur-1); }
+    else if (e.key==='Enter'){ e.preventDefault(); const vis=items.filter(i=>!i.hidden); const a = vis[cur]?.querySelector('a'); pal.close(); if (a) a.click(); else window.PROTO.go({page:'search'}); }
+  });
+  pal.addEventListener('click', e=>{ if (e.target===pal) pal.close(); const a=e.target.closest('a'); if(a) pal.close(); });
+  if (!window.__atlasKeys){ window.__atlasKeys = true; document.addEventListener('keydown', e=>{
+    const inField = e.target.closest('input,textarea,select,[contenteditable]');
+    if ((e.key==='k' || e.key==='K') && (e.metaKey||e.ctrlKey)){ e.preventDefault(); document.querySelector('#palette') && document.querySelector('[data-palette-open]').click(); }
+    else if (e.key==='/' && !inField){ e.preventDefault(); document.querySelector('[data-palette-open]')?.click(); }
+  }); }
+  /* split instruments (requirements + search finder): tracklist → pane, no scroll jump */
+  app.querySelectorAll('[data-track-go]').forEach(a=>a.addEventListener('click', e=>{
+    e.preventDefault(); const sel = a.getAttribute('href'); const pane = app.querySelector(sel); if(!pane) return;
+    const panes = pane.closest('[data-panes]'); panes.querySelectorAll('.pane').forEach(p=>p.classList.toggle('is-current', p===pane));
+    const track = panes.previousElementSibling?.querySelector('[data-track]') || app.querySelector('[data-track]');
+    track?.querySelectorAll('a').forEach(x=>{ if (x.getAttribute('href')===sel) x.setAttribute('aria-current','true'); else x.removeAttribute('aria-current'); });
+    if (location.hash && location.hash!=='#'+window.PROTO.state.page) history.replaceState(null,'','#'+window.PROTO.state.page);
+    if (a.closest('.pane__f')) pane.scrollIntoView({block:'start',behavior:'smooth'});
+  }));
+  /* search page: facet chips filter the finder; form re-runs the search page */
+  const facets = app.querySelector('[data-facets]');
+  facets?.addEventListener('click', e=>{ const b=e.target.closest('[data-facet]'); if(!b) return; facets.querySelectorAll('.chip').forEach(c=>c.classList.toggle('on', c===b)); const k=b.dataset.facet; const rows=[...app.querySelectorAll('.flist li')]; rows.forEach(li=>li.hidden = k!=='all' && li.dataset.facet!==k); const first = rows.find(li=>!li.hidden)?.querySelector('a'); if (first && !rows.some(li=>!li.hidden && li.querySelector('a[aria-current]'))) first.click(); });
+  app.querySelector('[data-search-form]')?.addEventListener('submit', e=>{ e.preventDefault(); window.PROTO.go({page:'search'}); });
+  /* guide lightbox */
+  const lb = app.querySelector('#lightbox');
+  app.querySelectorAll('[data-lightbox]').forEach(b=>b.addEventListener('click', ()=>{ lb.querySelector('img').src=b.dataset.lightbox; lb.querySelector('img').alt=b.dataset.alt; lb.querySelector('figcaption').textContent=b.dataset.alt; lb.showModal(); }));
+  lb?.addEventListener('click', e=>{ if (e.target===lb) lb.close(); });
+}
+
+window.OPTION = {
+  key:'G', name:'Atlas', thesis:'A spatial reference instrument: radial maps, a requirement wheel, a ⌘K palette and anchored popovers.',
+  render:{ home, award, requirements, guide, search },
+  mount
+};
+})();
+</script>
+<script src="proto.js"></script>
+</body>
+</html>

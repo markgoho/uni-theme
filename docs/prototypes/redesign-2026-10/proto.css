@@ -1,0 +1,17 @@
+/* PROTOTYPE HARNESS — not part of any design. Floating switcher bar. */
+.proto-bar{position:fixed;inset-block-end:max(10px,env(safe-area-inset-bottom,0px));inset-inline-start:50%;translate:-50% 0;z-index:2147483000;display:flex;align-items:center;gap:6px;padding:6px 8px;background:#111318;color:#f4f4f6;border:1px solid #3a3d46;border-radius:999px;box-shadow:0 10px 30px rgba(0,0,0,.45);font:500 12px/1 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;max-width:calc(100vw - 20px);flex-wrap:wrap;justify-content:center}
+.proto-bar *{box-sizing:border-box}
+.proto-bar__group{display:flex;align-items:center;gap:2px;padding:2px;background:#1c1f27;border-radius:999px}
+.proto-bar button,.proto-bar a{appearance:none;border:0;background:transparent;color:#c9ccd6;font:inherit;padding:6px 9px;border-radius:999px;cursor:pointer;text-decoration:none;white-space:nowrap;line-height:1}
+.proto-bar button:hover,.proto-bar a:hover{background:#2a2e39;color:#fff}
+.proto-bar [aria-pressed="true"],.proto-bar .is-on{background:#e8c36a;color:#1a1300}
+.proto-bar__name{padding:6px 10px;color:#fff;font-weight:700;letter-spacing:.01em}
+.proto-bar__name small{display:block;font-weight:500;color:#9a9eab;margin-block-start:3px;font-size:10px}
+.proto-bar__nav{font-weight:700;font-size:14px;padding-inline:8px}
+.proto-bar__nav[aria-disabled="true"]{opacity:.3;pointer-events:none}
+.proto-bar__hide{font-size:10px;color:#777b86}
+.proto-bar--hidden{padding:4px}
+.proto-bar--hidden > :not(.proto-bar__hide){display:none}
+.proto-bar kbd{font:inherit;color:#777b86;margin-inline-start:4px}
+@media (max-width:640px){.proto-bar kbd{display:none}.proto-bar__name small{display:none}}
+@media print{.proto-bar{display:none}}

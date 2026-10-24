@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Uni Theme Redesign Options</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Gallery: 7 options × 5 pages × 2 sites. Tokens: bone ground, graphite ink, olive accent, gold key. Type: Fraunces display, Public Sans body. */
+:root{--bg:oklch(0.975 0.006 86);--bg2:oklch(0.945 0.01 86);--fg:oklch(0.23 0.02 150);--fg2:oklch(0.45 0.02 140);--line:oklch(0.86 0.015 86);--accent:oklch(0.42 0.08 150);--key:oklch(0.78 0.13 85);--keyfg:oklch(0.25 0.05 80);--display:"Fraunces",Georgia,serif;--body:"Public Sans",system-ui,sans-serif;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:oklch(0.19 0.012 150);--bg2:oklch(0.24 0.014 150);--fg:oklch(0.94 0.01 86);--fg2:oklch(0.74 0.012 86);--line:oklch(0.34 0.015 150);--accent:oklch(0.78 0.1 150);--key:oklch(0.80 0.12 85);--keyfg:oklch(0.22 0.05 80);color-scheme:dark}}
+:root[data-theme="dark"]{--bg:oklch(0.19 0.012 150);--bg2:oklch(0.24 0.014 150);--fg:oklch(0.94 0.01 86);--fg2:oklch(0.74 0.012 86);--line:oklch(0.34 0.015 150);--accent:oklch(0.78 0.1 150);--key:oklch(0.80 0.12 85);--keyfg:oklch(0.22 0.05 80);color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:400 1rem/1.55 var(--body);padding-block:2rem 4rem;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:80rem;margin-inline:auto}
+h1,h2,h3{font-family:var(--display);font-weight:600;line-height:1.1;margin:0;text-wrap:balance}
+h1{font-size:clamp(2.2rem,5vw,3.6rem)}
+.lead{max-width:62ch;color:var(--fg2);font-size:1.1rem;margin-block:1rem 0}
+.meta{display:flex;gap:1.5rem;flex-wrap:wrap;margin-block:1.25rem 0;font-size:.9rem;color:var(--fg2)}
+.meta b{color:var(--fg);font-variant-numeric:tabular-nums}
+.key{display:inline-grid;place-items:center;min-width:1.6em;height:1.6em;padding-inline:.3em;border-radius:4px;background:var(--key);color:var(--keyfg);font:700 .8em/1 var(--body)}
+section{margin-block-start:3rem}
+section>h2{font-size:1.6rem;border-block-end:1px solid var(--line);padding-block-end:.5rem;margin-block-end:1.25rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(19rem,1fr));gap:1.25rem}
+.card{display:grid;grid-template-rows:auto 1fr;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--bg2);color:inherit;text-decoration:none;min-width:0;transition:translate .15s,box-shadow .15s}
+.card:hover,.card:focus-visible{translate:0 -2px;box-shadow:0 10px 30px oklch(0 0 0/.12);outline:none}
+.card:focus-visible{box-shadow:0 0 0 3px var(--accent)}
+.card--push{border-color:var(--key)}
+.card__thumb{width:100%;height:auto;aspect-ratio:16/10;object-fit:cover;object-position:top;border-block-end:1px solid var(--line);background:var(--bg)}
+.card__body{padding:1rem 1.1rem 1.2rem;display:grid;gap:.5rem;align-content:start}
+.card__kicker{display:flex;gap:.6rem;align-items:center;font:600 .72rem/1 var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--fg2)}
+.card h3{font-size:1.5rem}
+.thesis{margin:0}
+.look{margin:0;color:var(--fg2);font-size:.92rem}
+.card__cta{margin-block-start:.4rem;color:var(--accent);font-weight:600;font-size:.92rem}
+.howto{display:grid;grid-template-columns:repeat(auto-fit,minmax(16rem,1fr));gap:1rem 2rem;color:var(--fg2)}
+.howto p{margin:0} .howto b{color:var(--fg)}
+kbd{font:600 .8em/1 var(--body);border:1px solid var(--line);border-radius:4px;padding:.15em .4em;background:var(--bg)}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;min-width:72rem;width:100%;font-size:.86rem}
+th,td{text-align:start;vertical-align:top;padding:.7rem .8rem;border-block-end:1px solid var(--line);min-width:11rem}
+thead th{background:var(--bg2);position:sticky;top:0;font-weight:700}
+tbody th{font-weight:600;background:var(--bg2);position:sticky;left:0;min-width:11rem;max-width:14rem}
+td a{color:inherit;text-decoration:none;display:block} td a:hover{color:var(--accent);text-decoration:underline}
+.note{border-inline-start:3px solid var(--key);padding:.6rem 1rem;background:var(--bg2);border-radius:0 8px 8px 0;color:var(--fg2);margin-block-start:1.5rem}
+.note p{margin:0}
+img{max-width:100%}</style></head><body>
+<div class="wrap">
+<header>
+  <p class="card__kicker" style="margin:0 0 .6rem">Prototype · uni-theme · Merit Badge University + Scouting University</p>
+  <h1>Uni Theme Redesign Options</h1>
+  <p class="lead">Seven cohesive redesigns, each rendering the same five pages for both sites from one template and the real data: landing page, award (merit badge / rank) landing page, requirements page, Digital Resource Guide page and search results. Five core options, plus two that push what modern CSS and the web platform can do.</p>
+  <div class="meta"><span><b>7</b> options</span><span><b>5</b> pages each</span><span><b>2</b> sites (Camping · Tenderfoot)</span><span><b>Light + dark</b> for every page</span><span><b>400px</b> and up</span></div>
+</header>
+<section aria-labelledby="h-opts"><h2 id="h-opts">The options</h2>
+<div class="grid">
+<a class="card " href="option-a.html" id="opt-a">
+  <img class="card__thumb" src="thumbs/option-a.jpg" alt="Home page of option A, Handbook" width="720" height="450" loading="lazy">
+  <div class="card__body">
+    <div class="card__kicker"><span class="key">A</span><span>Core option</span></div>
+    <h3>Handbook</h3>
+    <p class="thesis">The site reads like the printed Scout handbook: table of contents, chapter openers, hanging numbers, marginalia and plates.</p>
+    <p class="look">Tan paper and olive-black ink, handbook red as the one accent, gold only for Eagle marks. Fraunces + Source Serif 4 + Public Sans small caps.</p>
+    <span class="card__cta">Open all five pages →</span>
+  </div>
+</a>
+<a class="card " href="option-b.html" id="opt-b">
+  <img class="card__thumb" src="thumbs/option-b.jpg" alt="Home page of option B, Trailhead" width="720" height="450" loading="lazy">
+  <div class="card__body">
+    <div class="card__kicker"><span class="key">B</span><span>Core option</span></div>
+    <h3>Trailhead</h3>
+    <p class="thesis">Every page answers “where am I, where next, how far”: wayfinding borrowed from topographic maps, trailhead kiosks and blaze markers.</p>
+    <p class="look">Olive and tan ground, blaze orange accent, CSS contour-line texture. Condensed grotesque labels with a sturdy body sans.</p>
+    <span class="card__cta">Open all five pages →</span>
+  </div>
+</a>
+<a class="card " href="option-c.html" id="opt-c">
+  <img class="card__thumb" src="thumbs/option-c.jpg" alt="Home page of option C, Ledger" width="720" height="450" loading="lazy">
+  <div class="card__body">
+    <div class="card__kicker"><span class="key">C</span><span>Core option</span></div>
+    <h3>Ledger</h3>
+    <p class="thesis">A fast, dense reference tool for counselors and leaders: a docs site, not a brochure. Density, scannability, keyboard-first search.</p>
+    <p class="look">Olive-tinted greys, one green accent, 1px rules, tight radii, tabular numerals. One neutral sans for everything.</p>
+    <span class="card__cta">Open all five pages →</span>
+  </div>
+</a>
+<a class="card " href="option-d.html" id="opt-d">
+  <img class="card__thumb" src="thumbs/option-d.jpg" alt="Home page of option D, Patrol Poster" width="720" height="450" loading="lazy">
+  <div class="card__body">
+    <div class="card__kicker"><span class="key">D</span><span>Core option</span></div>
+    <h3>Patrol Poster</h3>
+    <p class="thesis">Energy for Scouts, not institutions: flat printed-poster graphics, giant type, colour blocks, stickers and stamps from patrol culture.</p>
+    <p class="look">Flat campfire palette: deep green, canvas tan, brick red, marigold; thick rules, no gradients or shadows. Loud display face with a friendly body sans.</p>
+    <span class="card__cta">Open all five pages →</span>
+  </div>
+</a>
+<a class="card " href="option-e.html" id="opt-e">
+  <img class="card__thumb" src="thumbs/option-e.jpg" alt="Home page of option E, Night Watch" width="720" height="450" loading="lazy">
+  <div class="card__body">
+    <div class="card__kicker"><span class="key">E</span><span>Core option</span></div>
+    <h3>Night Watch</h3>
+    <p class="thesis">The campfire at night. Dark-first and cinematic: emblems glow like lanterns on layered forest greens with amber light.</p>
+    <p class="look">Near-black greens, lantern amber, pale moss; soft glows and translucent borders. Light theme is “dawn”. Elegant serif display with a soft humanist sans.</p>
+    <span class="card__cta">Open all five pages →</span>
+  </div>
+</a>
+<a class="card card--push" href="option-f.html" id="opt-f">
+  <img class="card__thumb" src="thumbs/option-f.jpg" alt="Home page of option F, Expedition" width="720" height="450" loading="lazy">
+  <div class="card__body">
+    <div class="card__kicker"><span class="key">F</span><span>Boundary pusher</span></div>
+    <h3>Expedition</h3>
+    <p class="thesis">The page is a journey you scroll through: pinned stacking scenes, a progress rail that fills, elements entering on their own view timelines, view transitions between pages. Native CSS only.</p>
+    <p class="look">Slate-green, canvas, ember red-orange, chalk white; big photographic moments. Variable display face with axes animated on scroll.</p>
+    <span class="card__cta">Open all five pages →</span>
+  </div>
+</a>
+<a class="card card--push" href="option-g.html" id="opt-g">
+  <img class="card__thumb" src="thumbs/option-g.jpg" alt="Home page of option G, Atlas" width="720" height="450" loading="lazy">
+  <div class="card__body">
+    <div class="card__kicker"><span class="key">G</span><span>Boundary pusher</span></div>
+    <h3>Atlas</h3>
+    <p class="thesis">A spatial reference instrument: a radial atlas of badges, a requirement wheel, a ⌘K command palette on every page, popovers anchored to the thing they describe.</p>
+    <p class="look">Graphite and bone instrument surfaces, deep green primary, brass gold ticks, hairline rules on a 4px grid. Geometric sans with tabular numerals.</p>
+    <span class="card__cta">Open all five pages →</span>
+  </div>
+</a></div>
+<div class="note"><p>Inside an option, the floating bar at the bottom switches page (<kbd>1</kbd>–<kbd>5</kbd>), site (<kbd>S</kbd>), theme (<kbd>D</kbd>) and option (<kbd>←</kbd> <kbd>→</kbd>); <kbd>H</kbd> hides the bar. Links inside the mock pages route to the matching mocked page; anything not mocked shows a small notice.</p></div>
+</section>
+<section aria-labelledby="h-matrix"><h2 id="h-matrix">Side by side</h2>
+<p class="lead" style="margin-block-end:1rem">Each row is one structural decision. The options were deliberately made to disagree on these, so you can mix: “B’s header with E’s requirements” is a real answer. Each cell links to the page where that choice is visible.</p>
+<div class="tablewrap"><table><thead><tr><th scope="col">Decision</th><th scope="col"><span class="key">A</span> Handbook</th><th scope="col"><span class="key">B</span> Trailhead</th><th scope="col"><span class="key">C</span> Ledger</th><th scope="col"><span class="key">D</span> Patrol Poster</th><th scope="col"><span class="key">E</span> Night Watch</th><th scope="col"><span class="key">F</span> Expedition</th><th scope="col"><span class="key">G</span> Atlas</th></tr></thead><tbody><tr><th scope="row">Navigation model</th><td><a href="option-a.html#award">Running-head header; sticky left margin column with chapter contents (collapsible on mobile)</a></td><td><a href="option-b.html#award">Persistent left trail-legend rail (bottom sheet on mobile); slim kiosk header</a></td><td><a href="option-c.html#award">Three-column docs layout: outline tree · content · on-this-page; 48px toolbar with always-present search</a></td><td><a href="option-d.html#award">Top bar plus a full-width coloured section tab strip; no sidebar</a></td><td><a href="option-e.html#award">Floating glass header that shrinks on scroll; right-hand floating rail; mobile bottom tab bar</a></td><td><a href="option-f.html#award">No sidebar; slim header that becomes a sticky expedition HUD with progress after the hero</a></td><td><a href="option-g.html#award">Command-palette-first instrument bar; sticky top dial strip replaces any sidebar</a></td></tr><tr><th scope="row">How “Do one of the following” reads</th><td><a href="option-a.html#requirements">Labelled rules across the block: “Do one of the following”</a></td><td><a href="option-b.html#requirements">Trail-junction signposts: DO ALL ↓ / CHOOSE 1 OF 3 →, children as forks</a></td><td><a href="option-c.html#requirements">Compact label row under the stem plus a right-margin counter</a></td><td><a href="option-d.html#requirements">Rotated stamps (DO ALL / PICK ONE) on the block corner; choices as big lettered tiles</a></td><td><a href="option-e.html#requirements">Glowing amber eyebrow in the card header; children as a lit vertical rail</a></td><td><a href="option-f.html#requirements">“Leg 3 · Choose 1 of 3 routes” eyebrow; children as route options</a></td><td><a href="option-g.html#requirements">Ring segments: a select mode draws an N-segment ring with “choose 1” in the centre</a></td></tr><tr><th scope="row">Requirement list form</th><td><a href="option-a.html#requirements">Numbered document with hanging numbers and letters, small-caps eyebrow for curated titles, “See also” references</a></td><td><a href="option-b.html#requirements">One continuous vertical trail with blaze markers; children as side spurs; “you are here” highlight</a></td><td><a href="option-c.html#requirements">Table-like outline: path column, content column, indented children, filter toolbar</a></td><td><a href="option-d.html#requirements">Colour-blocked poster panels, giant numerals, chunky lettered rows</a></td><td><a href="option-e.html#requirements">Cards in a spotlight: the hovered or focused card lifts and lights while siblings dim</a></td><td><a href="option-f.html#requirements">Scenes: each requirement a full-width scene with a sticky number panel; right-edge scroll-driven progress rail</a></td><td><a href="option-g.html#requirements">Split instrument: tracklist on the left, full verbatim detail pane on the right; guide links as anchored popovers</a></td></tr><tr><th scope="row">Guide page chrome</th><td><a href="option-a.html#guide">Book page: boxed requirement epigraph, drop cap, margin notes at wide widths, plates with captions</a></td><td><a href="option-b.html#guide">Mile-marker gutter of guide groups; sticky requirement box; callouts as trail signs</a></td><td><a href="option-c.html#guide">Docs page with bordered Requirement block and right-rail TOC generated from headings</a></td><td><a href="option-d.html#guide">Zine spread: coloured title block, full-bleed callout bands with stamp labels, horizontal chapter strip</a></td><td><a href="option-e.html#guide">Reading mode: 65ch measure, amber-ruled requirement, full-bleed vignetted images, progress line</a></td><td><a href="option-f.html#guide">Immersive article: pinned hero image, reading progress, parallax images, callouts entering on view()</a></td><td><a href="option-g.html#guide">Split view: requirement pinned in a sticky instrument card, prose scrolls; lightbox dialog images; radial chapter dial</a></td></tr><tr><th scope="row">Search result grouping</th><td><a href="option-a.html#search">Concordance: italic headword, entries grouped by award, red paths, no cards</a></td><td><a href="option-b.html#search">Legend-style filter rail; results as map pins per award with waypoint hits</a></td><td><a href="option-c.html#search">Flat ranked rows with a left facet rail; first row selected</a></td><td><a href="option-d.html#search">Colour-blocked tiles per award; query echoed in giant type; count as a stamp</a></td><td><a href="option-e.html#search">Award panels with emblem lanterns in circular frames; amber underline-glow highlights</a></td><td><a href="option-f.html#search">Staggered reveal of award panels on their own view() timelines</a></td><td><a href="option-g.html#search">The command palette expanded: facet chips and a two-pane finder (awards · hits)</a></td></tr><tr><th scope="row">Landing page</th><td><a href="option-a.html#home">Title page with an Index box, then a Contents list with dotted leaders (MBU: 14 fields; SU: two Parts, seven ranks)</a></td><td><a href="option-b.html#home">MBU: a trail map hero with categories as trailheads and the marked Trail to Eagle. SU: the seven ranks as a winding blazed path</a></td><td><a href="option-c.html#home">No hero photo: big search, then a dense directory (MBU: category list + Eagle table; SU: seven-rank table + link lists)</a></td><td><a href="option-d.html#home">MBU: poster headline, photo in a flat frame, wall of category tiles, scroll-snap rail of Eagle patch cards. SU: seven coloured rank stripes</a></td><td><a href="option-e.html#home">MBU: full-bleed night hero with glowing search, Eagle badges as a constellation grid. SU: seven ranks as rising stars along an ascending line</a></td><td><a href="option-f.html#home">MBU: scroll story in four pinned scenes with a scroll-snap badge rail. SU: seven pinned rank scenes climbing to the summit</a></td><td><a href="option-g.html#home">MBU: inline-SVG radial map of 14 categories with Eagle badges orbiting. SU: seven-segment rank dial climbing to Eagle</a></td></tr><tr><th scope="row">Award landing page</th><td><a href="option-a.html#award">Chapter opener spread: plate or level numeral, “In this chapter”, chapter facts, references</a></td><td><a href="option-b.html#award">Trailhead kiosk: big sign, distance board, route preview strip, pamphlet rack</a></td><td><a href="option-c.html#award">Spec sheet: title row with pills, key-value facts grid, collapsed outline, plain link list</a></td><td><a href="option-d.html#award">Poster for the award: giant name, emblem or giant level numeral, sticker facts, chunky buttons</a></td><td><a href="option-e.html#award">Floating glowing emblem or lit level numeral, glass facts card, lit requirement rail</a></td><td><a href="option-f.html#award">Cinematic hero that compresses into the HUD; the route as a horizontal scroll-snap rail of stops</a></td><td><a href="option-g.html#award">Requirement wheel (SVG spokes) with popover verbatim text; instrument readouts for facts</a></td></tr></tbody></table></div>
+</section>
+<section aria-labelledby="h-how"><h2 id="h-how">What is held constant</h2>
+<div class="howto">
+<p><b>Content.</b> Real data from both repos: all 10 Camping requirements with children, modes and resources; all 11 Tenderfoot groups (27 requirements) with the fitness lists and the official notes; the Camping Hazards and Square Knot guide pages; the live “knots” / “knot” search results.</p>
+<p><b>Rules.</b> Official requirement text appears verbatim at body size and is set apart from curated titles without a third typeface. Requirement paths, completion modes, Eagle-required and rank level are treated as data with a designed home on every option.</p>
+<p><b>Platform.</b> Static HTML and CSS, Google Fonts only, no iframes (videos are poster cards that link out), responsive to phone width, light and dark themes, reduced-motion safe. Everything shown maps onto Hugo partials in uni-theme.</p>
+</div>
+</section>
+</div>
+</body></html>

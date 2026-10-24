@@ -1,0 +1,828 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Option F · Expedition</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&family=Instrument+Sans:ital,wdth,wght@0,75..100,400..700;1,75..100,400..700&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="proto.css">
+<script src="data.js"></script>
+<style>
+/* DESIGN PLAN — Option F “Expedition”
+   The page is a journey you scroll. Pinned scenes, a progress rail that fills as you read, elements that walk in on
+   their own view() timeline, the award emblem morphing between pages with view transitions. Readable at rest.
+   Tokens: --pine (slate-green ink/surfaces) · --canvas (warm canvas page) · --ember (red-orange accent; --ember-text for
+   small type) · --chalk (chalk white) · --gold (Eagle only). Dark = night camp: deep pine ground, chalk type, brighter ember.
+   Type: --display Bricolage Grotesque (variable opsz/wdth/wght; curated titles, numerals, headlines)
+         --body Instrument Sans (prose and verbatim requirement text).
+   Pages: Home = scroll story (hero → pinned stat panel + snap rail → categories walk in → stacked step deck; SU = 7 pinned
+   rank scenes on a trail rail). Award = pinned cinematic hero compressing under a sticky HUD, route rail of stops, facts/
+   resources two-up, ember CTA. Requirements = one full-width scene per leg, sticky leg number, right-edge progress rail.
+   Guide = immersive article: pinned hero photo the title scrolls over, chapter strip, reading progress in the HUD.
+   Search = big echoed query, award panels staggering in, hits as rows. */
+:root{
+  --pine:oklch(0.36 0.055 160); --pine-2:oklch(0.46 0.05 160); --pine-deep:oklch(0.24 0.04 165); --pine-ink:oklch(0.19 0.03 165);
+  --canvas:oklch(0.955 0.018 85); --canvas-2:oklch(0.915 0.024 84); --canvas-3:oklch(0.86 0.03 82);
+  --chalk:oklch(0.985 0.006 90); --ink:oklch(0.21 0.03 160); --mute:oklch(0.46 0.03 150); --line:oklch(0.82 0.03 120);
+  --ember:oklch(0.63 0.19 36); --ember-text:oklch(0.50 0.17 34); --ember-soft:oklch(0.63 0.19 36 / .14); --ember-fill:oklch(0.55 0.19 33); --on-ember:oklch(0.99 0 0);
+  --gold:oklch(0.70 0.13 82); --gold-text:oklch(0.52 0.12 80); --mark:oklch(0.90 0.11 92);
+  --on-pine:oklch(0.96 0.02 95); --shadow:0 20px 50px -20px oklch(0.2 0.03 160 / .35);
+  --display:"Bricolage Grotesque",system-ui,sans-serif; --body:"Instrument Sans",system-ui,sans-serif;
+  --gutter:max(16px,env(safe-area-inset-left,0px)); --hud:3.25rem; --measure:64ch;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --pine:oklch(0.70 0.06 160); --pine-2:oklch(0.60 0.05 160); --pine-deep:oklch(0.19 0.03 165); --pine-ink:oklch(0.15 0.025 165);
+  --canvas:oklch(0.22 0.025 165); --canvas-2:oklch(0.265 0.027 163); --canvas-3:oklch(0.32 0.03 160);
+  --chalk:oklch(0.95 0.012 95); --ink:oklch(0.93 0.012 95); --mute:oklch(0.74 0.025 120); --line:oklch(0.36 0.03 160);
+  --ember:oklch(0.72 0.17 40); --ember-text:oklch(0.78 0.15 42); --ember-soft:oklch(0.72 0.17 40 / .18); --ember-fill:oklch(0.74 0.17 42); --on-ember:oklch(0.17 0.03 165);
+  --gold:oklch(0.80 0.12 85); --gold-text:oklch(0.84 0.11 85); --mark:oklch(0.50 0.11 80);
+  --on-pine:oklch(0.95 0.015 95); --shadow:0 20px 50px -20px oklch(0 0 0 / .7);
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --pine:oklch(0.70 0.06 160); --pine-2:oklch(0.60 0.05 160); --pine-deep:oklch(0.19 0.03 165); --pine-ink:oklch(0.15 0.025 165);
+  --canvas:oklch(0.22 0.025 165); --canvas-2:oklch(0.265 0.027 163); --canvas-3:oklch(0.32 0.03 160);
+  --chalk:oklch(0.95 0.012 95); --ink:oklch(0.93 0.012 95); --mute:oklch(0.74 0.025 120); --line:oklch(0.36 0.03 160);
+  --ember:oklch(0.72 0.17 40); --ember-text:oklch(0.78 0.15 42); --ember-soft:oklch(0.72 0.17 40 / .18); --ember-fill:oklch(0.74 0.17 42); --on-ember:oklch(0.17 0.03 165);
+  --gold:oklch(0.80 0.12 85); --gold-text:oklch(0.84 0.11 85); --mark:oklch(0.50 0.11 80);
+  --on-pine:oklch(0.95 0.015 95); --shadow:0 20px 50px -20px oklch(0 0 0 / .7);
+  color-scheme:dark}
+@property --ang{syntax:'<angle>';inherits:false;initial-value:160deg}
+@property --fill{syntax:'<percentage>';inherits:false;initial-value:0%}
+
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-padding-block-start:calc(var(--hud) + 1rem)}
+body{margin:0;background:var(--canvas);color:var(--ink);font:400 1.0625rem/1.55 var(--body);padding-block-end:5rem}
+.stage,#app>main{overflow-x:clip}
+img{max-width:100%;height:auto;display:block}
+a{color:inherit;text-decoration-color:color-mix(in oklch,currentColor 35%,transparent);text-underline-offset:.16em}
+a:hover{text-decoration-color:var(--ember)}
+:focus-visible{outline:3px solid var(--ember);outline-offset:3px;border-radius:2px}
+h1,h2,h3,h4{font-family:var(--display);font-weight:700;line-height:1.05;margin:0;text-wrap:balance;letter-spacing:-.015em;font-variation-settings:"opsz" 96,"wdth" 100}
+p{margin:0;text-wrap:pretty}
+ul,ol{margin:0;padding:0}
+button{font:inherit;color:inherit}
+.ms{font-family:'Material Symbols Rounded';font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;font-size:1.25em;line-height:1;vertical-align:-.22em;display:inline-block;font-style:normal}
+.ms--fill{font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24}
+.eyebrow{font:600 .72rem/1.2 var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--mute)}
+.eyebrow--ember{color:var(--ember-text)}
+.eyebrow--gold{color:var(--gold-text)}
+.wrap{max-width:78rem;margin-inline:auto;padding-inline:var(--gutter) max(16px,env(safe-area-inset-right,0px))}
+.narrow{max-width:46rem}
+mark{background:var(--mark);color:inherit;padding-inline:.12em;border-radius:3px}
+.num{font-family:var(--display);font-variation-settings:"opsz" 96,"wdth" 90;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.03em}
+.pill{display:inline-flex;align-items:center;gap:.35em;font:600 .72rem/1 var(--body);letter-spacing:.08em;text-transform:uppercase;padding:.45em .75em;border-radius:999px;border:1px solid var(--line);color:var(--mute);text-decoration:none;white-space:nowrap}
+.pill--ember{background:var(--ember-soft);border-color:transparent;color:var(--ember-text)}
+.pill--gold{background:color-mix(in oklch,var(--gold) 20%,transparent);border-color:transparent;color:var(--gold-text)}
+.pill--pine{background:var(--pine);border-color:transparent;color:var(--on-pine)}
+.btn{display:inline-flex;align-items:center;gap:.5em;font:600 .95rem/1 var(--body);padding:.9em 1.25em;border-radius:999px;text-decoration:none;border:1.5px solid var(--pine);color:var(--ink);background:transparent;cursor:pointer;transition:translate .2s,background .2s}
+.btn:hover{translate:0 -2px}
+.btn--ember{background:var(--ember-fill);border-color:var(--ember-fill);color:var(--on-ember)}
+.btn--pine{background:var(--pine);border-color:var(--pine);color:var(--on-pine)}
+.btn--chalk{background:var(--chalk);border-color:var(--chalk);color:var(--pine-ink)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+
+/* ---------- slim header ---------- */
+.top{position:relative;z-index:5;background:var(--canvas)}
+.top--over{position:absolute;inset-inline:0;inset-block-start:0;background:transparent;color:var(--chalk)}
+.top__in{display:flex;align-items:center;gap:1rem;min-height:3.5rem;padding-block:.5rem}
+.brand{font-family:var(--display);font-weight:800;font-variation-settings:"opsz" 48,"wdth" 90;font-size:1.25rem;letter-spacing:-.02em;text-decoration:none;display:inline-flex;align-items:center;gap:.5rem;min-width:0}
+.brand .ms{color:var(--ember)}
+.top--over .brand .ms{color:var(--chalk)}
+.top__nav{margin-inline-start:auto;display:flex;align-items:center;gap:.25rem}
+.top__nav a,.top__nav button{font:600 .86rem/1 var(--body);text-decoration:none;padding:.6em .85em;border-radius:999px;color:inherit;background:none;border:0;cursor:pointer;display:inline-flex;align-items:center;gap:.4em}
+.top__nav a:hover,.top__nav button:hover{background:color-mix(in oklch,currentColor 10%,transparent)}
+.top__nav .btn{padding:.7em 1.1em;font-size:.86rem}
+.top--over .btn--pine{background:var(--chalk);border-color:var(--chalk);color:var(--pine-ink)}
+.menu{position:relative}
+.menu summary{list-style:none;cursor:pointer;font:600 .86rem/1 var(--body);padding:.6em .85em;border-radius:999px;display:inline-flex;align-items:center;gap:.4em}
+.menu summary::-webkit-details-marker{display:none}
+.menu summary:hover{background:color-mix(in oklch,currentColor 10%,transparent)}
+.menu__panel{position:absolute;inset-inline-end:0;inset-block-start:calc(100% + .5rem);min-width:14rem;background:var(--chalk);color:var(--ink);border:1px solid var(--line);border-radius:1rem;padding:.5rem;box-shadow:var(--shadow);display:grid;z-index:50}
+.menu__panel a{color:var(--ink);padding:.7em .9em;border-radius:.6rem;justify-content:space-between}
+.menu__panel .eyebrow{padding:.6em .9em .2em}
+@media (max-width:720px){.top__nav .is-desk{display:none}}
+@media (min-width:721px){.menu .is-mobile{display:none}}
+
+/* ---------- expedition HUD (inner pages) ---------- */
+.hud{position:sticky;inset-block-start:0;z-index:40;background:color-mix(in oklch,var(--canvas) 86%,transparent);backdrop-filter:blur(14px) saturate(1.2);-webkit-backdrop-filter:blur(14px);border-block-end:1px solid var(--line);view-transition-name:hud}
+.hud__in{display:flex;align-items:center;gap:1rem;min-height:var(--hud)}
+.hud__who{display:flex;align-items:center;gap:.6rem;min-width:0;text-decoration:none;flex:0 1 auto}
+.hud__who img{width:1.9rem;height:1.9rem;object-fit:cover;border-radius:50%;border:1px solid var(--line)}
+.hud__lvl{width:1.9rem;height:1.9rem;border-radius:50%;background:var(--pine);color:var(--on-pine);display:grid;place-items:center;font-size:.95rem}
+.hud__who b{font-family:var(--display);font-weight:700;font-variation-settings:"opsz" 24,"wdth" 92;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hud__who small{font:600 .68rem/1 var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--ember-text);white-space:nowrap}
+.hud__links{display:flex;gap:.15rem;margin-inline-start:auto;overflow-x:auto;scrollbar-width:none;min-width:0;scroll-snap-type:x proximity;mask:linear-gradient(90deg,transparent,#000 .75rem,#000 calc(100% - .75rem),transparent)}
+.hud__links::-webkit-scrollbar{display:none}
+.hud__links a{font:600 .78rem/1 var(--body);text-decoration:none;padding:.55em .7em;border-radius:999px;white-space:nowrap;color:var(--mute);scroll-snap-align:start;display:inline-flex;gap:.35em;align-items:center}
+.hud__links a .num{color:var(--ember-text);font-size:.85em}
+.hud__links a:hover,.hud__links a[aria-current]{background:var(--canvas-2);color:var(--ink)}
+.hud__pct{font:600 .7rem/1 var(--body);color:var(--mute);letter-spacing:.08em;white-space:nowrap}
+.hud__bar{position:absolute;inset-inline:0;inset-block-end:-1px;height:3px;background:var(--line)}
+.hud__bar i{position:absolute;inset:0;background:var(--ember);transform-origin:0 50%;transform:scaleX(0)}
+@media (max-width:720px){.hud__pct{display:none}.hud__who b{max-width:9rem}}
+
+/* ---------- progress rail (right edge) ---------- */
+.rail{position:fixed;inset-block:0;inset-inline-end:0;width:1.25rem;z-index:30;pointer-events:none;display:none}
+.rail__track{position:absolute;inset-block:calc(var(--hud) + 1rem) 5rem;inset-inline-start:50%;width:2px;translate:-50% 0;background:var(--line);border-radius:2px}
+.rail__fill{position:absolute;inset:0;background:var(--ember);transform-origin:50% 0;transform:scaleY(0);border-radius:2px}
+.rail__stops{position:absolute;inset-block:calc(var(--hud) + 1rem) 5rem;inset-inline-start:50%;translate:-50% 0;display:flex;flex-direction:column;justify-content:space-between;list-style:none}
+.rail__stops li{width:8px;height:8px;border-radius:50%;background:var(--canvas);border:2px solid var(--pine-2);margin-inline-start:-3px}
+.rail__stops li:last-child{border-color:var(--ember)}
+@media (min-width:900px){.rail{display:block}}
+
+/* ---------- trail (breadcrumb) ---------- */
+.trail{display:flex;flex-wrap:wrap;gap:.35em .6em;align-items:center;font:600 .74rem/1.3 var(--body);letter-spacing:.06em;text-transform:uppercase;list-style:none}
+.trail a{text-decoration:none;opacity:.85}.trail a:hover{opacity:1;text-decoration:underline}
+.trail li+li::before{content:"›";margin-inline-end:.6em;opacity:.5}
+.trail [aria-current]{opacity:1;color:var(--ember-text)}
+.hero .trail [aria-current]{color:var(--chalk)}
+
+/* ---------- base camp (footer) ---------- */
+.camp{position:relative;z-index:6;margin-block-start:5rem;background:var(--pine-deep);color:var(--on-pine);padding-block:3.5rem 2rem}
+.camp__grid{display:grid;grid-template-columns:minmax(14rem,1.5fr) repeat(auto-fit,minmax(10rem,1fr));gap:2.5rem 2rem}
+.camp .brand{font-size:1.5rem}.camp .brand .ms{color:var(--ember)}
+.camp__tag{margin-block-start:.75rem;max-width:34ch;opacity:.8}
+.camp h2{font-size:.72rem;font-family:var(--body);font-weight:600;letter-spacing:.14em;text-transform:uppercase;opacity:.65;margin-block-end:.75rem}
+.camp ul{list-style:none;display:grid;gap:.45rem}.camp li a{text-decoration:none;opacity:.9}.camp li a:hover{opacity:1;text-decoration:underline}
+.camp__foot{margin-block-start:3rem;padding-block-start:1.25rem;border-block-start:1px solid oklch(1 0 0 / .15);display:flex;justify-content:space-between;flex-wrap:wrap;gap:.75rem;font-size:.86rem;opacity:.75}
+@media (max-width:640px){.camp__grid{grid-template-columns:1fr 1fr}.camp__grid>:first-child{grid-column:1/-1}}
+
+/* ---------- horizontal snap rails ---------- */
+.snap{display:flex;gap:1rem;overflow-x:auto;scroll-snap-type:x mandatory;padding-block:.5rem 1.25rem;scroll-padding-inline:var(--gutter);padding-inline:var(--gutter);margin-inline:calc(-1 * var(--gutter));scrollbar-width:thin;scrollbar-color:var(--pine-2) transparent;min-width:0}
+.snap>*{scroll-snap-align:start;flex:0 0 auto}
+.snap-hint{font:600 .72rem/1 var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--mute);display:inline-flex;align-items:center;gap:.4em}
+
+/* ---------- scroll-driven motion (progressive; every rest state is final/readable) ---------- */
+@media (prefers-reduced-motion:no-preference){
+  @supports ((animation-timeline:scroll()) and (animation-range:entry)){
+    @keyframes fillx{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+    @keyframes filly{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+    @keyframes walk-up{from{translate:0 28px}}
+    @keyframes walk-in{from{translate:-20px 0}}
+    @keyframes walk-in-r{from{translate:20px 0}}
+    @keyframes settle{from{scale:.97}}
+    @keyframes drift{from{translate:0 -6%}to{translate:0 6%}}
+    @keyframes spin-ang{from{--ang:120deg}to{--ang:220deg}}
+    @keyframes compress{to{scale:.6;translate:0 -10%}}
+    @keyframes thin{to{font-variation-settings:"opsz" 96,"wdth" 78,"wght" 500}}
+    @keyframes fade-out{to{opacity:0;translate:0 -24px}}
+    @keyframes stack{to{scale:.94;translate:0 -2rem}}
+    .hud__bar i{animation:fillx auto linear both;animation-timeline:scroll(root)}
+    .rail__fill{animation:filly auto linear both;animation-timeline:scroll(root)}
+    .walk{animation:walk-up auto ease-out both;animation-timeline:view();animation-range:entry 0% entry 55%}
+    .walk-l{animation:walk-in auto ease-out both;animation-timeline:view();animation-range:entry 0% entry 55%}
+    .walk-r{animation:walk-in-r auto ease-out both;animation-timeline:view();animation-range:entry 0% entry 55%}
+    .settle{animation:settle auto ease-out both;animation-timeline:view();animation-range:entry 0% entry 60%}
+    .parallax{animation:drift auto linear both;animation-timeline:view();animation-range:cover 0% cover 100%}
+  }
+}
+
+/* ---------- stage: pinned hero + content that scrolls over it ---------- */
+.stage{position:relative}
+.hero{position:sticky;inset-block-start:0;z-index:1;background:var(--pine-deep);color:var(--chalk);display:grid;align-content:end;min-height:72svh;padding-block:6rem 3.5rem;overflow:clip;isolation:isolate}
+.hero--photo{min-height:100svh;align-content:center;padding-block:7rem 6rem}
+.hero__img{position:absolute;inset:0;z-index:-2;width:100%;height:100%;object-fit:cover}
+.hero__scrim{position:absolute;inset:0;z-index:-1;background:linear-gradient(var(--ang),oklch(0.18 0.03 165 / .35),oklch(0.16 0.03 165 / .92) 78%)}
+.hero__grid{display:grid;gap:2rem;align-items:end}
+@media (min-width:860px){.hero__grid{grid-template-columns:minmax(0,1.3fr) minmax(0,.8fr)}}
+.hero .trail{margin-block-end:1.5rem;color:oklch(0.9 0.01 95)}
+.hero h1{font-size:clamp(2.75rem,7vw,6rem);font-weight:800;line-height:.95;letter-spacing:-.03em;font-variation-settings:"opsz" 96,"wdth" 100,"wght" 800}
+.hero h1 em{font-style:normal;color:var(--ember);font-variation-settings:"opsz" 96,"wdth" 85,"wght" 400}
+.hero__lead{margin-block-start:1.25rem;font-size:clamp(1.05rem,1.4vw,1.25rem);max-width:52ch;color:oklch(0.9 0.012 95)}
+.hero__pills{display:flex;flex-wrap:wrap;gap:.5rem;margin-block-end:1.25rem}
+.hero .pill{border-color:oklch(1 0 0 / .3);color:oklch(0.92 0.01 95)}
+.hero .pill--ember{background:var(--ember-fill);color:var(--on-ember)}
+.hero .pill--gold{background:var(--gold);color:oklch(0.2 0.05 80)}
+.hero__ctas{display:flex;flex-wrap:wrap;gap:.75rem;margin-block-start:1.75rem}
+.hero__meta{display:flex;flex-wrap:wrap;gap:.4em 1.25em;margin-block-start:1.5rem;font:500 .82rem/1.4 var(--body);color:oklch(0.82 0.015 95)}
+.hero__meta b{color:var(--chalk)}
+.emblem{justify-self:center;width:min(22rem,70vw);aspect-ratio:1;border-radius:50%;object-fit:cover;box-shadow:0 30px 80px -20px oklch(0 0 0 / .6),0 0 0 10px oklch(1 0 0 / .08);view-transition-name:award-emblem}
+.lvl{justify-self:center;display:grid;justify-items:center;gap:.5rem;view-transition-name:award-emblem}
+.lvl__n{font-family:var(--display);font-variation-settings:"opsz" 96,"wdth" 80;font-weight:800;font-size:clamp(9rem,22vw,17rem);line-height:.8;letter-spacing:-.06em;color:var(--chalk);text-shadow:0 20px 60px oklch(0 0 0 / .5)}
+.lvl__n small{font-size:.28em;color:var(--ember);letter-spacing:0;vertical-align:top;font-variation-settings:"opsz" 96,"wdth" 90;font-weight:600}
+.lvl__seq{display:flex;gap:.4rem}
+.lvl__seq i{width:1.6rem;height:5px;border-radius:3px;background:oklch(1 0 0 / .2)}
+.lvl__seq i.done{background:oklch(1 0 0 / .6)}.lvl__seq i.on{background:var(--ember)}
+.hero__title{view-transition-name:award-title}
+.over{position:relative;z-index:6;background:var(--canvas);border-start-start-radius:1.75rem;border-start-end-radius:1.75rem;box-shadow:0 -20px 50px -30px oklch(0 0 0 / .5)}
+.over--flat{border-radius:0;box-shadow:none}
+.over .hud{border-start-start-radius:1.75rem;border-start-end-radius:1.75rem}
+.over--flat .hud{border-radius:0}
+@media (prefers-reduced-motion:no-preference){@supports ((animation-timeline:scroll()) and (animation-range:entry)){
+  .hero--pin .emblem,.hero--pin .lvl{animation:compress auto linear both;animation-timeline:scroll(root);animation-range:0 70vh}
+  .hero--pin .hero__title{animation:thin auto linear both;animation-timeline:scroll(root);animation-range:0 60vh}
+  .hero--pin .hero__lead,.hero--pin .hero__ctas,.hero--pin .hero__meta,.hero--pin .hero__pills{animation:fade-out auto linear both;animation-timeline:scroll(root);animation-range:10vh 50vh}
+  .hero--photo .hero__scrim{animation:spin-ang auto linear both;animation-timeline:scroll(root);animation-range:0 100vh}
+  .hero--photo .hero__title{animation:thin auto linear both;animation-timeline:scroll(root);animation-range:0 90vh}
+}}
+
+/* ---------- award: the route ---------- */
+.sect{padding-block:3.5rem}
+.sect__head{display:flex;align-items:end;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-block-end:1.5rem}
+.sect__head h2{font-size:clamp(1.75rem,3.2vw,2.5rem)}
+.sect__head p{color:var(--mute);max-width:52ch}
+.stop-card{width:min(19rem,78vw);background:var(--chalk);border:1px solid var(--line);border-radius:1.25rem;padding:1.25rem;display:grid;grid-template-rows:auto auto 1fr auto;gap:.5rem;text-decoration:none;min-height:15rem;transition:translate .2s,border-color .2s;container-type:inline-size}
+.stop-card:hover{translate:0 -3px;border-color:var(--pine-2)}
+.stop-card .num{font-size:2.75rem;line-height:.9;color:var(--pine)}
+.stop-card .eyebrow{color:var(--ember-text)}
+.stop-card h3{font-size:1.2rem;font-weight:700;font-variation-settings:"opsz" 48,"wdth" 95}
+.stop-card p{font-size:.9rem;color:var(--mute);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.stop-card .foot{display:flex;justify-content:space-between;align-items:center;font:600 .74rem/1 var(--body);color:var(--mute);letter-spacing:.06em;text-transform:uppercase}
+.stop-card--summit{background:var(--pine);border-color:var(--pine);color:var(--on-pine)}
+.stop-card--summit .num,.stop-card--summit p,.stop-card--summit .foot{color:inherit}
+:root[data-theme="dark"] .stop-card,:root[data-theme="dark"] .route,:root[data-theme="dark"] .panel,:root[data-theme="dark"] .card,:root[data-theme="dark"] .call,:root[data-theme="dark"] .result,:root[data-theme="dark"] .chapters a,:root[data-theme="dark"] .rank-card{background:var(--canvas-2)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) :is(.stop-card,.route,.panel,.card,.call,.result,.chapters a,.rank-card){background:var(--canvas-2)}}
+.twoup{display:grid;gap:1.25rem}
+@media (min-width:760px){.twoup{grid-template-columns:1fr 1fr}}
+.panel{background:var(--chalk);border:1px solid var(--line);border-radius:1.25rem;padding:1.5rem}
+.panel h2{font-size:1.35rem;margin-block-end:1rem}
+.facts{display:grid;grid-template-columns:auto 1fr;gap:.6rem 1.25rem;margin:0}
+.facts dt{font:600 .72rem/1.6 var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}
+.facts dd{margin:0;font-weight:600;font-family:var(--display);font-variation-settings:"opsz" 24,"wdth" 95}
+.links{list-style:none;display:grid;gap:.25rem}
+.links a{display:flex;align-items:center;gap:.75rem;padding:.75rem .5rem;border-radius:.75rem;text-decoration:none;border-block-end:1px solid var(--line)}
+.links li:last-child a{border:0}
+.links a:hover{background:var(--canvas-2)}
+.links .ms{color:var(--ember-text)}
+.links small{margin-inline-start:auto;color:var(--mute);font-weight:600;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase}
+.go{display:flex;align-items:center;justify-content:space-between;gap:1rem;background:var(--ember-fill);color:var(--on-ember);text-decoration:none;border-radius:1.5rem;padding:clamp(1.5rem,4vw,2.5rem);margin-block-start:1.5rem;background-image:linear-gradient(var(--ang),oklch(1 0 0 / 0),oklch(1 0 0 / .18));transition:--ang .6s}
+.go:hover{--ang:60deg}
+.go b{font-family:var(--display);font-size:clamp(1.5rem,3.4vw,2.6rem);font-weight:800;letter-spacing:-.02em;line-height:1;font-variation-settings:"opsz" 96,"wdth" 92}
+.go .sub{display:block;font:500 .9rem/1.4 var(--body);opacity:.9;margin-block-start:.4rem}
+.go .ms{font-size:2.5rem}
+
+/* ---------- requirements: legs as scenes ---------- */
+.legend{display:flex;flex-wrap:wrap;gap:.75rem 1.5rem;font:500 .82rem/1.4 var(--body);color:var(--mute);align-items:center}
+.legend i{display:inline-block;width:1.4rem;border-block-start:3px solid var(--ember);vertical-align:middle;margin-inline-end:.4em}
+.legend b{font-family:var(--display);color:var(--ink)}
+.scene{display:grid;grid-template-columns:minmax(5.5rem,9rem) minmax(0,1fr);gap:1.5rem 2.5rem;padding-block:3.25rem;border-block-start:1px solid var(--line);scroll-margin-block-start:calc(var(--hud) + .5rem)}
+.scene:first-of-type{border:0}
+.scene__num{position:sticky;inset-block-start:calc(var(--hud) + 1rem);align-self:start;display:grid;gap:.4rem}
+.scene__num .big{font-size:clamp(3.5rem,7vw,6rem);line-height:.85;color:var(--pine)}
+.scene__num .big::before{content:"";display:block;width:2.5rem;border-block-start:4px solid var(--ember);margin-block-end:.75rem}
+.scene__num .eyebrow{font-size:.66rem}
+.scene__body{min-width:0;max-width:var(--measure)}
+.leg{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem 1rem;margin-block-end:.75rem}
+.leg .eyebrow{display:inline-flex;align-items:center;gap:.5em}
+.leg .eyebrow .ms{font-size:1.1rem;color:var(--ember)}
+.glink{margin-inline-start:auto;font:600 .78rem/1 var(--body);text-decoration:none;display:inline-flex;align-items:center;gap:.35em;padding:.5em .8em;border-radius:999px;background:var(--canvas-2);color:var(--ink);white-space:nowrap}
+.glink:hover{background:var(--pine);color:var(--on-pine)}
+.scene h2{font-size:clamp(1.6rem,2.6vw,2.2rem);margin-block-end:1rem;color:var(--pine)}
+.verbatim{border-inline-start:3px solid var(--ember);padding-inline-start:1rem;font-size:1.0625rem;line-height:1.6}
+.verbatim ul{list-style:none;display:grid;gap:.35rem;margin-block-start:.75rem}
+.verbatim ul li{padding-inline-start:1.4rem;position:relative}
+.verbatim ul li::before{content:"";position:absolute;inset-inline-start:0;inset-block-start:.6em;width:.6rem;height:.6rem;border-radius:50%;border:2px solid var(--ember)}
+.routes{list-style:none;display:grid;gap:.75rem;margin-block-start:1.25rem}
+.route{display:grid;grid-template-columns:auto minmax(0,1fr);gap:.25rem 1rem;padding:1rem 1.15rem;border:1px solid var(--line);border-radius:1rem;background:var(--chalk)}
+.route__m{display:grid;justify-items:center;gap:.15rem;color:var(--ember-text);width:2.25rem}
+.route__m .ms{font-size:1.5rem}
+.route__m b{font-family:var(--display);font-weight:800;font-size:.95rem}
+.route__t{font-family:var(--display);font-weight:700;font-size:1.05rem;color:var(--pine);font-variation-settings:"opsz" 24,"wdth" 95}
+.descent{list-style:none;display:grid;gap:1.4rem;margin-block-start:1.25rem;margin-inline-start:.65rem;padding-inline-start:1.6rem;border-inline-start:2px dashed var(--line)}
+.stop{position:relative;min-width:0}
+.stop::before{content:"";position:absolute;inset-inline-start:calc(-1.6rem - 7px);inset-block-start:.45rem;width:12px;height:12px;border-radius:50%;background:var(--canvas);border:3px solid var(--pine-2)}
+.stop__head{display:flex;flex-wrap:wrap;align-items:baseline;gap:.25rem .75rem;margin-block-end:.35rem}
+.stop__m{font-family:var(--display);font-weight:800;color:var(--ember-text);font-size:.9rem;letter-spacing:.02em}
+.stop__t{font-family:var(--display);font-weight:700;font-size:1.1rem;color:var(--pine);font-variation-settings:"opsz" 24,"wdth" 95}
+.stop .verbatim{font-size:1rem;border-color:color-mix(in oklch,var(--ember) 55%,var(--line))}
+.stop .leg{margin-block:.75rem .25rem}
+.supplies{margin-block-start:.9rem;display:flex;flex-wrap:wrap;gap:.4rem;align-items:center}
+.supplies .eyebrow{margin-inline-end:.25rem}
+.supplies a{font:500 .8rem/1.2 var(--body);text-decoration:none;padding:.4em .7em;border-radius:999px;border:1px solid var(--line);color:var(--ink);display:inline-flex;gap:.35em;align-items:center;max-width:100%}
+.supplies a:hover{border-color:var(--pine-2);background:var(--canvas-2)}
+.supplies a .ms{color:var(--ember-text);font-size:1rem}
+.notes{margin-block-start:3rem;padding:1.75rem;border-radius:1.25rem;background:var(--canvas-2);max-width:var(--measure)}
+.notes h2{font-size:1.1rem;margin-block-end:.5rem;display:flex;gap:.5em;align-items:center}
+.notes p{font-size:.95rem;line-height:1.6}
+@media (max-width:640px){
+  .scene{grid-template-columns:1fr;gap:.75rem;padding-block:2.25rem}
+  .scene__num{inset-block-start:var(--hud);display:flex;align-items:center;gap:.9rem;background:var(--canvas);padding-block:.5rem;z-index:2;border-block-end:1px solid var(--line)}
+  .scene__num .big{font-size:2.5rem}.scene__num .big::before{display:none}
+  .descent{margin-inline-start:.4rem;padding-inline-start:1.2rem}
+  .stop::before{inset-inline-start:calc(-1.2rem - 7px)}
+}
+
+/* ---------- guide: immersive article ---------- */
+.ghero{position:sticky;inset-block-start:0;z-index:1;height:78svh;overflow:clip;background:var(--pine-deep)}
+.ghero img{width:100%;height:112%;object-fit:cover;object-position:center 35%;translate:0 -6%}
+.ghero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,oklch(0.15 0.03 165 / .55),transparent 35%,oklch(0.15 0.03 165 / .35))}
+.over--guide{margin-block-start:-26svh}
+.gtitle{padding-block:2.5rem 1rem}
+.gtitle .trail{margin-block-end:1.25rem;color:var(--mute)}
+.gtitle .eyebrow{display:flex;gap:.75rem;flex-wrap:wrap;margin-block-end:.75rem}
+.gtitle h1{font-size:clamp(2.4rem,5.5vw,4.5rem);letter-spacing:-.03em;color:var(--pine);font-variation-settings:"opsz" 96,"wdth" 95}
+.gtitle__cap{font-size:.86rem;color:var(--mute);margin-block-start:1rem}
+.epigraph{margin-block:1.75rem 0;display:grid;grid-template-columns:auto minmax(0,1fr);gap:.25rem 1rem;align-items:start}
+.epigraph .num{font-size:2.4rem;line-height:1;color:var(--ember-text)}
+.epigraph .eyebrow{grid-column:2}
+.epigraph .verbatim{grid-column:2;font-size:1.15rem}
+.chapters{display:flex;gap:.6rem;overflow-x:auto;scroll-snap-type:x mandatory;padding-block:1rem 1.25rem;margin-inline:calc(-1 * var(--gutter));padding-inline:var(--gutter);scroll-padding-inline:var(--gutter);scrollbar-width:thin;scrollbar-color:var(--pine-2) transparent}
+.chapters a{scroll-snap-align:start;flex:0 0 auto;display:grid;gap:.15rem;text-decoration:none;padding:.7rem .9rem;border-radius:.9rem;border:1px solid var(--line);background:var(--chalk);min-width:8rem;max-width:13rem}
+.chapters a small{font:600 .64rem/1.2 var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chapters a b{font-family:var(--display);font-weight:700;font-size:.9rem;line-height:1.2;font-variation-settings:"opsz" 24,"wdth" 92;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.chapters a[aria-current]{background:var(--pine);border-color:var(--pine);color:var(--on-pine)}
+.chapters a[aria-current] small{color:oklch(0.9 0.02 95)}
+.chapters a:hover:not([aria-current]){border-color:var(--pine-2)}
+.article{max-width:var(--measure);padding-block:1rem 2rem;font-size:1.1rem;line-height:1.65}
+.article>*+*{margin-block-start:1.25rem}
+.article h2{font-size:clamp(1.6rem,3vw,2.1rem);margin-block-start:2.75rem;color:var(--pine)}
+.article h3{font-size:1.3rem;margin-block-start:2rem;font-variation-settings:"opsz" 48,"wdth" 95}
+.article ul,.article ol{padding-inline-start:1.4rem;display:grid;gap:.5rem}
+.article li::marker{color:var(--ember-text);font-weight:700}
+.article a{text-decoration-color:var(--ember)}
+.call{border-radius:1.25rem;padding:1.25rem 1.5rem;background:var(--chalk);border:1px solid var(--line);display:grid;gap:.5rem;font-size:1rem}
+.call .eyebrow{display:flex;gap:.5em;align-items:center}
+.call--tip{border-inline-start:5px solid var(--pine-2)}
+.call--safety{border-inline-start:5px solid var(--ember);background:var(--ember-soft)}
+.call--safety .eyebrow{color:var(--ember-text)}
+.call h4{font-size:1.2rem}
+.call ul{padding-inline-start:1.3rem}
+.check{list-style:none;padding:0!important;display:grid;gap:.5rem}
+.check li{display:flex;gap:.75rem;align-items:start}
+.check li::before{content:"";flex:0 0 auto;width:1.1rem;height:1.1rem;border:2px solid var(--pine-2);border-radius:.3rem;margin-block-start:.25rem}
+.frame{border-radius:1.25rem;overflow:clip;aspect-ratio:16/9;background:var(--canvas-2);margin-inline:0}
+.frame img{width:100%;height:116%;object-fit:cover;translate:0 -7%}
+figcaption{font-size:.86rem;color:var(--mute);margin-block-start:.6rem}
+.video{display:grid;grid-template-columns:auto minmax(0,1fr);gap:1.25rem;align-items:center;padding:1.5rem;border-radius:1.25rem;background:var(--pine-deep);color:var(--on-pine);text-decoration:none;background-image:radial-gradient(ellipse at 20% 50%,oklch(1 0 0 / .08),transparent 60%)}
+.video .play{width:3.75rem;height:3.75rem;border-radius:50%;background:var(--ember-fill);display:grid;place-items:center;color:var(--on-ember)}
+.video .play .ms{font-size:2rem;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24}
+.video b{font-family:var(--display);font-size:1.15rem;line-height:1.2;display:block;font-variation-settings:"opsz" 24,"wdth" 95}
+.video small{display:block;margin-block-start:.35rem;font-size:.82rem;opacity:.75}
+.ext{display:grid;gap:.25rem;padding:1.25rem 1.5rem;border-radius:1.25rem;border:1.5px dashed var(--line);text-decoration:none}
+.ext b{font-family:var(--display);display:flex;gap:.5em;align-items:center}
+.ext b .ms{color:var(--ember-text)}
+.ext>span{font-size:.95rem;color:var(--mute)}
+.nextleg{display:grid;gap:.5rem;padding:2rem;border-radius:1.5rem;background:var(--pine);color:var(--on-pine);text-decoration:none;margin-block-start:2.5rem!important;position:relative;overflow:clip}
+.nextleg::after{content:"arrow_forward";font-family:'Material Symbols Rounded';position:absolute;inset-inline-end:1.5rem;inset-block-start:50%;translate:0 -50%;font-size:2.5rem;opacity:.6}
+.nextleg .eyebrow{color:oklch(0.88 0.03 95)}
+.nextleg b{font-family:var(--display);font-size:clamp(1.4rem,3vw,2rem);font-weight:800;letter-spacing:-.02em;padding-inline-end:3.5rem;font-variation-settings:"opsz" 96,"wdth" 92}
+.nextleg>span:not(.eyebrow){font-size:1rem;opacity:.85;padding-inline-end:3.5rem}
+.turn{display:grid;gap:1rem;margin-block-start:2rem;max-width:var(--measure)}
+@media (min-width:600px){.turn{grid-template-columns:1fr 1fr}}
+.turn a{display:grid;gap:.25rem;padding:1.1rem 1.25rem;border-radius:1rem;border:1px solid var(--line);text-decoration:none}
+.turn a:last-child{text-align:end}
+.turn a b{font-family:var(--display);font-variation-settings:"opsz" 24,"wdth" 95}
+.turn a:hover{border-color:var(--pine-2);background:var(--canvas-2)}
+@media (prefers-reduced-motion:no-preference){@supports ((animation-timeline:scroll()) and (animation-range:entry)){
+  .ghero img{animation:drift auto linear both;animation-timeline:scroll(root);animation-range:0 80vh}
+  .frame img{animation:drift auto linear both;animation-timeline:view();animation-range:cover 0% cover 100%}
+}}
+
+/* ---------- search ---------- */
+.shead{padding-block:3rem 1.5rem;display:grid;gap:1.25rem}
+.shead h1{font-size:clamp(3rem,10vw,7.5rem);line-height:.9;letter-spacing:-.04em;color:var(--pine);font-variation-settings:"opsz" 96,"wdth" 85}
+.shead h1 em{font-style:normal;color:var(--ember)}
+.shead p{color:var(--mute);max-width:50ch}
+.find{display:flex;align-items:center;background:var(--chalk);border:1.5px solid var(--line);border-radius:999px;padding:.3rem .3rem .3rem 1.1rem;max-width:40rem;gap:.5rem}
+.find:focus-within{border-color:var(--pine)}
+.find .ms{color:var(--mute)}
+.find input{flex:1;min-width:0;border:0;background:transparent;font:inherit;font-size:1.05rem;padding:.7rem .25rem;color:var(--ink);outline:none}
+.find input::placeholder{color:var(--mute)}
+.find button{border:0;background:var(--pine);color:var(--on-pine);font:600 .86rem/1 var(--body);padding:.85em 1.2em;border-radius:999px;cursor:pointer}
+.hero .find{background:oklch(1 0 0 / .12);border-color:oklch(1 0 0 / .3);backdrop-filter:blur(10px)}
+.hero .find input{color:var(--chalk)}.hero .find input::placeholder{color:oklch(0.85 0.01 95)}.hero .find .ms{color:oklch(0.85 0.01 95)}
+.hero .find button{background:var(--ember-fill);color:var(--on-ember)}
+.tally{display:flex;flex-wrap:wrap;gap:.5rem 1.5rem;font:600 .78rem/1.4 var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--mute);padding-block:1rem;border-block:1px solid var(--line)}
+.tally b{color:var(--ink)}
+.results{display:grid;gap:1.5rem;padding-block:2rem}
+.result{background:var(--chalk);border:1px solid var(--line);border-radius:1.5rem;overflow:clip;display:grid;grid-template-columns:minmax(0,1fr)}
+@media (min-width:800px){.result{grid-template-columns:16rem minmax(0,1fr)}}
+.result__who{padding:1.5rem;display:flex;gap:1rem;align-items:center;text-decoration:none;background:var(--canvas-2)}
+.result__who img{width:4rem;height:4rem;border-radius:50%;object-fit:cover}
+.result__who .lvl__n{font-size:3.25rem;color:var(--pine);text-shadow:none;line-height:.9;white-space:nowrap}
+.result__who .lvl__n small{color:var(--ember-text)}
+.result__who h2{font-size:1.2rem;font-variation-settings:"opsz" 48,"wdth" 92}
+.result__who h2+small{display:block;font:600 .7rem/1.4 var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--mute);margin-block-start:.25rem}
+.hits{list-style:none;display:grid}
+.hit{display:grid;grid-template-columns:3.5rem minmax(0,1fr);gap:.25rem 1rem;padding:1rem 1.5rem;border-block-start:1px solid var(--line);text-decoration:none;align-items:baseline}
+.hit:first-child{border:0}
+.hit:hover{background:var(--canvas-2)}
+.hit .num{color:var(--ember-text);font-size:1.05rem}
+.hit b{font-family:var(--display);font-weight:700;color:var(--pine);font-variation-settings:"opsz" 24,"wdth" 95}
+.hit p{grid-column:2;font-size:.95rem;color:var(--mute)}
+
+/* ---------- home (MBU scroll story / SU trail to Eagle) ---------- */
+.stat-scene{display:grid;gap:2rem;padding-block:4rem 2rem}
+@media (min-width:900px){.stat-scene{grid-template-columns:minmax(16rem,20rem) minmax(0,1fr);gap:3rem}}
+.stat-panel{align-self:start;display:grid;gap:1rem;padding:1.75rem;border-radius:1.5rem;background:var(--pine);color:var(--on-pine);background-image:linear-gradient(var(--ang),oklch(1 0 0 / 0),oklch(1 0 0 / .12))}
+@media (min-width:900px){.stat-panel{position:sticky;inset-block-start:1.25rem}}
+.stat{display:grid}
+.stat .num{font-size:clamp(3.5rem,6vw,5rem);line-height:.9;color:var(--chalk)}
+.stat .num small{font-size:.35em;color:var(--ember);font-weight:600;margin-inline-start:.2em;letter-spacing:0;font-variation-settings:"opsz" 96,"wdth" 90}
+.stat span{font:600 .72rem/1.4 var(--body);letter-spacing:.12em;text-transform:uppercase;opacity:.75}
+.stat-panel p{font-size:.95rem;opacity:.9}
+.stat-panel .btn{justify-self:start}
+.badge-card{width:min(15rem,70vw);text-decoration:none;display:grid;gap:.6rem;container-type:inline-size}
+.badge-card img{aspect-ratio:1;object-fit:cover;border-radius:50%;width:100%;border:1px solid var(--line);transition:translate .25s,box-shadow .25s}
+.badge-card:hover img{translate:0 -4px;box-shadow:var(--shadow)}
+.badge-card h3{font-size:1.15rem;font-variation-settings:"opsz" 48,"wdth" 95}
+.badge-card h3 em{font-style:normal;color:var(--mute);font-weight:400;font-variation-settings:"opsz" 48,"wdth" 85}
+.badge-card .meta{display:flex;flex-wrap:wrap;gap:.35rem;align-items:center;font:600 .68rem/1.3 var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--mute)}
+.badge-card .pill{font-size:.62rem;padding:.35em .6em}
+.badge-card--eagle{width:min(11rem,44vw)}
+.cats{list-style:none;display:grid;grid-template-columns:repeat(auto-fill,minmax(10.5rem,1fr));gap:.75rem}
+.cats a{display:grid;grid-template-columns:auto 1fr;gap:.1rem .9rem;align-items:center;padding:1rem 1.1rem;border-radius:1rem;border:1px solid var(--line);text-decoration:none;background:var(--chalk);transition:border-color .2s}
+.cats a:hover{border-color:var(--pine-2)}
+.cats .ms{grid-row:1/3;font-size:1.75rem;color:var(--ember-text)}
+.cats b{font-family:var(--display);font-weight:700;font-size:1rem;line-height:1.15;font-variation-settings:"opsz" 24,"wdth" 92}
+.cats small{font:600 .68rem/1.3 var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--mute)}
+.deck{display:grid;gap:1.25rem;max-width:52rem}
+.card{position:sticky;inset-block-start:calc(5rem + var(--i) * 2.5rem);display:grid;grid-template-columns:auto minmax(0,1fr);gap:.5rem 1.5rem;align-items:start;padding:2rem;border-radius:1.5rem;background:var(--chalk);border:1px solid var(--line);box-shadow:var(--shadow)}
+.card .num{font-size:3.5rem;line-height:.9;color:var(--ember-text);grid-row:1/3}
+.card h3{font-size:1.5rem}
+.card p{color:var(--mute)}
+.card .ms{font-size:1.5rem;color:var(--pine-2);margin-inline-start:.5rem;vertical-align:-.3em}
+.trailway{position:relative;--x:2.6rem}
+.trailway__rail{position:absolute;inset-block:0;inset-inline-start:var(--x);width:3px;background:var(--line);border-radius:3px;translate:-50% 0}
+.trailway__fill{position:absolute;inset:0;background:var(--ember);transform-origin:50% 0;transform:scaleY(0);border-radius:3px}
+.phase{position:relative;padding:3rem 0 1rem calc(var(--x) + 1.75rem);display:grid;gap:.4rem}
+.phase::before{content:"";position:absolute;inset-inline-start:var(--x);inset-block-start:3.65rem;width:14px;height:14px;border-radius:50%;background:var(--ember);translate:-50% 0;box-shadow:0 0 0 5px var(--canvas)}
+.phase h2{font-size:clamp(1.5rem,3vw,2.2rem);color:var(--pine)}
+.phase p{color:var(--mute);max-width:60ch}
+.rank-scene{display:grid;grid-template-columns:calc(var(--x) * 2) minmax(0,1fr);gap:1.5rem;padding-block:1.5rem 2.5rem;min-height:52svh;scroll-margin-block-start:1rem}
+.rank-scene__num{position:sticky;inset-block-start:1.5rem;align-self:start;display:grid;justify-items:center;gap:.25rem;color:var(--pine)}
+.rank-scene__num .big{font-size:clamp(2.5rem,5vw,4.25rem);line-height:.9;background:var(--canvas);padding-block:.25rem}
+.rank-scene__num .eyebrow{font-size:.6rem;background:var(--canvas)}
+.rank-card{background:var(--chalk);border:1px solid var(--line);border-radius:1.5rem;padding:clamp(1.25rem,3vw,2rem);display:grid;gap:1rem;max-width:44rem}
+.rank-card__head{display:flex;flex-wrap:wrap;gap:.5rem 1rem;align-items:center;justify-content:space-between}
+.rank-card h3{font-size:clamp(1.6rem,3vw,2.4rem);color:var(--pine)}
+.rank-card p{color:var(--mute)}
+.rank-card .samples{display:flex;flex-wrap:wrap;gap:.4rem;list-style:none}
+.rank-card .samples li{font:500 .8rem/1.2 var(--body);padding:.45em .75em;border-radius:999px;background:var(--canvas-2)}
+.rank-card--summit{background:var(--pine);border-color:var(--pine);color:var(--on-pine)}
+.rank-card--summit h3,.rank-card--summit p{color:inherit}
+.rank-card--summit .samples li{background:oklch(1 0 0 / .14)}
+.rank-card--summit .btn{border-color:var(--chalk);color:var(--on-pine)}
+.rank-card__foot{display:flex;flex-wrap:wrap;gap:.75rem;align-items:center;justify-content:space-between;border-block-start:1px solid color-mix(in oklch,currentColor 15%,transparent);padding-block-start:1rem;font:600 .74rem/1.3 var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--mute)}
+.rank-card--summit .rank-card__foot{color:inherit}
+.extras{display:grid;gap:1.25rem}
+@media (min-width:760px){.extras{grid-template-columns:1fr 1fr}}
+@media (prefers-reduced-motion:no-preference){@supports ((animation-timeline:scroll()) and (animation-range:entry)){
+  .trailway{view-timeline:--trail block}
+  .trailway__fill{animation:filly auto linear both;animation-timeline:--trail;animation-range:cover 0% cover 85%}
+  .stat-panel{animation:spin-ang auto linear both;animation-timeline:scroll(root)}
+}}
+@media (max-width:640px){.trailway{--x:1.5rem}.rank-scene{grid-template-columns:calc(var(--x) * 2) minmax(0,1fr);gap:.75rem;min-height:0}.rank-scene__num .big{font-size:2.2rem}.phase{padding-inline-start:calc(var(--x) * 2 + .25rem)}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+(function(){
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const ms = (n, cls='') => `<span class="ms ${cls}" aria-hidden="true">${n}</span>`;
+const isMBU = site => site.key === 'mbu';
+const strip = h => String(h||'').replace(/<[^>]+>/g,'');
+const words = ['','one','two','three','four','five','six','seven','eight'];
+const txt = n => n.textFormat === 'html' ? n.text : esc(n.text);
+const isStem = t => !t || /^do the following:?$/i.test(strip(t).trim());
+const CAT_ICON = {'Agribusiness':'agriculture','Arts and Crafts':'palette','Business and Industry':'factory','Communications':'forum','Conservation':'eco','Hobbies':'extension','Natural Science':'science','Personal Development':'self_improvement','Physical Science':'rocket_launch','Professions':'work','Public Service':'volunteer_activism','Sports':'sports_basketball','Trades':'handyman','Transportation':'directions_car'};
+const STEP_ICON = {'list-checks':'checklist','book':'menu_book','trophy':'download'};
+
+/* ---- chrome ---- */
+function header(site, ctx, over){
+  const mbu = isMBU(site);
+  const links = [...site.nav.map(n=>({label:n.name, href:n.url})), mbu ? {label:'Eagle-required', href:'/merit-badges/eagle-required/'} : {label:'Field Guides', href:'/scouts-bsa/field-guides/'}];
+  return `<header class="top ${over?'top--over':''}"><div class="wrap top__in">
+    <a class="brand" href="/">${ms('explore')}<span>${esc(site.name)}</span></a>
+    <nav class="top__nav" aria-label="Site">
+      ${links.map(l=>`<a class="is-desk" href="${l.href}">${esc(l.label)}</a>`).join('')}
+      <a class="is-desk" href="/search/" ${ctx.page==='search'?'aria-current="page"':''}>${ms('search')} Search</a>
+      <button type="button" data-toggle-theme aria-label="Switch to ${ctx.dark?'light':'dark'} theme" title="Theme">${ms(ctx.dark?'light_mode':'dark_mode')}</button>
+      <a class="btn btn--pine is-desk" href="${site.cta.href}">${esc(site.cta.label)}</a>
+      <details class="menu"><summary class="is-mobile" aria-label="Menu">${ms('menu')} Menu</summary>
+        <div class="menu__panel"><span class="eyebrow">${esc(site.short)}</span>
+          ${links.map(l=>`<a href="${l.href}">${esc(l.label)}${ms('chevron_right')}</a>`).join('')}
+          <a href="/search/">Search requirements${ms('search')}</a>
+          <a href="${site.cta.href}"><b>${esc(site.cta.label)}</b>${ms('arrow_forward')}</a>
+        </div></details>
+    </nav></div></header>`;
+}
+function crumbUrl(site, label){
+  const a = site.award, g = site.guide;
+  const map = {'Home':'/', 'Merit Badges':'/merit-badges/', 'Scouts BSA':'/scouts-bsa/', 'Rank Advancement':'/scouts-bsa/ranks/', 'Search Requirements':'/search/', 'Requirements':a.requirementsUrl, [site.guideLabel]:a.guideUrl, [a.title]:a.url, [a.title+' '+a.label]:a.url, [g.title]:g.url};
+  return map[label] || null;
+}
+function trail(site, page){
+  const items = site.breadcrumbs[page];
+  return `<nav aria-label="Breadcrumb"><ol class="trail">${items.map((l,i)=>{ const last=i===items.length-1; const u=crumbUrl(site,l);
+    return `<li>${last?`<span aria-current="page">${esc(l)}</span>`:u?`<a href="${u}">${esc(l)}</a>`:`<span>${esc(l)}</span>`}</li>`; }).join('')}</ol></nav>`;
+}
+function hud(site, ctx, section, links){
+  const a = site.award;
+  const who = isMBU(site) ? `<img src="${a.emblem}" alt="" ${ctx.page!=='award'?'style="view-transition-name:award-emblem"':''}>` : `<span class="hud__lvl num" ${ctx.page!=='award'?'style="view-transition-name:award-emblem"':''}>${a.level}</span>`;
+  return `<div class="hud"><div class="wrap hud__in">
+    <a class="hud__who" href="${a.url}">${who}<span style="min-width:0;display:grid"><b ${ctx.page!=='award'?'style="view-transition-name:award-title"':''}>${esc(a.title)}</b><small>${esc(section)}</small></span></a>
+    <nav class="hud__links" aria-label="Sections">${links.map(l=>`<a href="${l.href}" ${l.current?'aria-current="location"':''}>${l.num?`<span class="num">${esc(l.num)}</span>`:''}${esc(l.label)}</a>`).join('')}</nav>
+    <span class="hud__pct" aria-hidden="true">${ms('hiking')} Progress</span>
+    <div class="hud__bar" aria-hidden="true"><i></i></div>
+  </div></div>`;
+}
+function rail(count){
+  return `<div class="rail" aria-hidden="true"><div class="rail__track"><div class="rail__fill"></div></div><ul class="rail__stops">${Array.from({length:count},()=>'<li></li>').join('')}</ul></div>`;
+}
+function footer(site){
+  return `<footer class="camp"><div class="wrap">
+    <div class="camp__grid">
+      <div><a class="brand" href="/">${ms('explore')}<span>${esc(site.name)}</span></a><p class="camp__tag">${esc(site.tagline)}</p>
+        <p class="camp__tag" style="font-size:.86rem;opacity:.65">${esc(site.domain)}</p></div>
+      ${site.footer.map(c=>`<nav aria-label="${esc(c.title)}"><h2>${esc(c.title)}</h2><ul>${c.links.map(l=>`<li><a href="${l.href}">${esc(l.label)}</a></li>`).join('')}</ul></nav>`).join('')}
+    </div>
+    <div class="camp__foot"><span>© ${new Date().getFullYear()} ${esc(site.name)}</span><span>Requirement text © Scouting America · guides and labels are ours</span></div>
+  </div></footer>`;
+}
+function find(site, q=''){
+  return `<form class="find" role="search" action="/search/">${ms('search')}<label class="sr" for="q-${site.key}">Search ${esc(site.awardPlural)} and requirements</label><input id="q-${site.key}" name="q" type="search" value="${esc(q)}" placeholder="Search every requirement — e.g. knots, first aid"><button type="submit">Search</button></form>`;
+}
+
+/* ---- requirement tree ---- */
+function modeText(n){
+  const k = n.children?.length || 0;
+  if (!n.mode) return k ? `${k} stop${k===1?'':'s'}` : 'Single stop';
+  if (n.mode.type === 'select') return `Choose ${words[n.mode.count]||n.mode.count} of ${k} route${k===1?'':'s'}`;
+  return `All ${k} stop${k===1?'':'s'}`;
+}
+function legEyebrow(n, depth){
+  const icon = n.mode?.type === 'select' ? 'explore' : n.children?.length ? 'route' : 'flag';
+  const lead = depth === 0 ? `Leg ${esc(n.path)} · ` : '';
+  return `<span class="eyebrow ${n.mode?.type==='select'?'eyebrow--ember':''}">${ms(icon)}${lead}${modeText(n)}</span>`;
+}
+function supplies(n){
+  if (!n.resources?.length) return '';
+  return `<div class="supplies"><span class="eyebrow">Supplies</span>${n.resources.map(r=>`<a href="${r.url}">${ms(/video/i.test(r.title)?'play_circle':'open_in_new')}${esc(r.title)}</a>`).join('')}</div>`;
+}
+function verbatim(n, cls=''){
+  if (!n.text && !n.list) return '';
+  return `<div class="verbatim ${cls}">${n.text ? `<p>${txt(n)}</p>` : ''}${n.list ? `<ul>${n.list.items.map(i=>`<li>${esc(i)}</li>`).join('')}</ul>` : ''}</div>`;
+}
+function kids(n, depth){
+  if (!n.children?.length) return '';
+  if (n.mode?.type === 'select') {
+    return `<ol class="routes" aria-label="${esc(modeText(n))}">${n.children.map(c=>`<li class="route" id="r-${esc(c.path)}">
+      <span class="route__m">${ms('explore')}<b>${esc(c.marker)}</b></span>
+      <div style="min-width:0">${c.title && !isStem(c.text) ? `<div class="route__t">${esc(c.title)}</div>` : ''}${verbatim(c)}${kids(c, depth+1)}${supplies(c)}</div></li>`).join('')}</ol>`;
+  }
+  return `<ol class="descent">${n.children.map(c=>`<li class="stop" id="r-${esc(c.path)}">
+    <div class="stop__head"><span class="stop__m">${esc(c.path)}</span>${c.title ? `<span class="stop__t">${esc(c.title)}</span>` : ''}${c.guide ? `<a class="glink" href="${c.guide}">${ms('menu_book')} Guide</a>` : ''}</div>
+    ${verbatim(c)}
+    ${c.children?.length ? `<div class="leg">${legEyebrow(c, depth+1)}</div>${kids(c, depth+1)}` : ''}
+    ${supplies(c)}</li>`).join('')}</ol>`;
+}
+function scene(n, site){
+  const stem = isStem(n.text);
+  return `<section class="scene" id="r-${esc(n.path)}" aria-labelledby="h-${esc(n.path)}">
+    <div class="scene__num"><span class="big num">${esc(n.path)}</span><span class="eyebrow">Leg ${esc(n.path)} of ${site.award.requirements.length}</span></div>
+    <div class="scene__body">
+      <div class="leg">${legEyebrow(n, 0)}${n.guide ? `<a class="glink" href="${n.guide}">${ms('menu_book')} Guide</a>` : ''}</div>
+      <h2 id="h-${esc(n.path)}">${esc(n.title || strip(n.text))}</h2>
+      ${verbatim(n, stem ? 'verbatim--stem' : '')}
+      ${kids(n, 0)}
+      ${supplies(n)}
+    </div></section>`;
+}
+function requirements(site, ctx){
+  const a = site.award, mbu = isMBU(site);
+  const links = a.requirements.map(r=>({href:`#r-${r.path}`, num:r.path, label:(r.title||strip(r.text)).split(' ').slice(0,2).join(' ')}));
+  return header(site, ctx, true) + `<div class="stage">
+  <section class="hero" aria-labelledby="h1"><div class="wrap">${trail(site,'requirements')}
+    <div class="hero__pills">${mbu ? `<span class="pill">${esc(a.category)}</span>${a.eagle?`<span class="pill pill--gold">${ms('workspace_premium')} Eagle required</span>`:''}` : `<span class="pill">${esc(a.program)}</span><span class="pill pill--ember">Rank ${a.level} of ${a.totalLevels}</span>`}</div>
+    <h1 id="h1">${esc(a.title)} <em>requirements</em></h1>
+    <p class="hero__lead">${a.requirements.length} legs · ${a.reqCount} requirements${mbu?'':` in ${a.groupCount} groups`} · official wording, updated ${esc(a.updated)}.</p>
+    <div class="hero__meta legend" style="color:oklch(0.85 0.012 95)"><span><i></i>Official requirement text, verbatim</span><span><b style="color:var(--chalk)">Bold display titles</b> are our labels</span><span>${ms('explore')} compass = choose a route</span></div>
+  </div></section>
+  <div class="over">${hud(site, ctx, 'Requirements', links)}
+    <main id="main" class="wrap" style="padding-block:1rem 2rem">
+      ${a.requirements.map(r=>scene(r, site)).join('')}
+      ${!mbu && a.footerNote ? `<aside class="notes"><h2>${ms('info')} Trail notes</h2><p>${a.footerNote}</p>${a.footnotes?.length?`<ol>${a.footnotes.map(f=>`<li>${f.text||f}</li>`).join('')}</ol>`:''}</aside>` : ''}
+      <div class="twoup" style="margin-block-start:3rem">
+        <a class="go" href="${a.guideUrl}"><span><b>Open the ${esc(site.guideLabel)}</b><span class="sub">${a.guidePages} pages that explain how to do each leg</span></span>${ms('menu_book')}</a>
+        <div class="panel"><h2>${mbu ? 'Supplies for this badge' : 'On the trail'}</h2><ul class="links">
+          ${mbu ? `<li><a href="${a.worksheetUrl}">${ms('download')} Fillable worksheet<small>PDF</small></a></li><li><a href="${a.pamphletUrl}">${ms('menu_book')} Merit badge pamphlet<small>PDF</small></a></li><li><a href="${a.officialUrl}">${ms('open_in_new')} Official page on Scouting.org</a></li>`
+                : `<li><a href="${a.prev.url}">${ms('arrow_back')} Previous rank: ${esc(a.prev.title)}<small>Rank ${a.level-1}</small></a></li><li><a href="${a.next.url}">${ms('arrow_forward')} Next rank: ${esc(a.next.title)}<small>Rank ${a.level+1}</small></a></li>`}
+          <li><a href="${a.guidePrintUrl}">${ms('print')} Print the complete guide</a></li></ul></div>
+      </div>
+    </main>
+    ${footer(site)}
+  </div></div>${rail(a.requirements.length)}`;
+}
+
+/* ---- award: cinematic hero + the route ---- */
+function identity(site){
+  const a = site.award;
+  if (isMBU(site)) return `<img class="emblem settle" src="${a.emblem}" alt="${esc(a.title)} merit badge emblem" width="640" height="640">`;
+  return `<div class="lvl" role="img" aria-label="Rank ${a.level} of ${a.totalLevels}"><div class="lvl__n num">${a.level}<small>/${a.totalLevels}</small></div>
+    <div class="lvl__seq" aria-hidden="true">${Array.from({length:a.totalLevels},(_,i)=>`<i class="${i+1<a.level?'done':i+1===a.level?'on':''}"></i>`).join('')}</div>
+    <span class="eyebrow" style="color:oklch(0.85 0.015 95)">${esc(a.program)} · Rank ${a.level} of ${a.totalLevels}</span></div>`;
+}
+function award(site, ctx){
+  const a = site.award, mbu = isMBU(site), n = a.requirements.length;
+  const stops = a.requirements.map(r=>{
+    const lead = r.children?.find(c=>c.text && !isStem(c.text));
+    const snippet = !isStem(r.text) ? strip(r.text) : (lead ? strip(lead.text) : '');
+    return `<a class="stop-card" href="${a.requirementsUrl}#r-${r.path}"><span class="num">${esc(r.path)}</span><span class="eyebrow">${modeText(r)}</span><span><h3>${esc(r.title || strip(r.text))}</h3><p>${esc(snippet)}</p></span><span class="foot"><span>Leg ${esc(r.path)} of ${n}</span>${r.guide||r.children?.some(c=>c.guide)?ms('menu_book'):''}</span></a>`;
+  }).join('') + `<a class="stop-card stop-card--summit" href="${a.guideUrl}"><span class="num">${ms('flag')}</span><span class="eyebrow" style="color:inherit">Summit</span><span><h3>${esc(a.title)} ${esc(a.label)}</h3><p>${mbu ? 'Every leg complete and signed off by your counselor.' : `Board of review passed. Next: ${esc(a.next.title)}.`}</p></span><span class="foot"><span>${esc(site.guideLabel)}</span>${ms('arrow_forward')}</span></a>`;
+  const links = [{href:'#route',label:'The route'},{href:'#facts',label:'Facts'},{href:'#supplies',label:mbu?'Supplies':'Neighbours'},{href:a.requirementsUrl,label:'Requirements'},{href:a.guideUrl,label:'Guide'}];
+  return header(site, ctx, true) + `<div class="stage">
+  <section class="hero hero--pin" aria-labelledby="h1"><div class="wrap"><div class="hero__grid">
+    <div>${trail(site,'award')}
+      <div class="hero__pills">${mbu ? `<a class="pill" href="/categories/">${ms(CAT_ICON[a.category]||'extension')} ${esc(a.category)}</a>${a.eagle?`<span class="pill pill--gold">${ms('workspace_premium')} Eagle required</span>`:''}` : `<span class="pill">${ms('hiking')} ${esc(a.program)}</span><span class="pill pill--ember">Rank ${a.level} of ${a.totalLevels}</span>`}</div>
+      <h1 id="h1" class="hero__title">${esc(a.title)}<br><em>${esc(a.label)}</em></h1>
+      <p class="hero__lead">${esc(a.description)}</p>
+      <div class="hero__ctas"><a class="btn btn--ember" href="${a.requirementsUrl}">${ms('route')} Walk the requirements</a><a class="btn btn--chalk" href="${a.guideUrl}">${ms('menu_book')} ${esc(site.guideLabel)}</a></div>
+      <div class="hero__meta"><span><b>${a.reqCount}</b> requirements</span><span><b>${n}</b> legs</span><span><b>${a.guidePages}</b> guide pages</span><span>Updated <b>${esc(a.updated)}</b></span></div>
+    </div>
+    ${identity(site)}
+  </div></div></section>
+  <div class="over">${hud(site, ctx, a.label, links)}
+    <main id="main">
+      <section class="sect wrap" id="route" aria-labelledby="h-route">
+        <div class="sect__head"><div><span class="eyebrow eyebrow--ember">The route</span><h2 id="h-route">${n} legs to the ${mbu?'badge':'rank'}</h2></div><p>Each card is one top-level requirement. Legs with a compass ask you to choose a route; the others you walk in full.</p></div>
+        <div class="snap" tabindex="0" aria-label="Requirement stops">${stops}</div>
+        <span class="snap-hint">${ms('swipe')} Scroll sideways · snaps to each stop</span>
+      </section>
+      <section class="sect wrap" style="padding-block-start:0"><div class="twoup">
+        <div class="panel walk-l" id="facts"><h2>Facts</h2><dl class="facts">
+          <dt>${esc(a.label)}</dt><dd>${esc(a.title)}</dd>
+          <dt>Requirements</dt><dd>${a.reqCount}${mbu?'':` in ${a.groupCount} groups`}</dd>
+          ${mbu ? `<dt>Category</dt><dd>${esc(a.category)}</dd><dt>Eagle required</dt><dd>${a.eagle?`${ms('workspace_premium')} Yes`:'No'}</dd>` : `<dt>Program</dt><dd>${esc(a.program)}</dd><dt>Position</dt><dd>Rank ${a.level} of ${a.totalLevels}</dd>`}
+          <dt>Guide</dt><dd>${a.guidePages} pages</dd><dt>Updated</dt><dd>${esc(a.updated)}</dd></dl></div>
+        <div class="panel walk-r" id="supplies"><h2>${mbu?'Supplies':'Neighbouring ranks'}</h2><ul class="links">
+          ${mbu ? `<li><a href="${a.worksheetUrl}">${ms('download')} Fillable worksheet<small>PDF</small></a></li><li><a href="${a.pamphletUrl}">${ms('menu_book')} Merit badge pamphlet<small>PDF</small></a></li><li><a href="${a.officialUrl}">${ms('open_in_new')} Official page on Scouting.org</a></li>`
+                : `<li><a href="${a.prev.url}">${ms('arrow_back')} ${esc(a.prev.title)}<small>Rank ${a.level-1} · before</small></a></li><li><a href="${a.next.url}">${ms('arrow_forward')} ${esc(a.next.title)}<small>Rank ${a.level+1} · after</small></a></li>`}
+          <li><a href="${a.guidePrintUrl}">${ms('print')} Print the complete guide</a></li></ul></div>
+      </div>
+      <a class="go" href="${a.requirementsUrl}#r-${a.requirements[0].path}"><span><b>Start with Requirement ${esc(a.requirements[0].path)}</b><span class="sub">${esc(a.requirements[0].title || strip(a.requirements[0].text))} · ${modeText(a.requirements[0]).toLowerCase()}</span></span>${ms('arrow_forward')}</a>
+      </section>
+    </main>
+    ${footer(site)}
+  </div></div>`;
+}
+
+/* ---- guide: immersive article ---- */
+function block(b){
+  switch(b.type){
+    case 'p': return `<p>${b.html}</p>`;
+    case 'h2': return `<h2>${esc(b.text)}</h2>`;
+    case 'h3': return `<h3>${esc(b.text)}</h3>`;
+    case 'ul': return `<ul>${b.items.map(i=>`<li>${i}</li>`).join('')}</ul>`;
+    case 'ol': return `<ol>${b.items.map(i=>`<li>${i}</li>`).join('')}</ol>`;
+    case 'tip': return `<aside class="call call--tip walk-l"><span class="eyebrow">${ms('lightbulb')} Trail tip</span><p>${b.html}</p></aside>`;
+    case 'safety': return `<aside class="call call--safety walk-r"><span class="eyebrow">${ms('warning')} Safety first</span><p>${b.html}</p></aside>`;
+    case 'be-prepared': return `<aside class="call ${b.safety?'call--safety':'call--tip'} walk-l"><span class="eyebrow">${ms('campaign')} Be prepared</span><h4>${esc(b.title)}</h4><ul>${b.items.map(i=>`<li>${i}</li>`).join('')}</ul></aside>`;
+    case 'checklist': return `<aside class="call call--tip walk-r"><span class="eyebrow">${ms('checklist')} Checklist</span><h4>${esc(b.title)}</h4><p style="color:var(--mute);font-size:.95rem">${esc(b.subtitle)}</p><ul class="check">${b.items.map(i=>`<li>${esc(i)}</li>`).join('')}</ul></aside>`;
+    case 'image': return `<figure><div class="frame"><img src="${b.src}" alt="${esc(b.alt)}" width="${b.width}" height="${b.height}"></div><figcaption>${esc(b.caption||b.alt)}</figcaption></figure>`;
+    case 'video': return `<a class="video settle" href="${b.url}"><span class="play">${ms('play_arrow')}</span><span><b>${esc(b.title)}</b><small>Video · ${esc(b.channel)} · opens on YouTube in a new tab</small></span></a>`;
+    case 'external-link': return `<a class="ext" href="${b.url}"><b>${ms('open_in_new')}${esc(b.title)}</b><span>${esc(b.description)}</span></a>`;
+    case 'next-page': return `<a class="nextleg" href="${b.url}"><span class="eyebrow">Next leg · ${esc(b.text)}</span><b>${esc(b.title)}</b><span>${esc(b.teaser)}</span></a>`;
+    default: return '';
+  }
+}
+function guide(site, ctx){
+  const g = site.guide, a = site.award;
+  const body = g.blocks.map(block).join('');
+  const h2s = g.blocks.filter(b=>b.type==='h2').map((b,i)=>({href:`#g-${i}`, label:b.text}));
+  const bodyWithIds = (()=>{ let i=0; return body.replace(/<h2>/g, ()=>`<h2 id="g-${i++}">`); })();
+  const chapters = a.guideNav.map(grp=>grp.items.map(it=>`<a href="${it.url}" ${it.url===g.url?'aria-current="page"':''}><small>${esc(grp.title)}</small><b>${it.path?`${esc(it.path)} · `:''}${esc(it.title)}</b></a>`).join('')).join('');
+  return header(site, ctx, true) + `<div class="stage">
+  <figure class="ghero" aria-hidden="true"><img src="${site.hero.image}" alt="" width="1600" height="1000" fetchpriority="high"></figure>
+  <div class="over over--guide">${hud(site, ctx, site.guideLabel, [{href:'#top',label:'Top'},...h2s,{href:'#next',label:'Next leg'}])}
+    <main id="main" class="wrap">
+      <div class="gtitle narrow" id="top">${trail(site,'guide')}
+        <div class="eyebrow"><span class="eyebrow--ember">${esc(g.kicker)}</span><span>${esc(site.guideLabel)} · ${esc(a.title)}</span></div>
+        <h1>${esc(g.title)}</h1>
+        <div class="epigraph"><span class="num">${esc(g.requirement.number)}</span><span class="eyebrow">Requirement ${esc(g.requirement.number)} · official text</span><div class="verbatim"><p>${esc(g.requirement.text)}</p></div></div>
+      </div>
+      <nav class="chapters" aria-label="Guide chapters">${chapters}</nav>
+      <article class="article">${bodyWithIds}</article>
+      <nav class="turn" id="next" aria-label="Pagination">
+        <a href="${g.prev.url}"><span class="eyebrow">${ms('arrow_back')} Previous</span><b>${esc(g.prev.title)}</b></a>
+        <a href="${g.next.url}"><span class="eyebrow">Next ${ms('arrow_forward')}</span><b>${esc(g.next.title)}</b></a>
+      </nav>
+    </main>
+    ${footer(site)}
+  </div></div>`;
+}
+
+/* ---- search: echoed query, panels staggering in ---- */
+function search(site, ctx){
+  const s = site.search, q = s.query, mbu = isMBU(site);
+  const re = new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}s?)`, 'ig');
+  const hl = t => esc(t).replace(re, '<mark>$1</mark>');
+  const hits = s.results.reduce((n,r)=>n+r.hits.length,0);
+  const results = s.results.map((r,i)=>`<section class="result walk" style="--i:${i}" aria-labelledby="res-${esc(r.slug)}">
+    <a class="result__who" href="${r.url}">${r.emblem ? `<img src="${r.emblem}" alt="">` : `<span class="lvl__n num" aria-hidden="true">${r.level}<small>/7</small></span>`}
+      <span style="min-width:0"><h2 id="res-${esc(r.slug)}">${esc(r.title)} ${esc(site.awardLabel)}</h2><small>${r.hits.length} hit${r.hits.length===1?'':'s'}${mbu ? ` · ${esc(r.category)}${r.eagle?' · Eagle':''}` : ` · Rank ${r.level} of 7`}</small></span></a>
+    <ol class="hits">${r.hits.map(h=>`<li><a class="hit" href="${r.url}requirements/#r-${h.path}"><span class="num">${esc(h.path)}</span>${h.title?`<b>${esc(h.title)}</b>`:`<b style="color:var(--mute);font-weight:500">Requirement ${esc(h.path)}</b>`}<p>${hl(h.excerpt)}</p></a></li>`).join('')}</ol>
+  </section>`).join('');
+  return header(site, ctx, false) + `<main id="main" class="wrap">
+    <div class="shead">${trail(site,'search')}
+      <div><span class="eyebrow eyebrow--ember">Search requirements</span><h1>“<em>${esc(q)}</em>”</h1></div>
+      <p>${esc(s.description)}</p>
+      ${find(site, q)}
+    </div>
+    <div class="tally"><span><b>${s.total}</b> ${esc(site.awardPlural)}</span><span><b>${hits}</b> matching requirements</span><span>Official wording · term highlighted</span></div>
+    <div class="results">${results}</div>
+  </main>` + footer(site);
+}
+
+/* ---- home ---- */
+function badgeCard(b, cls=''){
+  return `<a class="badge-card ${cls}" href="${b.url}"><img src="${b.emblem}" alt="${esc(b.title)} merit badge emblem" width="320" height="320"><h3>${esc(b.title)} <em>Merit Badge</em></h3><span class="meta"><span>${b.reqCount} req.</span>${b.eagle?`<span class="pill pill--gold">Eagle</span>`:`<span>${esc(b.category)}</span>`}</span></a>`;
+}
+function homeMBU(site){
+  const c = site.counts;
+  return `
+  <section class="stat-scene wrap" aria-labelledby="h-badges">
+    <div class="stat-panel"><span class="eyebrow" style="color:oklch(0.88 0.03 95)">Base camp</span>
+      <div class="stat"><span class="num">${c.badges}<small>badges</small></span><span>Scouting America merit badges</span></div>
+      <div class="stat"><span class="num">${c.categories}<small>fields</small></span><span>Categories to explore</span></div>
+      <div class="stat"><span class="num">${c.eagleBadges}<small>Eagle</small></span><span>Eagle-required badges</span></div>
+      <p>Every badge page carries the official requirements, a ${esc(site.guideLabel)} and a printable worksheet.</p>
+      <a class="btn btn--chalk" href="${site.cta.href}">${esc(site.cta.label)} ${ms('arrow_forward')}</a></div>
+    <div style="min-width:0">
+      <div class="sect__head"><div><span class="eyebrow eyebrow--ember">Featured</span><h2 id="h-badges">Start here</h2></div><span class="snap-hint">${ms('swipe')} Scroll sideways</span></div>
+      <div class="snap" tabindex="0" aria-label="Featured badges">${site.featured.map(b=>badgeCard(b)).join('')}</div>
+      <div class="sect__head" style="margin-block-start:2rem"><div><span class="eyebrow eyebrow--gold">${ms('workspace_premium')} Eagle required</span><h2>${site.eagle.length} badges on the trail to Eagle</h2></div><a class="pill" href="/merit-badges/eagle-required/">All ${site.eagle.length} ${ms('arrow_forward')}</a></div>
+      <div class="snap" tabindex="0" aria-label="Eagle-required badges">${site.eagle.map(b=>badgeCard(b,'badge-card--eagle')).join('')}</div>
+    </div>
+  </section>
+  <section class="sect wrap" aria-labelledby="h-cats">
+    <div class="sect__head"><div><span class="eyebrow eyebrow--ember">${c.categories} fields</span><h2 id="h-cats">Browse by field</h2></div><p>Every merit badge belongs to one of fourteen categories.</p></div>
+    <ul class="cats">${site.categories.map((k,i)=>`<li class="walk"><a href="${k.url}">${ms(CAT_ICON[k.name]||'extension')}<b>${esc(k.name)}</b><small>${k.count} badge${k.count===1?'':'s'}</small></a></li>`).join('')}</ul>
+  </section>
+  <section class="sect wrap" aria-labelledby="h-steps">
+    <div class="sect__head"><div><span class="eyebrow eyebrow--ember">On every badge page</span><h2 id="h-steps">Three things you will find</h2></div></div>
+    <div class="deck">${site.steps.map((s,i)=>`<article class="card" style="--i:${i}"><span class="num">${i+1}</span><h3>${esc(s.title)} ${ms(STEP_ICON[s.icon]||'star')}</h3><p>${esc(s.text)}</p></article>`).join('')}</div>
+  </section>
+  <section class="sect wrap" aria-labelledby="h-more">
+    <div class="sect__head"><div><span class="eyebrow eyebrow--ember">More to explore</span><h2 id="h-more">Twelve more badges</h2></div></div>
+    <div class="snap" tabindex="0" aria-label="More badges">${site.more.map(b=>badgeCard(b,'badge-card--eagle')).join('')}</div>
+  </section>`;
+}
+function homeSU(site){
+  const phases = site.phases, lead = site.footer.find(c=>c.title==='Leadership');
+  const scenes = site.ranks.map((r,i)=>{
+    const phase = phases.find(p=>parseInt(p.ranks,10)===r.level);
+    const summit = r.level === site.ranks.length;
+    return `${phase ? `<div class="phase"><span class="eyebrow eyebrow--ember">Phase · Ranks ${esc(phase.ranks)}</span><h2>${esc(phase.title)}</h2><p>${esc(phase.text)}</p></div>` : ''}
+    <section class="rank-scene" id="rank-${esc(r.slug)}" aria-labelledby="h-${esc(r.slug)}">
+      <div class="rank-scene__num"><span class="big num">${r.level}</span><span class="eyebrow">of ${site.ranks.length}</span></div>
+      <article class="rank-card ${summit?'rank-card--summit':''} settle">
+        <div class="rank-card__head"><h3 id="h-${esc(r.slug)}">${esc(r.title)}</h3><span class="pill ${summit?'pill--ember':''}" style="${summit?'':''}">${summit?ms('flag')+' Summit · ':''}Rank ${r.level} of ${site.ranks.length}</span></div>
+        <p>${esc(r.description)}</p>
+        <ul class="samples" aria-label="Sample requirement groups">${r.samples.map(s=>`<li>${esc(s)}</li>`).join('')}</ul>
+        <div class="rank-card__foot"><span>${r.groups} groups · ${r.leafCount} requirements${r.hasGuide?` · ${esc(site.guideLabel)}`:''}</span><a class="btn" href="${r.url}">${esc(r.title)} ${ms('arrow_forward')}</a></div>
+      </article>
+    </section>`;
+  }).join('');
+  return `
+  <section class="sect wrap" aria-labelledby="h-trail" style="padding-block-end:0">
+    <div class="sect__head"><div><span class="eyebrow eyebrow--ember">${site.counts.ranks} ranks, in sequence</span><h2 id="h-trail">The trail to Eagle</h2></div><p>Every Scout walks the same seven ranks in order. The rail on the left fills as you climb; Eagle is the summit.</p></div>
+  </section>
+  <div class="wrap"><div class="trailway"><div class="trailway__rail" aria-hidden="true"><div class="trailway__fill"></div></div>${scenes}</div></div>
+  <section class="sect wrap" aria-labelledby="h-extras"><div class="sect__head"><div><span class="eyebrow eyebrow--ember">Beyond the ranks</span><h2 id="h-extras">Field guides and leadership</h2></div></div>
+    <div class="extras">
+      <div class="panel walk-l"><h2>Field Guides</h2><ul class="links">${site.fieldGuides.map(f=>`<li><a href="${f.url}">${ms('menu_book')} ${esc(f.title)}</a></li>`).join('')}</ul></div>
+      <div class="panel walk-r"><h2>Leadership</h2><ul class="links">${lead.links.map(l=>`<li><a href="${l.href}">${ms('groups')} ${esc(l.label)}</a></li>`).join('')}</ul></div>
+    </div></section>`;
+}
+function home(site, ctx){
+  const mbu = isMBU(site);
+  return header(site, ctx, true) + `<div class="stage">
+  <section class="hero hero--photo" aria-labelledby="h1">
+    <img class="hero__img" src="${site.hero.image}" alt="${esc(site.hero.alt)}" width="1600" height="1000" fetchpriority="high"><div class="hero__scrim"></div>
+    <div class="wrap"><div class="narrow" style="max-width:54rem">
+      <span class="eyebrow" style="color:oklch(0.88 0.03 95)">${esc(site.name)} · ${esc(site.domain)}</span>
+      <h1 id="h1" class="hero__title" style="margin-block-start:.75rem">${mbu ? 'Every merit badge.<br><em>Every requirement.</em>' : 'The trail <em>to Eagle,</em><br>leg by leg.'}</h1>
+      <p class="hero__lead">${esc(site.tagline)}${mbu ? ' Official requirements, a guide for each one, and a search that reaches across all 142 badges.' : ' Official requirements for all seven Scouts BSA ranks, with a guide that explains how to do each one.'}</p>
+      <div class="hero__ctas" style="display:grid;gap:1rem;max-width:40rem">${find(site)}<div style="display:flex;gap:.75rem;flex-wrap:wrap"><a class="btn btn--chalk" href="${site.cta.href}">${esc(site.cta.label)}</a>${mbu ? `<a class="btn" style="border-color:oklch(1 0 0 / .5);color:var(--chalk)" href="/merit-badges/eagle-required/">${ms('workspace_premium')} Eagle-required list</a>` : `<a class="btn" style="border-color:oklch(1 0 0 / .5);color:var(--chalk)" href="/scouts-bsa/ranks/eagle/">${ms('flag')} Eagle Scout</a>`}</div></div>
+    </div></div>
+  </section>
+  <div class="over"><main id="main">${mbu ? homeMBU(site) : homeSU(site)}</main>${footer(site)}</div></div>`;
+}
+
+window.OPTION = {
+  key:'F', name:'Expedition', thesis:'The page is a journey you scroll: pinned scenes, a progress rail, elements that walk in, the emblem morphing between pages.',
+  render:{ home, award, requirements, guide, search },
+  mount(ctx, app){
+    app.querySelector('[data-toggle-theme]')?.addEventListener('click', ()=> window.PROTO.go({ theme: ctx.dark ? 'light' : 'dark' }));
+    app.querySelectorAll('form.find').forEach(f=>f.addEventListener('submit', e=>{ e.preventDefault(); window.PROTO.go({page:'search'}); }));
+    const strip = app.querySelector('.chapters'), cur = strip?.querySelector('[aria-current]');
+    if (strip && cur) strip.scrollLeft = Math.max(0, cur.offsetLeft - strip.offsetLeft - 16);
+    // Fallback for browsers without scroll-driven animations: drive the HUD bar and rail from a scroll listener.
+    if (!CSS.supports('animation-timeline: scroll()') && !matchMedia('(prefers-reduced-motion: reduce)').matches){
+      const bar = app.querySelector('.hud__bar i'), fill = app.querySelector('.rail__fill');
+      const tick = ()=>{ const max = document.documentElement.scrollHeight - innerHeight; const p = max>0 ? scrollY/max : 1; if(bar) bar.style.transform=`scaleX(${p})`; if(fill) fill.style.transform=`scaleY(${p})`; };
+      addEventListener('scroll', tick, {passive:true}); tick();
+    } else if (!matchMedia('(prefers-reduced-motion: reduce)').matches) { /* native timelines */ } else {
+      app.querySelectorAll('.hud__bar i,.rail__fill,.trailway__fill').forEach(el=>el.style.transform='none');
+    }
+  }
+};
+})();
+</script>
+<script src="proto.js"></script>
+</body>
+</html>

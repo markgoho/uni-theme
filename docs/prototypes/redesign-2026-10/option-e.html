@@ -1,0 +1,822 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Option E · Night Watch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..700&family=Figtree:ital,wght@0,300..800;1,300..800&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="proto.css">
+<script src="data.js"></script>
+<style>
+/* DESIGN PLAN — Option E “Night Watch”
+   The campfire at night. Dark is the default; light is “dawn”.
+   Tokens: --g0/--g1/--g2 layered forest-green grounds · --ink warm off-white text (3 steps) · --amber lantern glow (surfaces, rules, halos)
+           · --ember amber safe for TEXT in both themes · --moss pale moss secondary · --line translucent border.
+   Type: --display Newsreader (titles, curated requirement titles, numerals) · --body Figtree (everything else, incl. verbatim text).
+   Home:  full-bleed photo + heavy bottom scrim, glowing search; MBU = Eagle “constellation” of lantern cards + quiet category list;
+          SU = seven ranks as rising stars along an ascending line, two phase sky-bands.
+   Award: emblem floating in a halo (SU: big lit level numeral), facts in a glass card, “what you’ll do” lit rail, quiet resource buttons; right floating rail.
+   Reqs:  cards in a spotlight — hovered card lifts, number node lights amber, siblings dim; mode = glowing eyebrow; children = lit vertical rail.
+   Guide: reading mode, 65ch centred, amber-ruled requirement quote, full-bleed vignetted images, glowing-edge callouts, right drawer for contents,
+          amber reading-progress line.
+   Search: award panels with emblem lanterns (SU: lit level roundel); hits as rows; <mark> = amber underline glow. */
+:root{
+  --g0:oklch(0.17 0.022 165); --g1:oklch(0.205 0.024 165); --g2:oklch(0.245 0.026 165); --g3:oklch(0.30 0.028 165);
+  --ink:oklch(0.94 0.014 85); --ink-2:oklch(0.78 0.016 90); --ink-3:oklch(0.64 0.016 95);
+  --amber:oklch(0.80 0.145 75); --ember:oklch(0.84 0.13 80); --amber-soft:oklch(0.80 0.145 75 / .18); --glow:oklch(0.80 0.145 75 / .38);
+  --moss:oklch(0.80 0.06 140); --moss-soft:oklch(0.80 0.06 140 / .14);
+  --line:oklch(1 0 0 / .10); --line-2:oklch(1 0 0 / .18);
+  --scrim:oklch(0.14 0.02 165); --glass:oklch(0.20 0.024 165 / .72);
+  --shadow:0 20px 50px -20px oklch(0 0 0 / .7);
+  --display:"Newsreader",Georgia,"Times New Roman",serif; --body:"Figtree",system-ui,sans-serif;
+  --gutter:max(16px,env(safe-area-inset-left,0px)); --proto-h:72px; --head-h:4.25rem;
+  color-scheme:dark;
+}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){
+  --g0:oklch(0.945 0.012 110); --g1:oklch(0.975 0.008 100); --g2:oklch(0.99 0.004 95); --g3:oklch(0.91 0.014 110);
+  --ink:oklch(0.22 0.022 155); --ink-2:oklch(0.38 0.022 155); --ink-3:oklch(0.46 0.02 150);
+  --amber:oklch(0.76 0.15 70); --ember:oklch(0.47 0.125 60); --amber-soft:oklch(0.76 0.15 70 / .18); --glow:oklch(0.76 0.15 70 / .35);
+  --moss:oklch(0.42 0.07 145); --moss-soft:oklch(0.42 0.07 145 / .10);
+  --line:oklch(0 0 0 / .10); --line-2:oklch(0 0 0 / .18);
+  --scrim:oklch(0.16 0.02 165); --glass:oklch(0.97 0.008 100 / .78);
+  --shadow:0 20px 40px -24px oklch(0.3 0.03 150 / .45);
+  color-scheme:light}}
+:root[data-theme="light"]{
+  --g0:oklch(0.945 0.012 110); --g1:oklch(0.975 0.008 100); --g2:oklch(0.99 0.004 95); --g3:oklch(0.91 0.014 110);
+  --ink:oklch(0.22 0.022 155); --ink-2:oklch(0.38 0.022 155); --ink-3:oklch(0.46 0.02 150);
+  --amber:oklch(0.76 0.15 70); --ember:oklch(0.47 0.125 60); --amber-soft:oklch(0.76 0.15 70 / .18); --glow:oklch(0.76 0.15 70 / .35);
+  --moss:oklch(0.42 0.07 145); --moss-soft:oklch(0.42 0.07 145 / .10);
+  --line:oklch(0 0 0 / .10); --line-2:oklch(0 0 0 / .18);
+  --scrim:oklch(0.16 0.02 165); --glass:oklch(0.97 0.008 100 / .78);
+  --shadow:0 20px 40px -24px oklch(0.3 0.03 150 / .45);
+  color-scheme:light}
+
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-padding-block-start:calc(var(--head-h) + 1rem)}
+body{margin:0;background:var(--g0);color:var(--ink);font:400 1.0625rem/1.6 var(--body);padding-block:var(--head-h) calc(var(--proto-h) + 1.5rem);
+  background-image:radial-gradient(60rem 30rem at 15% -10%,var(--amber-soft),transparent 60%),radial-gradient(50rem 30rem at 110% 10%,var(--moss-soft),transparent 60%);background-attachment:fixed}
+img{max-width:100%;height:auto;display:block}
+a{color:inherit;text-decoration-color:var(--line-2);text-underline-offset:.2em}
+a:hover{text-decoration-color:var(--ember)}
+:focus-visible{outline:2px solid var(--amber);outline-offset:3px;border-radius:4px}
+h1,h2,h3,h4{font-family:var(--display);font-weight:400;line-height:1.08;margin:0;text-wrap:balance;letter-spacing:-.012em;font-optical-sizing:auto}
+p{margin:0;text-wrap:pretty}
+ul,ol{margin:0;padding:0}
+.ms{font-family:'Material Symbols Rounded';font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;font-size:1.25em;line-height:1;vertical-align:-.22em;display:inline-block}
+.ms--fill{font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24}
+.eyebrow{font:600 .72rem/1.2 var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+.eyebrow--ember{color:var(--ember)}
+.wrap{max-width:78rem;margin-inline:auto;padding-inline:var(--gutter) max(16px,env(safe-area-inset-right,0px))}
+.min0{min-width:0}
+mark{background:transparent;color:inherit;font-weight:600;box-shadow:inset 0 -.14em 0 0 var(--amber);text-shadow:0 0 12px var(--glow)}
+.btn{display:inline-flex;align-items:center;gap:.5rem;padding:.7rem 1.1rem;border-radius:999px;border:1px solid var(--line-2);background:var(--g2);color:var(--ink);text-decoration:none;font:600 .92rem/1 var(--body);cursor:pointer;transition:border-color .2s,box-shadow .2s,translate .2s}
+.btn:hover{border-color:var(--amber);box-shadow:0 0 0 1px var(--amber-soft),0 0 24px var(--glow);translate:0 -1px}
+.btn--lit{background:linear-gradient(180deg,var(--amber),color-mix(in oklch,var(--amber),black 18%));color:oklch(0.18 0.03 70);border-color:transparent;box-shadow:0 0 28px var(--glow)}
+.btn--lit:hover{box-shadow:0 0 36px var(--glow)}
+.btn--quiet{background:transparent}
+.glass{background:var(--glass);backdrop-filter:blur(14px) saturate(1.2);-webkit-backdrop-filter:blur(14px) saturate(1.2);border:1px solid var(--line);border-radius:1.25rem;box-shadow:var(--shadow)}
+.node{display:inline-grid;place-items:center;min-width:2.1rem;height:2.1rem;padding-inline:.45rem;border-radius:999px;border:1px solid var(--line-2);background:var(--g1);color:var(--ember);font:500 .95rem/1 var(--display);font-variant-numeric:tabular-nums;letter-spacing:.02em;transition:box-shadow .25s,background .25s,color .25s,border-color .25s}
+.node--lit,.node.is-lit{background:var(--amber);color:oklch(0.18 0.03 70);border-color:transparent;box-shadow:0 0 0 4px var(--amber-soft),0 0 22px var(--glow)}
+.verbatim{color:var(--ink);font-size:1.0625rem;line-height:1.62;max-width:68ch}
+.verbatim a{text-decoration-color:var(--amber)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.halo{position:relative;isolation:isolate}
+.halo::before{content:"";position:absolute;inset:-18%;border-radius:50%;background:radial-gradient(circle,var(--glow),transparent 68%);z-index:-1;filter:blur(8px)}
+
+/* ---------- floating glass header ---------- */
+.sky{position:fixed;inset-block-start:0;inset-inline:0;z-index:50;padding-block:.75rem;transition:padding .25s}
+.sky__in{display:flex;align-items:center;gap:1rem;padding-block:.55rem;padding-inline:1.1rem 0.6rem;border-radius:999px;min-height:3.25rem}
+.sky__brand{font-family:var(--display);font-size:1.3rem;font-weight:500;text-decoration:none;letter-spacing:-.01em;display:inline-flex;align-items:center;gap:.55rem;white-space:nowrap;min-width:0}
+.sky__brand .ms{color:var(--amber);filter:drop-shadow(0 0 8px var(--glow))}
+.sky__short{display:none}
+@media (max-width:480px){.sky__long{display:none}.sky__short{display:inline}}
+.sky__nav{display:flex;align-items:center;gap:.25rem;margin-inline-start:auto}
+.sky__nav a,.sky__nav button{font:600 .86rem/1 var(--body);color:var(--ink-2);text-decoration:none;padding:.6rem .8rem;border-radius:999px;border:0;background:transparent;cursor:pointer;display:inline-flex;align-items:center;gap:.4rem;white-space:nowrap}
+.sky__nav a:hover,.sky__nav button:hover{color:var(--ink);background:var(--g2)}
+.sky__nav a[aria-current="page"]{color:var(--ember)}
+.sky__nav .btn{padding:.6rem 1rem;margin-inline-start:.35rem}
+.sky__menu{display:none}
+@supports (animation-timeline: scroll()){
+  .sky{animation:sky-shrink linear both;animation-timeline:scroll();animation-range:0 140px}
+  @keyframes sky-shrink{to{padding-block:.3rem}}
+}
+@media (max-width:860px){
+  .sky__nav > a:not(.sky__icon),.sky__nav .btn{display:none}
+  .sky__menu{display:block;margin-inline-start:auto}
+  .sky__menu summary{list-style:none;cursor:pointer;display:inline-flex;align-items:center;gap:.4rem;padding:.55rem .8rem;border-radius:999px;font:600 .86rem/1 var(--body);color:var(--ink-2)}
+  .sky__menu summary::-webkit-details-marker{display:none}
+  .sky__menu[open] summary{color:var(--ember)}
+  .sky__drop{position:absolute;inset-inline:var(--gutter);inset-block-start:calc(100% + .5rem);padding:.6rem;display:grid;gap:.15rem}
+  .sky__drop a{display:flex;align-items:center;justify-content:space-between;padding:.8rem .9rem;border-radius:.75rem;text-decoration:none;font-weight:600;color:var(--ink)}
+  .sky__drop a:hover{background:var(--g2)}
+  .sky__drop a[aria-current="page"]{color:var(--ember)}
+  .sky__nav{margin-inline-start:0}
+}
+
+/* ---------- breadcrumb ---------- */
+.crumbs{display:flex;flex-wrap:wrap;gap:.3rem .5rem;align-items:center;font:500 .8rem/1.4 var(--body);color:var(--ink-3);margin-block:1.25rem 1.5rem}
+.crumbs a{text-decoration:none;color:var(--ink-3)}
+.crumbs a:hover{color:var(--ember)}
+.crumbs .ms{font-size:1rem;opacity:.6}
+.crumbs [aria-current]{color:var(--ink-2)}
+
+/* ---------- right floating rail + mobile tab bar ---------- */
+.stage{display:grid;grid-template-columns:minmax(0,1fr);gap:2.5rem;align-items:start}
+@media (min-width:1024px){.stage{grid-template-columns:minmax(0,1fr) 17rem}.stage--wide{grid-template-columns:minmax(0,1fr) 15rem}}
+.rail{display:none}
+@media (min-width:1024px){
+  .rail{display:block;position:sticky;inset-block-start:calc(var(--head-h) + 1rem);padding:1.25rem;order:2}
+}
+.rail__id{display:flex;gap:.8rem;align-items:center;min-width:0}
+.rail__id img{width:3.4rem;height:3.4rem;border-radius:50%;object-fit:cover;border:1px solid var(--line-2);box-shadow:0 0 18px var(--glow)}
+.rail__lvl{width:3.4rem;height:3.4rem;border-radius:50%;display:grid;place-items:center;background:var(--amber);color:oklch(0.18 0.03 70);font:500 1.5rem/1 var(--display);box-shadow:0 0 18px var(--glow)}
+.rail__id h2{font-size:1.25rem;font-weight:500}
+.rail__id small{display:block;font:600 .68rem/1.4 var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.rail__links{list-style:none;margin-block-start:1rem;padding-block-start:1rem;border-block-start:1px solid var(--line);display:grid;gap:.15rem}
+.rail__links a{display:flex;align-items:center;gap:.6rem;padding:.55rem .7rem;border-radius:.7rem;text-decoration:none;font-weight:600;font-size:.92rem;color:var(--ink-2)}
+.rail__links a:hover{background:var(--g2);color:var(--ink)}
+.rail__links a[aria-current="page"]{color:var(--ember);background:var(--amber-soft)}
+.rail__links .ms{font-size:1.2rem}
+.rail__meta{margin-block-start:1rem;padding-block-start:1rem;border-block-start:1px solid var(--line);display:grid;gap:.4rem;font-size:.86rem;color:var(--ink-3)}
+.rail__meta b{color:var(--ink-2);font-weight:600}
+.rail__secs{list-style:none;margin-block-start:.75rem;display:grid;gap:.1rem;max-height:34vh;overflow:auto;padding-inline-end:.25rem}
+.rail__secs a{display:grid;grid-template-columns:1.9rem minmax(0,1fr);gap:.4rem;align-items:baseline;padding:.3rem .4rem;border-radius:.5rem;text-decoration:none;font-size:.86rem;color:var(--ink-2)}
+.rail__secs a:hover{background:var(--g2);color:var(--ink)}
+.rail__secs .n{font-family:var(--display);color:var(--ember);font-size:.95rem}
+.tabs{display:none}
+@media (max-width:1023.98px){
+  .tabs{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;position:fixed;inset-inline:var(--gutter);inset-block-end:calc(var(--proto-h) + 14px);z-index:40;padding:.35rem;border-radius:1.1rem}
+  .tabs a{display:grid;justify-items:center;gap:.15rem;padding:.5rem .3rem;border-radius:.85rem;text-decoration:none;font:600 .7rem/1 var(--body);letter-spacing:.04em;color:var(--ink-2)}
+  .tabs a .ms{font-size:1.35rem}
+  .tabs a[aria-current="page"]{color:var(--ember);background:var(--amber-soft)}
+  body:has(.tabs){padding-block-end:calc(var(--proto-h) + 6rem)}
+}
+
+/* ---------- footer: embers ---------- */
+.embers{margin-block-start:5rem;border-block-start:1px solid var(--line);position:relative;overflow:clip;background:linear-gradient(180deg,transparent,var(--g1))}
+.embers::before{content:"";position:absolute;inset-inline:0;inset-block-end:-10rem;height:16rem;background:radial-gradient(50% 100% at 50% 100%,var(--glow),transparent 70%);pointer-events:none}
+.embers__in{position:relative;padding-block:3rem 1.5rem;display:grid;gap:2.5rem;grid-template-columns:minmax(14rem,1.3fr) repeat(auto-fit,minmax(10rem,1fr))}
+.embers__brand{font-family:var(--display);font-size:1.5rem;font-weight:500;display:flex;gap:.5rem;align-items:center}
+.embers__brand .ms{color:var(--amber)}
+.embers p{color:var(--ink-2);margin-block-start:.5rem;max-width:30ch}
+.embers h3{font:600 .72rem/1.2 var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+.embers ul{list-style:none;margin-block-start:.75rem;display:grid;gap:.45rem}
+.embers li a{text-decoration:none;color:var(--ink-2);font-size:.95rem}
+.embers li a:hover{color:var(--ember)}
+.embers__base{position:relative;display:flex;justify-content:space-between;flex-wrap:wrap;gap:.5rem 1.5rem;padding-block:1.25rem 0;border-block-start:1px solid var(--line);font-size:.8rem;color:var(--ink-3)}
+@media (max-width:640px){.embers__in{grid-template-columns:1fr 1fr}.embers__in>:first-child{grid-column:1/-1}}
+
+/* ---------- home: hero ---------- */
+.hero{position:relative;overflow:clip;min-height:min(78svh,44rem);display:grid;align-items:end;margin-block-start:calc(-1 * var(--head-h));border-radius:0 0 2rem 2rem}
+.hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 40%}
+.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,oklch(0.14 0.02 165 / .35) 0%,oklch(0.14 0.02 165 / .15) 35%,var(--scrim) 92%),radial-gradient(40rem 20rem at 70% 90%,var(--glow),transparent 70%)}
+.hero > .wrap{position:relative;z-index:1;width:100%}
+.hero__in{padding-block:8rem 3.5rem;color:oklch(0.95 0.015 85);max-width:46rem}
+.hero__in .eyebrow{color:oklch(0.86 0.12 80)}
+.hero h1{font-size:clamp(2.6rem,6.5vw,5rem);font-weight:300;margin-block:.6rem .9rem;color:oklch(0.97 0.01 85)}
+.hero h1 em{font-style:italic;font-weight:400;color:oklch(0.88 0.13 80)}
+.hero p{font-size:clamp(1.05rem,1.6vw,1.25rem);color:oklch(0.86 0.014 90);max-width:38ch}
+.hero__cta{display:flex;flex-wrap:wrap;gap:.6rem;margin-block-start:1.4rem}
+.hero__cta .btn{background:oklch(1 0 0 / .08);border-color:oklch(1 0 0 / .25);color:oklch(0.95 0.01 85);backdrop-filter:blur(8px)}
+.hero__cta .btn--lit{background:linear-gradient(180deg,oklch(0.82 0.145 75),oklch(0.72 0.14 70));color:oklch(0.18 0.03 70);border-color:transparent}
+.lantern-search{display:flex;align-items:center;gap:.4rem;margin-block-start:1.5rem;padding:.4rem .4rem .4rem 1rem;border-radius:999px;background:oklch(0.14 0.02 165 / .55);border:1px solid oklch(0.80 0.145 75 / .5);box-shadow:0 0 0 1px oklch(0.80 0.145 75 / .15),0 0 40px var(--glow),inset 0 0 20px oklch(0.80 0.145 75 / .08);backdrop-filter:blur(10px);max-width:34rem}
+.lantern-search .ms{color:oklch(0.86 0.13 80)}
+.lantern-search input{flex:1;min-width:0;background:transparent;border:0;color:oklch(0.97 0.01 85);font:400 1rem/1.4 var(--body);padding:.5rem .4rem}
+.lantern-search input::placeholder{color:oklch(0.78 0.014 90)}
+.lantern-search input:focus{outline:none}
+.lantern-search button{appearance:none;border:0;border-radius:999px;padding:.65rem 1.1rem;background:oklch(0.82 0.145 75);color:oklch(0.18 0.03 70);font:600 .9rem/1 var(--body);cursor:pointer}
+.lantern-search--page{margin-block-start:1.25rem;background:var(--g1);border-color:var(--amber);box-shadow:0 0 0 1px var(--amber-soft),0 0 30px var(--glow);max-width:40rem}
+.lantern-search--page input{color:var(--ink)}
+.lantern-search--page input::placeholder{color:var(--ink-3)}
+.lantern-search--page .ms{color:var(--ember)}
+.lantern-search--page button{background:var(--amber)}
+
+/* ---------- home: sections ---------- */
+.sec{margin-block-start:4.5rem}
+.sec__head{display:flex;align-items:end;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-block-end:1.5rem}
+.sec__head h2{font-size:clamp(1.8rem,3vw,2.4rem);font-weight:400}
+.sec__head p{color:var(--ink-2);max-width:52ch}
+.sec__head a{font:600 .88rem/1 var(--body);text-decoration:none;color:var(--ember);display:inline-flex;align-items:center;gap:.3rem;white-space:nowrap}
+.constellation{display:grid;grid-template-columns:repeat(auto-fill,minmax(10.5rem,1fr));gap:1rem}
+.lantern{position:relative;display:grid;justify-items:center;text-align:center;gap:.6rem;padding:1.4rem 1rem 1.2rem;border-radius:1.25rem;background:var(--g1);border:1px solid var(--line);text-decoration:none;overflow:clip;transition:translate .25s,border-color .25s,box-shadow .25s}
+.lantern::before{content:"";position:absolute;inset:auto -30% -45% -30%;height:70%;background:radial-gradient(50% 60% at 50% 100%,var(--glow),transparent 70%);opacity:.5;transition:opacity .25s;pointer-events:none}
+.lantern:hover{translate:0 -3px;border-color:var(--amber);box-shadow:0 0 32px var(--glow)}
+.lantern:hover::before{opacity:1}
+.lantern img{width:5.4rem;height:5.4rem;border-radius:50%;object-fit:cover;border:1px solid var(--line-2);box-shadow:0 0 0 5px var(--g2),0 0 24px var(--glow)}
+.lantern h3{font-size:1.15rem;font-weight:500;line-height:1.15}
+.lantern small{font-size:.78rem;color:var(--ink-3);display:flex;gap:.4rem;align-items:center;justify-content:center;flex-wrap:wrap}
+.lantern .eagle{position:absolute;inset-inline-end:.7rem;inset-block-start:.7rem;color:var(--ember);font-size:1.1rem}
+.lantern--big{grid-template-columns:5.4rem minmax(0,1fr);justify-items:start;text-align:start;align-items:center;gap:.2rem 1.1rem;padding:1.1rem 1.2rem}
+.lantern--big img{grid-row:1/4}
+.lantern--big h3{font-size:1.35rem}
+.lantern--big p{font-size:.9rem;color:var(--ink-2)}
+.featured{display:grid;grid-template-columns:repeat(auto-fit,minmax(16rem,1fr));gap:1rem}
+.cats{list-style:none;columns:2;column-gap:3rem}
+.cats li{break-inside:avoid}
+.cats a{display:flex;align-items:baseline;gap:.75rem;padding:.7rem 0;border-block-end:1px solid var(--line);text-decoration:none;color:var(--ink)}
+.cats a:hover .cats__name{color:var(--ember)}
+.cats__name{font-family:var(--display);font-size:1.2rem;flex:1}
+.cats__n{font-size:.8rem;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.cats .ms{color:var(--ink-3);font-size:1.1rem;align-self:center}
+@media (max-width:640px){.cats{columns:1}}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:1rem}
+.step{padding:1.4rem;border-radius:1.25rem;background:var(--g1);border:1px solid var(--line);display:grid;gap:.5rem;align-content:start}
+.step .node{justify-self:start}
+.step h3{font-size:1.3rem;font-weight:500}
+.step p{color:var(--ink-2);font-size:.95rem}
+
+/* ---------- home SU: night sky with rising ranks ---------- */
+.skyline{position:relative;overflow:clip;border-radius:1.5rem;background:radial-gradient(60rem 20rem at 50% 100%,var(--amber-soft),transparent 70%),var(--g1);border:1px solid var(--line);padding:2rem 1.5rem 1.75rem;isolation:isolate}
+.stars{position:absolute;inset:0;z-index:-1;pointer-events:none;background:
+  radial-gradient(1.5px 1.5px at 12% 18%,oklch(0.9 0.01 85 / .7),transparent 60%),radial-gradient(1px 1px at 28% 62%,oklch(0.9 0.01 85 / .5),transparent 60%),
+  radial-gradient(2px 2px at 44% 24%,oklch(0.9 0.01 85 / .6),transparent 60%),radial-gradient(1px 1px at 61% 48%,oklch(0.9 0.01 85 / .6),transparent 60%),
+  radial-gradient(1.5px 1.5px at 76% 14%,oklch(0.9 0.01 85 / .7),transparent 60%),radial-gradient(1px 1px at 88% 56%,oklch(0.9 0.01 85 / .5),transparent 60%),
+  radial-gradient(1.5px 1.5px at 94% 30%,oklch(0.9 0.01 85 / .6),transparent 60%),radial-gradient(1px 1px at 6% 80%,oklch(0.9 0.01 85 / .5),transparent 60%)}
+.ascent{position:relative;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:.6rem;align-items:end;padding-block-start:11rem}
+.ascent__line{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;overflow:visible}
+.ascent__line path{fill:none;stroke:var(--amber);stroke-width:1.5;stroke-dasharray:4 6;opacity:.7;filter:drop-shadow(0 0 6px var(--glow))}
+.star{position:relative;z-index:1;display:grid;gap:.35rem;padding:1rem .8rem .9rem;border-radius:1rem;background:var(--g2);border:1px solid var(--line);text-decoration:none;translate:0 calc(var(--lvl,1) * -1.4rem);transition:border-color .25s,box-shadow .25s;min-width:0}
+.star:hover{border-color:var(--amber);box-shadow:0 0 28px var(--glow)}
+.star .node{justify-self:start}
+.star h3{font-size:1.05rem;font-weight:500;line-height:1.15}
+.star small{font-size:.74rem;color:var(--ink-3);line-height:1.35}
+.star h3{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.star--now .node{background:var(--amber);color:oklch(0.18 0.03 70);box-shadow:0 0 0 4px var(--amber-soft),0 0 22px var(--glow)}
+.phases{display:grid;grid-template-columns:4fr 3fr;gap:.6rem;margin-block-start:1.25rem}
+.phase{padding:1.1rem 1.2rem;border-radius:1rem;border:1px solid var(--line);background:linear-gradient(180deg,var(--moss-soft),transparent)}
+.phase .eyebrow{color:var(--moss)}
+.phase h3{font-size:1.25rem;font-weight:500;margin-block:.25rem .4rem}
+.phase p{font-size:.92rem;color:var(--ink-2)}
+@media (max-width:860px){
+  .ascent{grid-template-columns:1fr;padding-block-start:0;gap:.5rem}
+  .ascent__line{display:none}
+  .star{translate:none;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:.1rem .9rem}
+  .star .node{grid-row:1/3}
+  .phases{grid-template-columns:1fr}
+}
+.guides{display:grid;grid-template-columns:repeat(auto-fit,minmax(13rem,1fr));gap:.75rem}
+.guides a{display:flex;align-items:center;gap:.7rem;padding:1rem 1.1rem;border-radius:1rem;border:1px solid var(--line);background:var(--g1);text-decoration:none;font-family:var(--display);font-size:1.15rem}
+.guides a .ms{color:var(--ember)}
+.guides a:hover{border-color:var(--amber)}
+
+/* ---------- award page ---------- */
+.aw-hero{display:grid;grid-template-columns:minmax(0,1fr);gap:2rem;align-items:center;position:relative;overflow:clip;padding:2.5rem 0 1rem;margin-inline:-1rem;padding-inline:1rem}
+@media (min-width:720px){.aw-hero{grid-template-columns:minmax(0,1fr) 20rem;gap:2rem}}
+.aw-hero__emblem{justify-self:center;order:-1}
+@media (min-width:720px){.aw-hero__emblem{order:2}}
+.emblem-float{position:relative;width:14rem;height:14rem;display:grid;place-items:center;isolation:isolate}
+.emblem-float::before{content:"";position:absolute;inset:-25%;border-radius:50%;background:radial-gradient(circle,var(--glow) 0%,transparent 65%);z-index:-1;filter:blur(10px);animation:breathe 6s ease-in-out infinite}
+.emblem-float::after{content:"";position:absolute;inset:0;border-radius:50%;background:var(--emblem) center/cover;filter:blur(22px) saturate(1.3);opacity:.55;z-index:-1}
+.emblem-float img{width:12rem;height:12rem;border-radius:50%;object-fit:cover;border:1px solid var(--line-2);box-shadow:0 0 0 7px var(--g1),0 0 0 8px var(--line),0 30px 50px -20px oklch(0 0 0 / .6)}
+@keyframes breathe{50%{opacity:.6;scale:1.08}}
+.level-float{width:12rem;height:12rem;border-radius:50%;display:grid;place-items:center;align-content:center;background:radial-gradient(circle at 50% 30%,var(--g3),var(--g1));border:1px solid var(--line-2);box-shadow:0 0 0 7px var(--g1),0 0 0 8px var(--line),0 0 50px var(--glow)}
+.level-float b{font:300 5rem/1 var(--display);color:var(--ember);letter-spacing:-.04em;text-shadow:0 0 24px var(--glow)}
+.level-float b small{font-size:.38em;color:var(--ink-3);font-weight:400;letter-spacing:0}
+.level-float span{font:600 .68rem/1 var(--body);letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3);margin-block-start:.3rem}
+.aw-hero__text h1{font-size:clamp(2.6rem,6vw,4.6rem);font-weight:300;margin-block:.5rem .9rem}
+.aw-hero__text h1 span{font-style:italic;color:var(--ink-2);font-size:.6em}
+.aw-hero__text .lede{font-size:1.15rem;color:var(--ink-2);max-width:56ch}
+.ctas{display:flex;flex-wrap:wrap;gap:.6rem}
+.aw-hero__text .ctas{margin-block-start:1.6rem}
+.tags{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center}
+.tag{display:inline-flex;align-items:center;gap:.35rem;padding:.35rem .7rem;border-radius:999px;border:1px solid var(--line-2);font:600 .74rem/1 var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2)}
+.tag--eagle{color:var(--ember);border-color:var(--amber);box-shadow:0 0 14px var(--glow)}
+.tag .ms{font-size:1rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(9rem,1fr));gap:0;margin-block-start:2.5rem;overflow:clip}
+.facts > div{padding:1.1rem 1.25rem;border-inline-start:1px solid var(--line)}
+.facts > div:first-child{border-inline-start:0}
+.facts .eyebrow{display:block;margin-block-end:.3rem}
+.facts b{font:400 1.5rem/1.1 var(--display);color:var(--ink)}
+.facts b.sm{font-size:1.15rem}
+@media (max-width:640px){.facts > div{border-inline-start:0;border-block-start:1px solid var(--line)}.facts > div:first-child{border-block-start:0}}
+.litrail{list-style:none;position:relative;display:grid;gap:.1rem;margin-block-start:1.25rem}
+.litrail::before{content:"";position:absolute;inset-block:1.2rem;inset-inline-start:1.05rem;width:1px;background:linear-gradient(180deg,var(--amber),var(--line-2) 40%,var(--line-2) 60%,var(--amber));opacity:.7}
+.litrail li{position:relative;display:grid;grid-template-columns:2.1rem minmax(0,1fr);gap:.9rem;align-items:start;padding-block:.55rem}
+.litrail li a{text-decoration:none;color:inherit;display:block;min-width:0}
+.litrail li a:hover h3{color:var(--ember)}
+.litrail h3{font-size:1.15rem;font-weight:500;line-height:1.2}
+.litrail p{font-size:.92rem;color:var(--ink-2);margin-block-start:.15rem}
+.litrail .node{position:relative;z-index:1}
+.resources{display:flex;flex-wrap:wrap;gap:.6rem;margin-block-start:1.25rem}
+.resources .btn{font-weight:500}
+.resources .ms{color:var(--ember)}
+.ranknav{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-block-start:2rem}
+.ranknav a{display:grid;gap:.2rem;padding:1rem 1.2rem;border-radius:1rem;border:1px solid var(--line);background:var(--g1);text-decoration:none}
+.ranknav a:last-child{text-align:end}
+.ranknav a:hover{border-color:var(--amber)}
+.ranknav b{font:400 1.3rem/1.1 var(--display)}
+.ranknav .eyebrow{display:flex;gap:.3rem;align-items:center}
+.ranknav a:last-child .eyebrow{justify-content:end}
+.note{margin-block-start:2.5rem;padding:1.1rem 1.25rem 1.1rem 1.5rem;border-inline-start:2px solid var(--amber);border-radius:0 1rem 1rem 0;background:var(--g1);font-size:.95rem;color:var(--ink-2);box-shadow:-6px 0 20px -8px var(--glow)}
+.note strong{color:var(--ember);letter-spacing:.08em;font-size:.78rem}
+.aw-h2{font-size:clamp(1.6rem,2.6vw,2.1rem);font-weight:400;margin-block-start:3rem;display:flex;align-items:baseline;gap:.75rem;flex-wrap:wrap}
+.aw-h2 small{font:500 .82rem/1 var(--body);color:var(--ink-3)}
+
+/* ---------- requirements: cards in a spotlight ---------- */
+.req-head{display:grid;gap:.6rem;margin-block-end:2rem;max-width:60ch}
+.req-head h1{font-size:clamp(2.2rem,5vw,3.6rem);font-weight:300}
+.req-head h1 em{font-style:italic;color:var(--ink-2)}
+.req-head p{color:var(--ink-2)}
+.legend{display:flex;flex-wrap:wrap;gap:.5rem 1.25rem;font-size:.82rem;color:var(--ink-3);align-items:center}
+.legend span{display:inline-flex;align-items:center;gap:.4rem}
+.legend i{display:inline-block;width:1.4rem;height:.3rem;border-radius:999px;background:var(--amber);box-shadow:0 0 8px var(--glow)}
+.legend i.curated{background:var(--ink);box-shadow:none;width:.9rem;height:.9rem;border-radius:2px;background:transparent;border:1px solid var(--ink-3);font:italic 500 .7rem/1 var(--display);display:grid;place-items:center;color:var(--ink-3)}
+.spot{list-style:none;display:grid;gap:1.1rem}
+.card{position:relative;padding:1.4rem 1.5rem 1.5rem;border-radius:1.35rem;background:var(--g1);border:1px solid var(--line);box-shadow:0 1px 0 oklch(1 0 0 / .04) inset,0 10px 30px -22px oklch(0 0 0 / .8);transition:translate .3s,opacity .3s,border-color .3s,box-shadow .3s;scroll-margin-block-start:calc(var(--head-h) + 1rem)}
+.card::before{content:"";position:absolute;inset:0;border-radius:inherit;background:radial-gradient(60% 50% at 50% -10%,var(--amber-soft),transparent 70%);opacity:0;transition:opacity .3s;pointer-events:none}
+@media (hover:hover){
+  .spot:has(.card:hover) .card:not(:hover){opacity:.62}
+  .card:hover{translate:0 -3px;border-color:color-mix(in oklch,var(--amber),transparent 45%);box-shadow:0 0 0 1px var(--amber-soft),0 24px 50px -24px oklch(0 0 0 / .8),0 0 40px -10px var(--glow)}
+  .card:hover::before{opacity:1}
+  .card:hover > .card__head .node{background:var(--amber);color:oklch(0.18 0.03 70);border-color:transparent;box-shadow:0 0 0 4px var(--amber-soft),0 0 22px var(--glow)}
+}
+.card:has(:focus-visible){border-color:var(--amber)}
+.card__head{display:grid;grid-template-columns:auto minmax(0,1fr);gap:.4rem 1rem;align-items:center}
+.card__head .node{min-width:2.6rem;height:2.6rem;font-size:1.25rem}
+.card__title{display:flex;flex-wrap:wrap;gap:.3rem 1rem;align-items:baseline;min-width:0}
+.card__title h2{font-size:1.65rem;font-weight:500;line-height:1.1}
+.card__title h2.untitled{font-style:italic;font-weight:300;color:var(--ink-2);font-size:1.3rem}
+.mode{display:inline-flex;align-items:center;gap:.35rem;font:700 .7rem/1 var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--ember);padding:.4rem .7rem;border-radius:999px;background:var(--amber-soft);box-shadow:0 0 16px var(--glow),inset 0 0 0 1px color-mix(in oklch,var(--amber),transparent 55%);animation:flicker 5s ease-in-out infinite}
+.mode .ms{font-size:.95rem}
+.mode--select{color:var(--ember)}
+@keyframes flicker{50%{box-shadow:0 0 24px var(--glow),inset 0 0 0 1px color-mix(in oklch,var(--amber),transparent 35%)}}
+.card__body{margin-block-start:.9rem;padding-inline-start:calc(2.6rem + 1rem)}
+@media (max-width:640px){.card{padding:1.1rem 1rem 1.2rem}.card__body{padding-inline-start:0}}
+.card .verbatim{margin-block-start:.25rem}
+.kids{list-style:none;position:relative;margin-block-start:1rem;display:grid;gap:.15rem}
+.kids::before{content:"";position:absolute;inset-block:1.1rem;inset-inline-start:1.05rem;width:1px;background:var(--line-2)}
+.kid{position:relative;display:grid;grid-template-columns:2.1rem minmax(0,1fr);gap:.85rem;padding-block:.6rem;transition:opacity .25s}
+.kid .node{position:relative;z-index:1;font-size:.88rem}
+.kid__title{font-family:var(--display);font-size:1.15rem;font-weight:500;line-height:1.25;display:block;margin-block-end:.1rem}
+.kid .verbatim{font-size:1rem}
+.kids--select .kid > .node{opacity:.55}
+.kids--select .kid .kid__title{color:var(--ink-2)}
+.kids--select .kid:hover > .node,.kids--select .kid:focus-within > .node{opacity:1}
+.kids--select .kid:hover .node{background:var(--amber);color:oklch(0.18 0.03 70);box-shadow:0 0 16px var(--glow);border-color:transparent}
+.mode--kid{margin-block-start:.6rem}
+.kids .kids{margin-block-start:.6rem}
+.kids .kids .node{min-width:1.8rem;height:1.8rem;font-size:.8rem}
+.kids .kids::before{inset-inline-start:.9rem}
+.kids .kids .kid{grid-template-columns:1.8rem minmax(0,1fr);gap:.7rem;padding-block:.4rem}
+.bul{list-style:none;margin-block-start:.5rem;display:grid;grid-template-columns:repeat(auto-fill,minmax(14rem,1fr));gap:.25rem .9rem;max-width:68ch}
+.bul li{display:flex;gap:.55rem;align-items:baseline;font-size:.98rem;color:var(--ink)}
+.bul li::before{content:"";flex:none;width:.4rem;height:.4rem;border-radius:50%;background:var(--amber);box-shadow:0 0 6px var(--glow);translate:0 -.1em}
+.extras{display:flex;flex-wrap:wrap;gap:.4rem;margin-block-start:.6rem;align-items:center}
+.chip{display:inline-flex;align-items:center;gap:.35rem;padding:.35rem .7rem .35rem .55rem;border-radius:999px;border:1px solid var(--line);background:var(--g2);font:500 .78rem/1.2 var(--body);color:var(--ink-2);text-decoration:none;max-width:100%;min-width:0}
+.chip span:not(.ms){overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chip .ms{font-size:1rem;color:var(--ink-3);flex:none}
+.chip:hover{border-color:var(--amber);color:var(--ink)}
+.chip--guide{color:var(--ember);border-color:color-mix(in oklch,var(--amber),transparent 60%)}
+.chip--guide .ms{color:var(--ember)}
+.card__foot{display:flex;flex-wrap:wrap;gap:.5rem;margin-block-start:1rem;padding-inline-start:calc(2.6rem + 1rem)}
+@media (max-width:640px){.card__foot{padding-inline-start:0}}
+
+/* ---------- guide: reading mode ---------- */
+.progress{position:fixed;inset-block-start:0;inset-inline-start:0;height:3px;width:100%;z-index:60;background:linear-gradient(90deg,var(--amber),var(--ember));box-shadow:0 0 12px var(--glow);transform-origin:0 50%;scale:0 1}
+@supports (animation-timeline: scroll()){.progress{animation:grow linear both;animation-timeline:scroll()}@keyframes grow{from{scale:0 1}to{scale:1 1}}}
+.read{display:grid;grid-template-columns:minmax(var(--gutter),1fr) minmax(0,min(65ch,100% - 2 * var(--gutter))) minmax(var(--gutter),1fr);row-gap:1.4rem}
+.read > *{grid-column:2}
+.read > .bleed{grid-column:1/-1;width:100%}
+.read > .bleed figure{margin:0;position:relative;overflow:clip;border-radius:1.5rem;max-width:62rem;margin-inline:auto}
+.read > .bleed figure::after{content:"";position:absolute;inset:0;box-shadow:inset 0 0 120px 30px var(--scrim);opacity:.55;pointer-events:none;border-radius:inherit}
+.read > .bleed img{width:100%;aspect-ratio:var(--ar,16/9);object-fit:cover}
+.read figcaption{text-align:center;font-size:.86rem;color:var(--ink-3);margin-block-start:.6rem;font-style:italic;padding-inline:var(--gutter)}
+@media (min-width:1200px){.read-stage{display:grid;grid-template-columns:minmax(0,1fr) 17rem;gap:2rem;align-items:start}.read-stage .rail{inset-block-start:calc(var(--head-h) + 1rem)}}
+.gd-head{display:grid;gap:.75rem;padding-block:1rem 0}
+.gd-head .kicker{display:flex;flex-wrap:wrap;align-items:center;gap:.6rem;color:var(--ink-3);font:600 .78rem/1.2 var(--body);letter-spacing:.1em;text-transform:uppercase}
+.gd-head .kicker .node{font-size:.85rem;min-width:2rem;height:1.8rem}
+.gd-head h1{font-size:clamp(2.3rem,5vw,3.6rem);font-weight:300;line-height:1.02}
+.gd-head .gd-meta{display:flex;flex-wrap:wrap;gap:.5rem 1.2rem;font-size:.84rem;color:var(--ink-3);align-items:center}
+.gd-head .gd-meta a{color:var(--ember);text-decoration:none;font-weight:600}
+.quote{position:relative;padding:1.2rem 1.4rem 1.2rem 1.6rem;border-inline-start:2px solid var(--amber);background:linear-gradient(90deg,var(--amber-soft),transparent 70%);border-radius:0 1rem 1rem 0;box-shadow:-8px 0 24px -10px var(--glow)}
+.quote .eyebrow{display:flex;gap:.5rem;align-items:center;margin-block-end:.35rem}
+.quote .eyebrow .node{min-width:1.9rem;height:1.7rem;font-size:.8rem}
+.quote .verbatim{font-size:1.1rem}
+.prose{font-size:1.0625rem;line-height:1.7;color:var(--ink)}
+.prose p{color:var(--ink)}
+.read h2{font-size:clamp(1.7rem,3vw,2.2rem);font-weight:400;margin-block-start:1.2rem}
+.read h3{font-size:1.35rem;font-weight:500;margin-block-start:.5rem}
+.read ul.prose,.read ol.prose{padding-inline-start:1.3rem;display:grid;gap:.45rem}
+.read ol.prose li::marker{color:var(--ember);font-family:var(--display);font-weight:600}
+.read ul.prose li::marker{color:var(--amber)}
+.callout{position:relative;padding:1.2rem 1.4rem;border-radius:1.1rem;background:var(--g1);border:1px solid var(--line);box-shadow:0 0 0 1px color-mix(in oklch,var(--c,var(--amber)),transparent 70%),0 0 28px -6px color-mix(in oklch,var(--c,var(--amber)),transparent 55%)}
+.callout__kick{display:flex;gap:.5rem;align-items:center;font:700 .72rem/1 var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--c,var(--ember));margin-block-end:.5rem}
+.callout__kick .ms{font-size:1.1rem}
+.callout--safety{--c:oklch(0.72 0.16 30)}
+:root[data-theme="light"] .callout--safety,:root:not([data-theme="dark"]) .callout--safety{--c:oklch(0.52 0.17 30)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .callout--safety{--c:oklch(0.72 0.16 30)}}
+.callout--tip{--c:var(--ember)}
+.callout--prep{--c:var(--moss)}
+.callout h3{font-size:1.3rem;margin-block:0 .3rem}
+.callout .sub{color:var(--ink-3);font-size:.9rem;margin-block-end:.6rem}
+.callout ol,.callout ul{padding-inline-start:1.3rem;display:grid;gap:.4rem}
+.callout ol li::marker{color:var(--c);font-family:var(--display)}
+.ticks{list-style:none;display:grid;gap:.5rem;padding:0!important}
+.ticks li{display:flex;gap:.6rem;align-items:baseline}
+.ticks .ms{color:var(--c);flex:none;font-size:1.15rem;translate:0 .15em}
+.poster{display:grid;grid-template-columns:7.5rem minmax(0,1fr);gap:1rem;align-items:center;padding:.9rem;border-radius:1.1rem;background:var(--g1);border:1px solid var(--line);text-decoration:none;transition:border-color .25s,box-shadow .25s}
+.poster:hover{border-color:var(--amber);box-shadow:0 0 28px var(--glow)}
+.poster__thumb{aspect-ratio:16/10;border-radius:.7rem;display:grid;place-items:center;background:radial-gradient(circle at 50% 50%,var(--g3),var(--scrim));position:relative;overflow:clip}
+.poster__thumb .ms{font-size:2.6rem;color:var(--amber);filter:drop-shadow(0 0 10px var(--glow))}
+.poster b{font:500 1.15rem/1.25 var(--display);display:block}
+.poster small{display:block;color:var(--ink-3);font-size:.8rem;margin-block-start:.25rem}
+.poster p{color:var(--ink-2);font-size:.92rem;margin-block-start:.25rem}
+.poster--link{grid-template-columns:3rem minmax(0,1fr)}
+.poster--link .poster__thumb{aspect-ratio:1;border-radius:50%}
+.poster--link .poster__thumb .ms{font-size:1.5rem}
+.nextpage{display:grid;gap:.3rem;padding:1.4rem 1.5rem;border-radius:1.25rem;border:1px solid color-mix(in oklch,var(--amber),transparent 55%);background:linear-gradient(135deg,var(--amber-soft),transparent 60%),var(--g1);text-decoration:none;box-shadow:0 0 36px -10px var(--glow)}
+.nextpage .eyebrow{color:var(--ember)}
+.nextpage b{font:400 1.5rem/1.15 var(--display)}
+.nextpage p{color:var(--ink-2);font-size:.95rem}
+.pager{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-block-start:1rem}
+.pager a{display:grid;gap:.2rem;padding:1rem 1.1rem;border-radius:1rem;border:1px solid var(--line);background:var(--g1);text-decoration:none;min-width:0}
+.pager a:last-child{text-align:end}
+.pager a:hover{border-color:var(--amber)}
+.pager b{font:500 1.1rem/1.2 var(--display)}
+.pager .eyebrow{display:flex;gap:.3rem;align-items:center}
+.pager a:last-child .eyebrow{justify-content:end}
+@media (max-width:480px){.pager,.ranknav{grid-template-columns:1fr}.pager a:last-child,.ranknav a:last-child{text-align:start}.pager a:last-child .eyebrow,.ranknav a:last-child .eyebrow{justify-content:start}}
+.drawer{display:flex;justify-content:flex-end;margin-block:-.5rem .5rem}
+.drawer summary{list-style:none;cursor:pointer;display:inline-flex;align-items:center;gap:.5rem;padding:.6rem .9rem;border-radius:999px;font:600 .84rem/1 var(--body);color:var(--ink-2)}
+.drawer summary::-webkit-details-marker{display:none}
+.drawer[open] summary{color:var(--ember)}
+.drawer__panel{position:fixed;z-index:45;inset-inline-end:max(16px,env(safe-area-inset-right,0px));inset-block-start:calc(var(--head-h) + .75rem);padding:1rem;max-height:calc(100svh - var(--head-h) - var(--proto-h) - 7rem);overflow:auto;width:min(22rem,calc(100vw - 2 * var(--gutter)))}
+.drawer__panel h2{font-size:1.1rem;font-weight:500;margin-block-end:.5rem}
+.rail__toc summary{list-style:none}.rail__toc summary::-webkit-details-marker{display:none}
+.node{text-transform:none}
+.toc{list-style:none;display:grid;gap:.6rem}
+.toc .eyebrow{display:block;margin-block-end:.2rem;font-size:.66rem}
+.toc ul{list-style:none;display:grid;gap:.05rem}
+.toc a{display:grid;grid-template-columns:1.7rem minmax(0,1fr);gap:.4rem;align-items:baseline;padding:.3rem .5rem;border-radius:.5rem;text-decoration:none;font-size:.88rem;color:var(--ink-2)}
+.toc a:hover{background:var(--g2);color:var(--ink)}
+.toc a[aria-current="page"]{color:var(--ember);background:var(--amber-soft)}
+.toc .n{font-family:var(--display);color:var(--ember);font-size:.95rem}
+@media (min-width:1200px){.drawer{display:none}}
+
+/* ---------- search: lantern panels ---------- */
+.sr-head{display:grid;gap:.5rem;max-width:60ch;margin-block-end:2rem}
+.sr-head h1{font-size:clamp(2.3rem,5vw,3.6rem);font-weight:300}
+.sr-head p{color:var(--ink-2)}
+.sr-count{font-size:.9rem;color:var(--ink-3);margin-block-start:.6rem}
+.sr-count b{color:var(--ember);font-weight:600}
+.panels{list-style:none;display:grid;gap:1rem}
+.panel{display:grid;grid-template-columns:7rem minmax(0,1fr);gap:1.25rem;padding:1.25rem;border-radius:1.35rem;background:var(--g1);border:1px solid var(--line);position:relative;overflow:clip;transition:border-color .25s,box-shadow .25s}
+.panel::before{content:"";position:absolute;inset-block:0;inset-inline-start:-4rem;width:16rem;background:radial-gradient(circle at 25% 50%,var(--glow),transparent 60%);opacity:.6;pointer-events:none}
+.panel:hover{border-color:color-mix(in oklch,var(--amber),transparent 50%);box-shadow:0 0 36px -8px var(--glow)}
+.panel__lantern{position:relative;display:grid;justify-items:center;align-content:start;gap:.6rem;text-decoration:none;text-align:center}
+.panel__lantern img,.panel__lantern .roundel{width:6rem;height:6rem;border-radius:50%;object-fit:cover;border:1px solid var(--line-2);box-shadow:0 0 0 5px var(--g2),0 0 28px var(--glow)}
+.panel__lantern .roundel{display:grid;place-items:center;align-content:center;background:radial-gradient(circle at 50% 30%,var(--g3),var(--g1))}
+.panel__lantern .roundel b{font:300 2.6rem/1 var(--display);color:var(--ember);text-shadow:0 0 16px var(--glow)}
+.panel__lantern .roundel small{font:600 .6rem/1 var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+.panel__head{display:flex;flex-wrap:wrap;gap:.3rem 1rem;align-items:baseline}
+.panel__head h2{font-size:1.5rem;font-weight:500}
+.panel__head h2 a{text-decoration:none}
+.panel__head h2 a:hover{color:var(--ember)}
+.panel__head small{font-size:.8rem;color:var(--ink-3)}
+.hits{list-style:none;margin-block-start:.75rem;display:grid}
+.hit{display:grid;grid-template-columns:auto minmax(0,1fr);gap:.2rem .8rem;align-items:baseline;padding-block:.65rem;border-block-start:1px solid var(--line)}
+.hit .node{font-size:.85rem;min-width:2rem;height:1.8rem;align-self:start}
+.hit b{font:500 1.05rem/1.3 var(--display);display:block}
+.hit b a{text-decoration:none}
+.hit b a:hover{color:var(--ember)}
+.hit p{font-size:.95rem;color:var(--ink-2)}
+@media (max-width:640px){.panel{grid-template-columns:1fr;gap:.9rem}.panel__lantern{grid-template-columns:4rem minmax(0,1fr);justify-items:start;text-align:start;align-items:center}.panel__lantern img,.panel__lantern .roundel{width:4rem;height:4rem}.panel__lantern .roundel b{font-size:1.8rem}.panel__lantern .roundel small{display:none}}
+
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.progress{display:none}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+(function(){
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const ms = (n, extra='') => `<span class="ms ${extra}" aria-hidden="true">${n}</span>`;
+const isMBU = site => site.key === 'mbu';
+const cur = (ctx, page) => ctx.page === page ? 'aria-current="page"' : '';
+const safeText = (node) => node.textFormat === 'html' ? node.text : esc(node.text);
+const modeLabel = m => !m ? '' : m.type === 'all' ? 'Do all of the following' : `Do ${['','one','two','three','four','five'][m.count] || m.count} of the following`;
+const crumbUrls = (site) => ({ 'Home':'/', 'Merit Badges':'/merit-badges/', 'Scouts BSA':'/scouts-bsa/', 'Rank Advancement':'/scouts-bsa/ranks/',
+  [site.award.title]:site.award.url, [`${site.award.title} ${site.awardLabel}`]:site.award.url, 'Requirements':site.award.requirementsUrl, [site.guideLabel]:site.award.guideUrl, 'Search Requirements':'/search/' });
+const crumbs = (site, key) => {
+  const items = site.breadcrumbs[key], urls = crumbUrls(site);
+  return `<nav class="crumbs" aria-label="Breadcrumb">${items.map((t,i)=> i===items.length-1
+    ? `<span aria-current="page">${esc(t)}</span>`
+    : `<a href="${urls[t] || '/'}">${esc(t)}</a>${ms('chevron_right')}`).join('')}</nav>`;
+};
+const navLinks = (site, ctx) => [
+  ...site.nav.map(n => ({ label:n.name, href:n.url })),
+  { label: site.cta.label, href: site.cta.href },
+  { label: 'Search requirements', href: '/search/', page:'search' },
+];
+const header = (site, ctx) => {
+  const links = navLinks(site, ctx);
+  return `
+<header class="sky"><div class="wrap"><div class="sky__in glass">
+  <a class="sky__brand" href="/">${ms('local_fire_department','ms--fill')}<span class="sky__long">${esc(site.name)}</span><span class="sky__short">${esc(site.short)}</span></a>
+  <nav class="sky__nav" aria-label="Site">
+    ${links.filter(l=>!l.page).map(l=>`<a href="${l.href}">${esc(l.label)}</a>`).join('')}
+    <a class="sky__icon" href="/search/" ${cur(ctx,'search')} aria-label="Search requirements" title="Search requirements">${ms('search')}</a>
+    <button type="button" class="sky__icon" data-toggle-theme aria-label="Switch to ${ctx.dark?'dawn (light)':'night (dark)'} theme" title="Theme">${ms(ctx.dark?'wb_twilight':'bedtime')}</button>
+    <details class="sky__menu"><summary aria-label="Menu">${ms('menu')} Menu</summary>
+      <div class="sky__drop glass">${links.map(l=>`<a href="${l.href}" ${l.page?cur(ctx,l.page):''}>${esc(l.label)} ${ms('chevron_right')}</a>`).join('')}</div>
+    </details>
+  </nav>
+</div></div></header>`;
+};
+const footer = site => `
+<footer class="embers"><div class="wrap">
+  <div class="embers__in">
+    <div><div class="embers__brand">${ms('local_fire_department','ms--fill')} ${esc(site.name)}</div><p>${esc(site.tagline)}</p></div>
+    ${site.footer.map(c=>`<div><h3>${esc(c.title)}</h3><ul>${c.links.map(l=>`<li><a href="${l.href}">${esc(l.label)}</a></li>`).join('')}</ul></div>`).join('')}
+  </div>
+  <div class="embers__base"><span>© 2026 ${esc(site.name)} · ${esc(site.domain)}</span><span>Requirement text © Scouting America</span></div>
+</div></footer>`;
+const searchForm = (site, q='', page=false) => `
+<form class="lantern-search ${page?'lantern-search--page':''}" action="/search/" role="search">
+  ${ms('search')}<label class="sr" for="q">Search requirements</label>
+  <input id="q" type="search" name="q" value="${esc(q)}" placeholder="Find a requirement across all ${esc(site.awardPlural)} — ${isMBU(site)?'knots, first aid, budget':'knot, map, first aid'}" autocomplete="off">
+  <button type="submit">Search</button>
+</form>`;
+const awardLinks = (site, ctx) => [
+  ['award','Overview','info',site.award.url],['requirements','Requirements','checklist',site.award.requirementsUrl],['guide',site.guideLabel.replace('Digital ',''),'menu_book',site.award.guideUrl]
+];
+const identity = (site, small=false) => {
+  const a = site.award;
+  return `<div class="rail__id">
+    ${a.emblem ? `<img src="${a.emblem}" alt="${esc(a.title)} ${esc(a.label)} emblem">` : `<div class="rail__lvl" aria-hidden="true">${a.level}</div>`}
+    <div class="min0"><small>${isMBU(site) ? esc(a.category) : `${esc(a.label)} ${a.level} of ${a.totalLevels}`}</small><h2>${esc(a.title)}</h2></div>
+  </div>`;
+};
+const rail = (site, ctx, extra='') => `
+<aside class="rail glass" aria-label="${esc(site.award.title)} ${esc(site.award.label)}">
+  ${identity(site)}
+  <ul class="rail__links">${awardLinks(site,ctx).map(([p,l,i,h])=>`<li><a href="${h}" ${cur(ctx,p)}>${ms(i)}${esc(l)}</a></li>`).join('')}</ul>
+  <div class="rail__meta">
+    <span><b>${site.award.reqCount}</b> requirements</span>
+    ${isMBU(site) && site.award.eagle ? `<span>${ms('star','ms--fill')} <b>Eagle-required</b></span>` : ''}
+    <span>Updated <b>${esc(site.award.updated)}</b></span>
+  </div>
+  ${extra}
+</aside>`;
+const tabs = (site, ctx) => `<nav class="tabs glass" aria-label="${esc(site.award.title)} sections">${awardLinks(site,ctx).map(([p,l,i,h])=>`<a href="${h}" ${cur(ctx,p)}>${ms(i)}${p==='guide'?'Guide':esc(l)}</a>`).join('')}</nav>`;
+const page = (site, ctx, body, opts={}) => header(site,ctx) + body + footer(site) + (opts.tabs ? tabs(site,ctx) : '');
+
+/* ---------- HOME ---------- */
+function home(site, ctx){
+  const mbu = isMBU(site);
+  const hero = `
+<section class="hero" aria-labelledby="h1">
+  <img src="${site.hero.image}" alt="${esc(site.hero.alt)}">
+  <div class="wrap"><div class="hero__in">
+    <span class="eyebrow">${esc(site.domain)}</span>
+    <h1 id="h1">${mbu ? `Every merit badge requirement, <em>word for word</em>` : `The trail to Eagle, <em>one rank at a time</em>`}</h1>
+    <p>${esc(site.tagline)} ${mbu ? `Official text for all ${site.counts.badges} badges, a study guide for each, and one search across everything.` : `Official text for all ${site.counts.ranks} Scouts BSA ranks, a requirements guide for each, and one search across everything.`}</p>
+    ${searchForm(site)}
+    <div class="hero__cta"><a class="btn btn--lit" href="${site.cta.href}">${ms('arrow_forward')}${esc(site.cta.label)}</a>${mbu ? `<a class="btn" href="/merit-badges/eagle-required/">${ms('star')}${site.counts.eagleBadges} Eagle-required badges</a>` : `<a class="btn" href="${site.fieldGuides[0].url}">${ms('explore')}Field guides</a>`}</div>
+  </div></div>
+</section>`;
+  const body = mbu ? `
+<main class="wrap">
+  <section class="sec" aria-labelledby="h-feat">
+    <div class="sec__head"><div><h2 id="h-feat">Tonight’s lanterns</h2><p>Three badges to start with.</p></div><a href="${site.cta.href}">All ${site.counts.badges} badges ${ms('arrow_forward')}</a></div>
+    <div class="featured">${site.featured.map(b=>`<a class="lantern lantern--big" href="${b.url}"><img src="${b.emblem}" alt="${esc(b.title)} merit badge emblem"><h3>${esc(b.title)}</h3><p>${esc(b.category)} · ${b.reqCount} requirements</p>${b.eagle?`<small>${ms('star','ms--fill')} Eagle-required</small>`:''}</a>`).join('')}</div>
+  </section>
+  <section class="sec" aria-labelledby="h-eagle">
+    <div class="sec__head"><div><h2 id="h-eagle">The Eagle constellation</h2><p>${site.counts.eagleBadges} merit badges are on the Eagle-required list. Each glows a little brighter.</p></div><a href="/merit-badges/eagle-required/strategy/">Eagle badge strategy ${ms('arrow_forward')}</a></div>
+    <div class="constellation">${site.eagle.map(b=>`<a class="lantern" href="${b.url}"><span class="eagle">${ms('star','ms--fill')}</span><img src="${b.emblem}" alt="${esc(b.title)} merit badge emblem"><h3>${esc(b.title)}</h3><small>${b.reqCount} requirements</small></a>`).join('')}</div>
+  </section>
+  <section class="sec" aria-labelledby="h-cats">
+    <div class="sec__head"><div><h2 id="h-cats">Browse by field</h2><p>${site.counts.categories} fields of interest, ${site.counts.badges} badges.</p></div></div>
+    <ul class="cats">${site.categories.map(c=>`<li><a href="${c.url}"><span class="cats__name">${esc(c.name)}</span><span class="cats__n">${c.count} badges</span>${ms('chevron_right')}</a></li>`).join('')}</ul>
+  </section>
+  <section class="sec" aria-labelledby="h-steps">
+    <div class="sec__head"><h2 id="h-steps">What’s on every badge page</h2></div>
+    <div class="steps">${site.steps.map((s,i)=>`<div class="step"><span class="node node--lit">${i+1}</span><h3>${esc(s.title)}</h3><p>${esc(s.text)}</p></div>`).join('')}</div>
+  </section>
+</main>` : `
+<main class="wrap">
+  <section class="sec" aria-labelledby="h-ranks">
+    <div class="sec__head"><div><h2 id="h-ranks">Seven ranks, one ascent</h2><p>Scouts BSA ranks are earned in sequence. Pick a rank to read its requirements.</p></div><a href="${site.cta.href}">All ranks ${ms('arrow_forward')}</a></div>
+    <div class="skyline"><div class="stars" aria-hidden="true"></div>
+      <div class="ascent">
+        <svg class="ascent__line" viewBox="0 0 700 300" preserveAspectRatio="none" aria-hidden="true"><path d="M50 138 L150 116 L250 94 L350 71 L450 49 L550 27 L650 5"/></svg>
+        ${site.ranks.map(r=>`<a class="star ${r.slug===site.award.slug?'star--now':''}" href="${r.url}" style="--lvl:${r.level}"><span class="node">${r.level}</span><h3>${esc(r.title)}</h3><small>${r.leafCount} requirements<br>${r.groups} groups</small></a>`).join('')}
+      </div>
+      <div class="phases">${site.phases.map(p=>`<div class="phase"><span class="eyebrow">Ranks ${esc(p.ranks)}</span><h3>${esc(p.title)}</h3><p>${esc(p.text)}</p></div>`).join('')}</div>
+    </div>
+  </section>
+  <section class="sec" aria-labelledby="h-fg">
+    <div class="sec__head"><div><h2 id="h-fg">Field guides</h2><p>Skills that span several ranks, gathered in one place.</p></div></div>
+    <div class="guides">${site.fieldGuides.map(g=>`<a href="${g.url}">${ms('explore')}${esc(g.title)}</a>`).join('')}</div>
+  </section>
+  <section class="sec" aria-labelledby="h-more">
+    <div class="sec__head"><div><h2 id="h-more">Beyond the ranks</h2></div></div>
+    <div class="guides">${site.footer.find(c=>c.title==='Leadership').links.map(g=>`<a href="${g.href}">${ms('groups')}${esc(g.label)}</a>`).join('')}</div>
+  </section>
+</main>`;
+  return page(site, ctx, hero + body);
+}
+
+/* ---------- AWARD ---------- */
+function award(site, ctx){
+  const a = site.award, mbu = isMBU(site);
+  const emblem = a.emblem
+    ? `<div class="emblem-float" style="--emblem:url('${a.emblem}')"><img src="${a.emblem}" alt="${esc(a.title)} ${esc(a.label)} emblem"></div>`
+    : `<div class="level-float" role="img" aria-label="${esc(a.label)} ${a.level} of ${a.totalLevels}"><b>${a.level}<small> / ${a.totalLevels}</small></b><span>${esc(a.program)} ${esc(a.label)}</span></div>`;
+  const facts = mbu ? [
+      ['Requirements', a.reqCount], ['Field', a.category, true], ['Eagle', a.eagle ? 'Required' : 'Elective', true], ['Updated', a.updated, true]
+    ] : [
+      ['Requirements', a.reqCount], ['Groups', a.groupCount], ['Program', a.program, true], ['Updated', a.updated, true]
+    ];
+  const resources = mbu ? [
+      ['Official requirements', a.officialUrl, 'verified'], ['Merit badge pamphlet', a.pamphletUrl, 'auto_stories'], ['Printable worksheet', a.worksheetUrl, 'edit_document'], [`Print the ${site.guideLabel}`, a.guidePrintUrl, 'print']
+    ] : [[`Print the ${site.guideLabel}`, a.guidePrintUrl, 'print']];
+  const top = a.requirements;
+  const body = `
+<main class="wrap">
+  ${crumbs(site,'award')}
+  <div class="stage">
+    <div class="min0">
+      <section class="aw-hero" aria-labelledby="h1">
+        <div class="aw-hero__text min0">
+          <div class="tags">
+            <span class="tag">${ms(mbu?'category':'military_tech')}${mbu ? esc(a.category) : `${esc(a.program)} · ${esc(a.label)} ${a.level} of ${a.totalLevels}`}</span>
+            ${mbu && a.eagle ? `<span class="tag tag--eagle">${ms('star','ms--fill')}Eagle-required</span>` : ''}
+          </div>
+          <h1 id="h1">${esc(a.title)} <span>${esc(a.label)}</span></h1>
+          <p class="lede">${esc(a.description)}</p>
+          <div class="ctas"><a class="btn btn--lit" href="${a.requirementsUrl}">${ms('checklist')}Read the ${a.reqCount} requirements</a><a class="btn" href="${a.guideUrl}">${ms('menu_book')}${esc(site.guideLabel)}</a></div>
+        </div>
+        <div class="aw-hero__emblem">${emblem}</div>
+      </section>
+      <section class="facts glass" aria-label="At a glance">${facts.map(([k,v,sm])=>`<div><span class="eyebrow">${esc(k)}</span><b class="${sm?'sm':''}">${esc(v)}</b></div>`).join('')}</section>
+      <h2 class="aw-h2">What you’ll do <small>${top.length} ${mbu ? 'requirements' : 'requirement groups'} · ${a.reqCount} in all</small></h2>
+      <ol class="litrail">${top.map(r=>`<li><span class="node">${esc(r.path)}</span><a href="${a.requirementsUrl}#req-${r.path.replace(/\./g,'-')}"><h3>${esc(r.title || r.text)}</h3>${r.title && r.text && r.text !== 'Do the following:' ? `<p>${r.textFormat==='html'? r.text : esc(r.text)}</p>` : r.children.length ? `<p>${r.children.length} parts${r.mode?.type==='select' ? ` — ${modeLabel(r.mode).toLowerCase()}` : ''}${r.children.filter(c=>c.title).length ? ': ' + esc(r.children.filter(c=>c.title).map(c=>c.title).join(', ')) : ''}</p>` : ''}</a></li>`).join('')}</ol>
+      <h2 class="aw-h2">Resources</h2>
+      <div class="resources">${resources.map(([l,h,i])=>`<a class="btn btn--quiet" href="${h}">${ms(i)}${esc(l)}</a>`).join('')}</div>
+      ${mbu ? '' : `<nav class="ranknav" aria-label="Neighbouring ranks">
+        ${a.prev ? `<a href="${a.prev.url}"><span class="eyebrow">${ms('arrow_back')} Rank ${a.level-1}</span><b>${esc(a.prev.title)}</b></a>` : '<span></span>'}
+        ${a.next ? `<a href="${a.next.url}"><span class="eyebrow">Rank ${a.level+1} ${ms('arrow_forward')}</span><b>${esc(a.next.title)}</b></a>` : ''}
+      </nav>
+      ${a.footerNote ? `<aside class="note">${a.footerNote}</aside>` : ''}`}
+    </div>
+    ${rail(site, ctx)}
+  </div>
+</main>`;
+  return page(site, ctx, body, {tabs:true});
+}
+
+/* ---------- REQUIREMENTS ---------- */
+const extras = (n) => {
+  const items = [];
+  if (n.guide) items.push(`<a class="chip chip--guide" href="${n.guide}">${ms('menu_book')}<span>Guide</span></a>`);
+  for (const r of n.resources) items.push(`<a class="chip" href="${r.url}" title="${esc(r.title)}">${ms(/\(video\)/i.test(r.title)?'play_circle':/\(pdf\)/i.test(r.title)?'picture_as_pdf':'open_in_new')}<span>${esc(r.title.replace(/\s*\((video|website|pdf)\)\s*$/i,''))}</span></a>`);
+  return items.length ? `<div class="extras">${items.join('')}</div>` : '';
+};
+const listBlock = n => n.list ? `<ul class="bul">${n.list.items.map(i=>`<li>${i}</li>`).join('')}</ul>` : '';
+const kids = (n) => n.children.length ? `<ol class="kids ${n.mode?.type==='select'?'kids--select':''}" aria-label="Parts of requirement ${esc(n.path)}">${n.children.map(kid).join('')}</ol>` : '';
+function kid(n){
+  return `<li class="kid" id="req-${n.path.replace(/\./g,'-')}">
+    <span class="node">${esc(n.marker)}</span>
+    <div class="min0">
+      ${n.title ? `<span class="kid__title">${esc(n.title)}</span>` : ''}
+      ${n.text ? `<p class="verbatim">${safeText(n)}</p>` : ''}
+      ${n.mode ? `<span class="mode mode--${n.mode.type} mode--kid">${ms(n.mode.type==='select'?'alt_route':'done_all')}${modeLabel(n.mode)}</span>` : ''}
+      ${listBlock(n)}
+      ${kids(n)}
+      ${extras(n)}
+    </div>
+  </li>`;
+}
+function card(n){
+  const stem = n.text && n.text !== 'Do the following:' ? `<p class="verbatim">${safeText(n)}</p>` : (n.text ? `<p class="verbatim" style="color:var(--ink-2)">${esc(n.text)}</p>` : '');
+  return `<li class="card" id="req-${n.path.replace(/\./g,'-')}">
+    <div class="card__head">
+      <span class="node">${esc(n.path)}</span>
+      <div class="card__title">
+        ${n.title ? `<h2>${esc(n.title)}</h2>` : `<h2 class="untitled">Requirement ${esc(n.path)}</h2>`}
+        ${n.mode ? `<span class="mode mode--${n.mode.type}">${ms(n.mode.type==='select'?'alt_route':'done_all')}${modeLabel(n.mode)}</span>` : ''}
+      </div>
+    </div>
+    <div class="card__body">
+      ${stem}
+      ${listBlock(n)}
+      ${kids(n)}
+    </div>
+    ${(n.guide || n.resources.length) ? `<div class="card__foot">${extras(n)}</div>` : ''}
+  </li>`;
+}
+function requirements(site, ctx){
+  const a = site.award, mbu = isMBU(site);
+  const secs = `<ol class="rail__secs" aria-label="Jump to requirement">${a.requirements.map(r=>`<li><a href="#req-${r.path.replace(/\./g,'-')}"><span class="n">${esc(r.path)}</span><span class="min0">${esc(r.title || 'Requirement '+r.path)}</span></a></li>`).join('')}</ol>`;
+  const body = `
+<main class="wrap">
+  ${crumbs(site,'requirements')}
+  <div class="stage stage--wide">
+    <div class="min0">
+      <header class="req-head">
+        <span class="eyebrow eyebrow--ember">${esc(a.title)} ${esc(a.label)}${mbu ? (a.eagle ? ' · Eagle-required' : '') : ` · ${a.level} of ${a.totalLevels}`}</span>
+        <h1>The <em>official</em> requirements</h1>
+        <p>${a.reqCount} requirements in ${a.requirements.length} ${mbu?'numbered requirements':'groups'}, in Scouting America’s own words. Updated ${esc(a.updated)}.</p>
+        <div class="legend" aria-label="How to read this page"><span><i class="curated">Aa</i> Serif titles are our short labels</span><span><i></i> Amber marks a choice — how many parts you must do</span><span>Plain text is the official wording</span></div>
+      </header>
+      <ol class="spot">${a.requirements.map(card).join('')}</ol>
+      ${a.footerNote ? `<aside class="note">${a.footerNote}</aside>` : ''}
+      <div class="ctas" style="margin-block-start:2.5rem"><a class="btn btn--lit" href="${a.guideUrl}">${ms('menu_book')}Open the ${esc(site.guideLabel)}</a><a class="btn" href="${a.guidePrintUrl}">${ms('print')}Print the guide</a></div>
+    </div>
+    ${rail(site, ctx, secs)}
+  </div>
+</main>`;
+  return page(site, ctx, body, {tabs:true});
+}
+
+/* ---------- GUIDE ---------- */
+function block(b){
+  switch(b.type){
+    case 'p': return `<p class="prose">${b.html}</p>`;
+    case 'h2': return `<h2>${esc(b.text)}</h2>`;
+    case 'h3': return `<h3>${esc(b.text)}</h3>`;
+    case 'ul': return `<ul class="prose">${b.items.map(i=>`<li>${i}</li>`).join('')}</ul>`;
+    case 'ol': return `<ol class="prose">${b.items.map(i=>`<li>${i}</li>`).join('')}</ol>`;
+    case 'tip': return `<aside class="callout callout--tip"><div class="callout__kick">${ms('lightbulb')}Tip</div><p class="prose">${b.html}</p></aside>`;
+    case 'safety': return `<aside class="callout callout--safety"><div class="callout__kick">${ms('health_and_safety')}Safety first</div><p class="prose">${b.html}</p></aside>`;
+    case 'be-prepared': return `<aside class="callout ${b.safety?'callout--safety':'callout--prep'}"><div class="callout__kick">${ms('emergency_home')}Be prepared</div><h3>${esc(b.title)}</h3><ol>${b.items.map(i=>`<li>${i}</li>`).join('')}</ol></aside>`;
+    case 'checklist': return `<aside class="callout callout--prep"><div class="callout__kick">${ms('checklist')}Checklist</div><h3>${esc(b.title)}</h3>${b.subtitle?`<p class="sub">${esc(b.subtitle)}</p>`:''}<ul class="ticks">${b.items.map(i=>`<li>${ms('check_circle')}<span>${i}</span></li>`).join('')}</ul></aside>`;
+    case 'image': return `<div class="bleed"><figure style="--ar:${b.width}/${b.height}"><img src="${b.src}" width="${b.width}" height="${b.height}" alt="${esc(b.alt)}"></figure>${b.caption?`<figcaption>${esc(b.caption)}</figcaption>`:''}</div>`;
+    case 'video': return `<a class="poster" href="${b.url}"><span class="poster__thumb">${ms('play_circle','ms--fill')}</span><span class="min0"><b>${esc(b.title)}</b><small>Video · ${esc(b.channel)} · opens in a new tab</small></span></a>`;
+    case 'external-link': return `<a class="poster poster--link" href="${b.url}"><span class="poster__thumb">${ms('open_in_new')}</span><span class="min0"><b>${esc(b.title)}</b>${b.description?`<p>${esc(b.description)}</p>`:''}</span></a>`;
+    case 'next-page': return `<a class="nextpage" href="${b.url}"><span class="eyebrow">${esc(b.text)} — next</span><b>${esc(b.title)}</b><p>${esc(b.teaser)}</p></a>`;
+    default: return '';
+  }
+}
+const toc = (site, g) => `<ol class="toc">${site.award.guideNav.map(sec=>`<li><span class="eyebrow">${esc(sec.title)}</span><ul>${sec.items.map(it=>`<li><a href="${it.url}" ${it.url===g.url?'aria-current="page"':''}><span class="n">${esc(it.path || '·')}</span><span class="min0">${esc(it.title)}</span></a></li>`).join('')}</ul></li>`).join('')}</ol>`;
+function guide(site, ctx){
+  const a = site.award, g = site.guide;
+  const body = `
+<div class="progress" aria-hidden="true"></div>
+<main class="wrap">
+  ${crumbs(site,'guide')}
+  <details class="drawer"><summary class="glass">${ms('toc')} Contents</summary><div class="drawer__panel glass"><h2>${esc(site.guideLabel)}</h2>${toc(site,g)}</div></details>
+  <div class="read-stage">
+    <article class="read min0">
+      <header class="gd-head">
+        <div class="kicker"><span class="node">${esc(g.path)}</span><span>${esc(g.kicker)}</span></div>
+        <h1>${esc(g.title)}</h1>
+        <div class="gd-meta"><span>${esc(a.title)} ${esc(a.label)} · <a href="${a.guideUrl}">${esc(site.guideLabel)}</a></span><span>${a.guidePages} pages</span><span><a href="${a.guidePrintUrl}">${ms('print')} Print the guide</a></span></div>
+      </header>
+      <blockquote class="quote"><span class="eyebrow eyebrow--ember"><span class="node">${esc(g.requirement.number)}</span>Official requirement</span><p class="verbatim">${g.requirement.text}</p></blockquote>
+      ${g.blocks.map(block).join('')}
+      <nav class="pager" aria-label="Guide pages">
+        ${g.prev ? `<a href="${g.prev.url}"><span class="eyebrow">${ms('arrow_back')} Previous</span><b>${esc(g.prev.title)}</b></a>` : '<span></span>'}
+        ${g.next ? `<a href="${g.next.url}"><span class="eyebrow">Next ${ms('arrow_forward')}</span><b>${esc(g.next.title)}</b></a>` : ''}
+      </nav>
+    </article>
+    ${rail(site, ctx, `<details class="rail__toc" open><summary class="eyebrow" style="cursor:pointer;margin-block-start:1rem;padding-block-start:1rem;border-block-start:1px solid var(--line)">Contents</summary>${toc(site,g)}</details>`)}
+  </div>
+</main>`;
+  return page(site, ctx, body, {tabs:true});
+}
+
+/* ---------- SEARCH ---------- */
+const hl = (text, q) => esc(text).replace(new RegExp('('+q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\w*)','gi'), '<mark>$1</mark>');
+function search(site, ctx){
+  const s = site.search, mbu = isMBU(site);
+  const body = `
+<main class="wrap">
+  ${crumbs(site,'search')}
+  <header class="sr-head">
+    <h1>Search the <em style="color:var(--ink-2)">requirements</em></h1>
+    <p>${esc(s.description)}</p>
+    ${searchForm(site, s.query, true)}
+    <p class="sr-count"><b>${s.total}</b> ${esc(site.awardPlural)} mention “${esc(s.query)}”${s.results.length < s.total ? ` — showing ${s.results.length}` : ''}</p>
+  </header>
+  <ol class="panels" aria-label="Results">${s.results.map(r=>`<li class="panel">
+    <a class="panel__lantern" href="${r.url}" aria-label="${esc(r.title)} ${esc(site.awardLabel)}">
+      ${r.emblem ? `<img src="${r.emblem}" alt="">` : `<span class="roundel" aria-hidden="true"><b>${r.level}</b><small>of ${site.counts.ranks}</small></span>`}
+    </a>
+    <div class="min0">
+      <div class="panel__head"><h2><a href="${r.url}">${esc(r.title)} ${esc(site.awardLabel)}</a></h2><small>${mbu ? `${esc(r.category)}${r.eagle?' · Eagle-required':''} · ${r.reqCount} requirements` : `Rank ${r.level} of ${site.counts.ranks}`} · ${r.hits.length} ${r.hits.length===1?'match':'matches'}</small></div>
+      <ol class="hits">${r.hits.map(h=>`<li class="hit"><span class="node">${esc(h.path)}</span><div class="min0">${h.title ? `<b><a href="${r.url}requirements/#req-${h.path.replace(/\./g,'-')}">${hl(h.title, s.query)}</a></b>` : ''}<p>${hl(h.excerpt, s.query)}</p></div></li>`).join('')}</ol>
+    </div>
+  </li>`).join('')}</ol>
+</main>`;
+  return page(site, ctx, body);
+}
+
+window.OPTION = {
+  key:'E', name:'Night Watch', thesis:'The campfire at night: dark-first, emblems glow like lanterns, amber marks every choice.',
+  render:{ home, award, requirements, guide, search },
+  mount(ctx, app){
+    app.querySelector('[data-toggle-theme]')?.addEventListener('click', ()=> window.PROTO.go({ theme: ctx.dark ? 'light' : 'dark' }));
+    app.querySelectorAll('form.lantern-search').forEach(f=>f.addEventListener('submit', e=>{ e.preventDefault(); window.PROTO.go({page:'search'}); }));
+    const sync = ()=>{ const bar = document.querySelector('.proto-bar'); if(bar) document.documentElement.style.setProperty('--proto-h', (bar.classList.contains('proto-bar--hidden') ? 28 : bar.offsetHeight) + 'px'); };
+    requestAnimationFrame(sync); setTimeout(sync, 50); setTimeout(sync, 400);
+    if (!window.__nwResize){ window.__nwResize = true; addEventListener('resize', sync); document.addEventListener('click', e=>{ if(e.target.closest('.proto-bar__hide')) setTimeout(sync,0); }); }
+  }
+};
+})();
+</script>
+<script src="proto.js"></script>
+</body>
+</html>

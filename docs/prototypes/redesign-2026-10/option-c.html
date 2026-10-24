@@ -1,0 +1,779 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Option C · Ledger</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="proto.css">
+<script src="data.js"></script>
+<style>
+/* DESIGN PLAN — Option C “Ledger”
+   A dense reference tool: a spec database for people who already know what they want.
+   Tokens: --bg/--bg-2/--bg-3 olive-tinted greys (surfaces), --fg/--fg-2/--fg-3 (ink ramp), --line (1px rules),
+           --accent olive green (dark: leaf green), --gold (Eagle only), --mark (search highlight).
+   Type: Figtree for everything. Two roles: UI (500–600, letter-spaced small caps for labels) and body (400, verbatim text).
+   Verbatim vs curated: curated titles = 600 weight row headers; official text = 400 weight, full size, hung on a 2px rule.
+   Home   = toolbar + big search + directory tables (categories, Eagle table | rank table grouped by phase).
+   Award  = spec sheet: title row, facts grid, collapsed outline, resource list.
+   Reqs   = three columns: outline tree | two-column ledger (path | content) with mode rows | on-this-page + legend.
+   Guide  = three columns: guide tree | Requirement block + docs prose | TOC from h2/h3. prev/next as footer rows.
+   Search = facet rail | flat ranked rows (award · path · title · excerpt), first row selected. */
+:root{
+  --bg:oklch(0.985 0.004 110); --bg-2:oklch(0.962 0.007 110); --bg-3:oklch(0.935 0.010 110);
+  --fg:oklch(0.22 0.018 130); --fg-2:oklch(0.40 0.018 130); --fg-3:oklch(0.50 0.016 125);
+  --line:oklch(0.885 0.012 110); --line-2:oklch(0.78 0.018 115);
+  --accent:oklch(0.46 0.10 138); --accent-2:oklch(0.38 0.09 138); --accent-soft:oklch(0.93 0.035 138); --on-accent:oklch(0.99 0.01 120);
+  --gold:oklch(0.50 0.12 82); --gold-soft:oklch(0.94 0.05 88);
+  --mark:oklch(0.91 0.11 95); --sel:oklch(0.955 0.025 138);
+  --font:"Figtree",ui-sans-serif,system-ui,sans-serif;
+  --gutter:max(16px,env(safe-area-inset-left,0px)); --r:4px; --r2:6px;
+  --shadow:0 1px 2px oklch(0 0 0 / .06);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:oklch(0.195 0.010 125); --bg-2:oklch(0.23 0.011 125); --bg-3:oklch(0.275 0.012 125);
+  --fg:oklch(0.93 0.008 110); --fg-2:oklch(0.76 0.012 115); --fg-3:oklch(0.66 0.012 115);
+  --line:oklch(0.31 0.012 125); --line-2:oklch(0.42 0.015 125);
+  --accent:oklch(0.80 0.14 138); --accent-2:oklch(0.88 0.12 138); --accent-soft:oklch(0.30 0.045 138); --on-accent:oklch(0.17 0.03 138);
+  --gold:oklch(0.82 0.12 85); --gold-soft:oklch(0.32 0.05 85);
+  --mark:oklch(0.48 0.10 90); --sel:oklch(0.27 0.03 138);
+  --shadow:0 1px 2px oklch(0 0 0 / .4);
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:oklch(0.195 0.010 125); --bg-2:oklch(0.23 0.011 125); --bg-3:oklch(0.275 0.012 125);
+  --fg:oklch(0.93 0.008 110); --fg-2:oklch(0.76 0.012 115); --fg-3:oklch(0.66 0.012 115);
+  --line:oklch(0.31 0.012 125); --line-2:oklch(0.42 0.015 125);
+  --accent:oklch(0.80 0.14 138); --accent-2:oklch(0.88 0.12 138); --accent-soft:oklch(0.30 0.045 138); --on-accent:oklch(0.17 0.03 138);
+  --gold:oklch(0.82 0.12 85); --gold-soft:oklch(0.32 0.05 85);
+  --mark:oklch(0.48 0.10 90); --sel:oklch(0.27 0.03 138);
+  --shadow:0 1px 2px oklch(0 0 0 / .4);
+  color-scheme:dark}
+
+*,*::before,*::after{box-sizing:border-box;min-width:0}
+html{-webkit-text-size-adjust:100%;scroll-padding-block-start:4rem}
+body{margin:0;background:var(--bg);color:var(--fg);font:400 .9375rem/1.55 var(--font);font-variant-numeric:tabular-nums;padding-block-end:6rem}
+img{max-width:100%;height:auto;display:block}
+a{color:var(--accent-2);text-decoration:none}
+a:hover{text-decoration:underline;text-underline-offset:.16em}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:var(--r)}
+h1,h2,h3,h4{margin:0;font-weight:600;line-height:1.2;letter-spacing:-.01em;text-wrap:balance}
+h1{font-size:clamp(1.5rem,1.2rem + 1.2vw,2rem)}
+h2{font-size:1.125rem}
+h3{font-size:1rem}
+p{margin:0}
+ul,ol{margin:0;padding:0}
+button{font:inherit;color:inherit}
+.ms{font-family:'Material Symbols Rounded';font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 20;font-size:1.2em;line-height:1;display:inline-block;vertical-align:-.22em;font-weight:400}
+.ms--fill{font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 20}
+.lbl{font-size:.6875rem;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--fg-3);line-height:1.3}
+.num{font-variant-numeric:tabular-nums;font-weight:600;color:var(--fg-2)}
+.muted{color:var(--fg-3)}
+mark{background:var(--mark);color:inherit;border-radius:2px;padding-inline:.08em}
+kbd{font:500 .6875rem/1 var(--font);border:1px solid var(--line-2);border-block-end-width:2px;border-radius:3px;padding:.2em .4em;color:var(--fg-3);background:var(--bg)}
+.wrap{max-width:84rem;margin-inline:auto;padding-inline:var(--gutter) max(16px,env(safe-area-inset-right,0px))}
+.pill{display:inline-flex;align-items:center;gap:.3em;font-size:.6875rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;border:1px solid var(--line-2);border-radius:var(--r);padding:.2em .5em;color:var(--fg-2);white-space:nowrap;line-height:1.4}
+.pill--eagle{border-color:transparent;background:var(--gold-soft);color:var(--gold)}
+.pill--accent{border-color:transparent;background:var(--accent-soft);color:var(--accent-2)}
+.btn{display:inline-flex;align-items:center;gap:.4em;font-weight:600;font-size:.8125rem;border:1px solid var(--line-2);border-radius:var(--r);padding:.45em .8em;background:var(--bg);color:var(--fg);cursor:pointer;text-decoration:none;line-height:1.3;white-space:nowrap}
+.btn:hover{background:var(--bg-2);text-decoration:none;border-color:var(--fg-3)}
+.btn--primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn--primary:hover{background:var(--accent-2);border-color:var(--accent-2)}
+.btn--ghost{border-color:transparent}
+.ext::after{content:"north_east";font-family:'Material Symbols Rounded';font-size:.85em;margin-inline-start:.2em;vertical-align:-.05em;color:var(--fg-3)}
+hr.rule{border:0;border-block-start:1px solid var(--line);margin:0}
+
+/* ---------- toolbar header ---------- */
+.tb{position:sticky;inset-block-start:0;z-index:50;background:color-mix(in oklch,var(--bg) 92%,transparent);backdrop-filter:blur(8px);border-block-end:1px solid var(--line)}
+.tb__in{display:flex;align-items:center;gap:.75rem;min-height:48px}
+.tb__brand{display:flex;align-items:center;gap:.5rem;color:var(--fg);font-weight:700;font-size:.9375rem;letter-spacing:-.01em;white-space:nowrap}
+.tb__brand:hover{text-decoration:none}
+.tb__mark{width:22px;height:22px;border-radius:var(--r);background:var(--accent);color:var(--on-accent);display:grid;place-items:center;font-size:.6875rem;font-weight:700;letter-spacing:0}
+.tb__brand small{font-weight:500;color:var(--fg-3);font-size:.8125rem}
+.tb__nav{display:flex;align-items:center;gap:.1rem}
+.tb__nav a{color:var(--fg-2);font-weight:500;font-size:.8125rem;padding:.35em .6em;border-radius:var(--r)}
+.tb__nav a:hover{background:var(--bg-2);color:var(--fg);text-decoration:none}
+.tb__nav a[aria-current="page"]{color:var(--fg);background:var(--bg-3)}
+.tb__search{flex:1;max-width:34rem;margin-inline:auto;position:relative;display:flex;align-items:center}
+.tb__search > .ms{position:absolute;inset-inline-start:.6rem;color:var(--fg-3);pointer-events:none}
+.tb__search input{width:100%;height:32px;border:1px solid var(--line-2);border-radius:var(--r2);background:var(--bg-2);padding-inline:2rem 3.4rem;font:inherit;font-size:.8125rem;color:var(--fg)}
+.tb__search input::placeholder{color:var(--fg-3)}
+.tb__search input:focus{outline:2px solid var(--accent);outline-offset:-1px;background:var(--bg)}
+.tb__search kbd{position:absolute;inset-inline-end:.5rem;pointer-events:none}
+.tb__tools{display:flex;align-items:center;gap:.25rem;margin-inline-start:auto}
+.icon-btn{appearance:none;background:none;border:1px solid transparent;border-radius:var(--r);width:32px;height:32px;display:inline-grid;place-items:center;color:var(--fg-2);cursor:pointer;text-decoration:none}
+.icon-btn:hover{background:var(--bg-2);color:var(--fg);text-decoration:none}
+.tb__menu{display:none;position:relative}
+.tb__menu summary{list-style:none;cursor:pointer}
+.tb__menu summary::-webkit-details-marker{display:none}
+.tb__menu .menu{position:absolute;inset-inline-end:0;inset-block-start:calc(100% + 6px);min-width:14rem;background:var(--bg);border:1px solid var(--line-2);border-radius:var(--r2);box-shadow:0 8px 24px oklch(0 0 0 / .18);padding:.4rem;display:grid;z-index:60}
+.tb__menu .menu a{padding:.5em .7em;border-radius:var(--r);color:var(--fg);font-weight:500;font-size:.875rem}
+.tb__menu .menu a:hover{background:var(--bg-2);text-decoration:none}
+.tb__menu .menu a[aria-current="page"]{background:var(--bg-3)}
+.tb__mobile-search{display:none}
+@media (max-width:900px){.tb__nav,.tb__brand small{display:none}.tb__menu{display:block}}
+@media (max-width:640px){.tb__search{display:none}.tb__mobile-search{display:inline-grid}}
+
+/* ---------- breadcrumb ---------- */
+.crumbs{display:flex;flex-wrap:wrap;align-items:center;gap:.25rem .4rem;font-size:.75rem;color:var(--fg-3);padding-block:.75rem;font-weight:500}
+.crumbs a{color:var(--fg-3)}
+.crumbs a:hover{color:var(--fg)}
+.crumbs .ms{font-size:1rem;color:var(--line-2)}
+.crumbs [aria-current]{color:var(--fg);font-weight:600}
+
+/* ---------- footer ---------- */
+.ft{margin-block-start:4rem;border-block-start:1px solid var(--line);background:var(--bg-2)}
+.ft__in{display:grid;grid-template-columns:minmax(14rem,1.3fr) repeat(auto-fit,minmax(9rem,1fr));gap:1.5rem 2rem;padding-block:2rem}
+.ft__brand{font-weight:700;color:var(--fg)}
+.ft__brand p{color:var(--fg-2);font-size:.8125rem;margin-block-start:.3rem;max-width:28ch}
+.ft h2{font-size:.6875rem;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--fg-3);margin-block-end:.5rem}
+.ft ul{list-style:none;display:grid;gap:.2rem}
+.ft li a{color:var(--fg-2);font-size:.8125rem;font-weight:500;display:block;padding-block:.15em}
+.ft li a:hover{color:var(--fg)}
+.ft__base{border-block-start:1px solid var(--line);padding-block:.9rem;display:flex;flex-wrap:wrap;gap:.5rem 1.5rem;font-size:.75rem;color:var(--fg-3);font-weight:500}
+.ft__base span:last-child{margin-inline-start:auto}
+@media (max-width:640px){.ft__in{grid-template-columns:1fr 1fr}.ft__in>:first-child{grid-column:1/-1}}
+
+/* ---------- docs 3-column layout ---------- */
+.docs{display:grid;grid-template-columns:15.5rem minmax(0,1fr) 15rem;gap:0 2.5rem;align-items:start}
+.docs__side{mask-image:linear-gradient(#000 calc(100% - 2.5rem),transparent)}
+.docs__side,.docs__rail{position:sticky;inset-block-start:calc(48px + 1rem);max-height:calc(100dvh - 48px - 1rem);overflow:auto;padding-block-end:1rem;scrollbar-width:thin}
+.docs__main{min-width:0;padding-block-end:2rem}
+.side-sec+.side-sec{margin-block-start:1.25rem;padding-block-start:1rem;border-block-start:1px solid var(--line)}
+.side-sec>.lbl{display:block;margin-block-end:.4rem;padding-inline:.5rem}
+.side-nav{list-style:none;display:grid;gap:1px}
+.side-nav a{display:flex;align-items:center;gap:.5rem;padding:.35em .5rem;border-radius:var(--r);color:var(--fg-2);font-weight:500;font-size:.8125rem}
+.side-nav a:hover{background:var(--bg-2);color:var(--fg);text-decoration:none}
+.side-nav a[aria-current="page"]{background:var(--accent-soft);color:var(--accent-2);font-weight:600}
+.side-nav a .ms{color:var(--fg-3);font-size:1.1rem}
+.side-nav a[aria-current="page"] .ms{color:inherit}
+.tree{list-style:none;display:grid;gap:1px;font-size:.8125rem}
+.tree a{display:grid;grid-template-columns:2.4rem 1fr;gap:.4rem;padding:.3em .5rem;border-radius:var(--r);color:var(--fg-2);line-height:1.35}
+.tree a:hover{background:var(--bg-2);color:var(--fg);text-decoration:none}
+.tree a[aria-current]{background:var(--accent-soft);color:var(--accent-2);font-weight:600}
+.tree .p{font-weight:600;color:var(--fg-3);font-variant-numeric:tabular-nums}
+.tree a[aria-current] .p{color:inherit}
+.tree .tree{margin-inline-start:.9rem;border-inline-start:1px solid var(--line);padding-inline-start:.3rem}
+.tree .tree a{grid-template-columns:2rem 1fr}
+.tree .tree .tree a{grid-template-columns:2.4rem 1fr}
+.tree-grp{margin-block-start:.6rem}
+.tree-grp>.lbl{display:block;padding:.2rem .5rem;color:var(--fg-2);text-transform:none;letter-spacing:0;font-size:.75rem}
+.rail-sec+.rail-sec{margin-block-start:1.25rem;padding-block-start:1rem;border-block-start:1px solid var(--line)}
+.rail-sec>.lbl{display:block;margin-block-end:.5rem}
+.toc{list-style:none;display:grid;gap:1px;font-size:.8125rem;border-inline-start:1px solid var(--line)}
+.toc a{display:block;padding:.25em .7rem;color:var(--fg-2);margin-inline-start:-1px;border-inline-start:1px solid transparent;line-height:1.35}
+.toc a:hover{color:var(--fg);border-color:var(--fg-3);text-decoration:none}
+.toc .toc--h3 a{padding-inline-start:1.4rem;font-size:.75rem;color:var(--fg-3)}
+.toc .p{display:inline-block;min-width:1.6rem;font-weight:600;color:var(--fg-3)}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:.35rem .9rem;font-size:.8125rem}
+.kv dt{color:var(--fg-3);font-weight:500}
+.kv dd{margin:0;color:var(--fg);font-weight:500;text-align:end}
+.legend{display:grid;gap:.5rem;font-size:.75rem;color:var(--fg-2)}
+.legend .sw-title{font-weight:600;color:var(--fg)}
+.legend .sw-verb{border-inline-start:2px solid var(--line-2);padding-inline-start:.5rem}
+.legend .sw-mode{display:inline-block;font-size:.625rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--accent-2);background:var(--accent-soft);padding:.1em .4em;border-radius:3px}
+.docs-collapse{display:none}
+@media (max-width:1100px){
+  .docs{grid-template-columns:14.5rem minmax(0,1fr)}
+  .docs__rail{display:none}
+  .docs-collapse{display:block;margin-block-end:1rem}
+}
+@media (max-width:860px){
+  .docs{grid-template-columns:minmax(0,1fr)}
+  .docs__side{display:none}
+}
+.docs-collapse{border:1px solid var(--line);border-radius:var(--r2);background:var(--bg-2)}
+.docs-collapse summary{list-style:none;cursor:pointer;padding:.55rem .8rem;font-weight:600;font-size:.8125rem;display:flex;align-items:center;gap:.5rem}
+.docs-collapse summary::-webkit-details-marker{display:none}
+.docs-collapse summary .ms{margin-inline-start:auto;transition:rotate .2s}
+.docs-collapse[open] summary .ms{rotate:180deg}
+.docs-collapse .docs-collapse__body{padding:.4rem .5rem .8rem;border-block-start:1px solid var(--line)}
+.docs-collapse .docs-collapse__body>*+*{margin-block-start:1rem}
+@media (min-width:861px){.docs-collapse .dc-side{display:none}}
+.docs-collapse .dc-side+.rail-sec{margin-block-start:1.25rem;padding-block-start:1rem;border-block-start:1px solid var(--line)}
+
+/* ---------- home ---------- */
+.home-top{padding-block:2.5rem 2rem;border-block-end:1px solid var(--line)}
+.home-top h1{font-size:clamp(1.5rem,1.1rem + 1.6vw,2.125rem);max-width:28ch}
+.home-top p.lede{color:var(--fg-2);margin-block-start:.4rem;max-width:60ch}
+.bigsearch{margin-block-start:1.25rem;position:relative;max-width:44rem}
+.bigsearch > .ms{position:absolute;inset-inline-start:.9rem;inset-block-start:50%;translate:0 -50%;color:var(--fg-3);font-size:1.4rem;pointer-events:none}
+.bigsearch input{width:100%;height:48px;border:1px solid var(--line-2);border-radius:var(--r2);background:var(--bg-2);padding-inline:2.8rem 5.5rem;font:inherit;font-size:1rem;color:var(--fg);box-shadow:var(--shadow)}
+.bigsearch input:focus{outline:2px solid var(--accent);outline-offset:-1px;background:var(--bg)}
+.bigsearch button{position:absolute;inset-inline-end:.4rem;inset-block-start:50%;translate:0 -50%}
+.examples{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem;margin-block-start:.7rem;font-size:.75rem;color:var(--fg-3)}
+.examples a{font-size:.75rem;font-weight:500;color:var(--fg-2);border:1px solid var(--line);border-radius:999px;padding:.15em .6em;background:var(--bg)}
+.examples a:hover{border-color:var(--fg-3);color:var(--fg);text-decoration:none}
+.stats{display:flex;flex-wrap:wrap;gap:.5rem 2rem;margin-block-start:1.5rem}
+.stats div{display:grid}
+.stats b{font-size:1.25rem;font-weight:600;letter-spacing:-.01em}
+.stats span{font-size:.75rem;color:var(--fg-3);font-weight:500}
+.dir{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.6fr);gap:2.5rem;padding-block:2rem}
+.dir>section{min-width:0}
+.sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:.3rem 1rem;margin-block-end:.6rem;flex-wrap:wrap}
+.sec-head h2{font-size:.9375rem}
+.sec-head a{font-size:.8125rem;font-weight:500}
+@media (max-width:860px){.dir{grid-template-columns:1fr;gap:2rem}}
+.dirlist{list-style:none;border-block-start:1px solid var(--line)}
+.dirlist li a{display:grid;grid-template-columns:1.5rem 1fr auto;align-items:center;gap:.6rem;padding:.5em .4rem;border-block-end:1px solid var(--line);color:var(--fg);font-weight:500;font-size:.875rem}
+.dirlist li a:hover{background:var(--bg-2);text-decoration:none}
+.dirlist .ms{color:var(--fg-3);font-size:1.1rem}
+.dirlist .cnt{color:var(--fg-3);font-size:.75rem;font-weight:600}
+.dirlist .cnt b{color:var(--fg);font-weight:600;font-size:.8125rem}
+.features{list-style:none;border-block-start:1px solid var(--line)}
+.features li{display:grid;grid-template-columns:1.6rem 1fr;gap:.6rem;padding:.75rem .4rem;border-block-end:1px solid var(--line)}
+.features .ms{color:var(--accent);font-size:1.25rem}
+.features b{display:block;font-weight:600;font-size:.875rem}
+.features p{color:var(--fg-2);font-size:.8125rem;margin-block-start:.15rem}
+.linklist{list-style:none;border-block-start:1px solid var(--line)}
+.linklist li a{display:flex;align-items:center;gap:.5rem;padding:.5em .4rem;border-block-end:1px solid var(--line);color:var(--fg);font-weight:500;font-size:.875rem}
+.linklist li a:hover{background:var(--bg-2);text-decoration:none}
+.linklist li a .ms{color:var(--fg-3)}
+.linklist li a .ms:last-child{margin-inline-start:auto}
+.twocol{display:grid;grid-template-columns:1fr 1fr;gap:2rem}
+@media (max-width:560px){.twocol{grid-template-columns:1fr}}
+
+/* table */
+.tbl{width:100%;border-collapse:collapse;font-size:.875rem}
+.tbl th,.tbl td{text-align:start;padding:.5em .6rem;border-block-end:1px solid var(--line);vertical-align:middle}
+.tbl thead th{font-size:.6875rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--fg-3);border-block-end:1px solid var(--line-2);padding-block:.4em;white-space:nowrap}
+.tbl tbody tr:hover{background:var(--bg-2)}
+.tbl td.n,.tbl th.n{text-align:end;font-variant-numeric:tabular-nums}
+.tbl td.n{font-weight:600}
+.tbl .grp td{background:var(--bg-2);padding-block:.7em;border-block-start:1px solid var(--line-2)}
+.tbl .grp b{font-weight:600;font-size:.8125rem}
+.tbl .grp span{display:block;color:var(--fg-2);font-size:.75rem;font-weight:400;margin-block-start:.15em;max-width:70ch}
+.tbl .grp small{color:var(--fg-3);font-weight:600;font-size:.6875rem;letter-spacing:.06em;text-transform:uppercase;margin-inline-start:.5em}
+.tbl a.row-link{color:var(--fg);font-weight:600;display:flex;align-items:center;gap:.6rem}
+.tbl a.row-link img{width:28px;height:28px;border-radius:50%;flex:none;object-fit:cover}
+.tbl .muted{font-size:.8125rem}
+.tbl .yes{color:var(--accent-2);font-weight:600}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r2);background:var(--bg)}
+.tbl-wrap .tbl{border:0}
+.tbl-wrap .tbl tbody tr:last-child td{border-block-end:0}
+.lvl{display:inline-grid;place-items:center;width:28px;height:28px;border:1.5px solid var(--accent);border-radius:var(--r);font-weight:700;font-size:.8125rem;color:var(--accent-2);flex:none}
+@media (max-width:560px){.tbl .hide-sm{display:none}}
+
+/* ---------- award spec sheet ---------- */
+.spec-title{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;padding-block:.5rem 1.25rem;border-block-end:1px solid var(--line)}
+.spec-title img{width:64px;height:64px;border-radius:50%;flex:none}
+.lvl--big{width:64px;height:64px;border-radius:var(--r2);border-width:2px;display:grid;grid-template-rows:1fr auto;place-items:center;padding-block:.35rem}
+.lvl--big b{font-size:1.5rem;line-height:1}
+.lvl--big small{font-size:.5625rem;letter-spacing:.08em;text-transform:uppercase;font-weight:600;line-height:1}
+.spec-title .t{display:grid;gap:.25rem;flex:1 1 20rem}
+.spec-title .pills{display:flex;flex-wrap:wrap;gap:.35rem}
+.spec-title .acts{display:flex;gap:.5rem;flex-wrap:wrap;margin-inline-start:auto}
+.spec-desc{color:var(--fg-2);max-width:68ch;margin-block-start:.25rem}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(10rem,1fr));border:1px solid var(--line);border-radius:var(--r2);margin-block-start:1.25rem;overflow:hidden;background:var(--bg)}
+.facts div{padding:.7rem .9rem;border-inline-end:1px solid var(--line);border-block-end:1px solid var(--line);margin-inline-end:-1px;margin-block-end:-1px}
+.facts .lbl{display:block;margin-block-end:.2rem}
+.facts b{font-weight:600;font-size:.9375rem}
+.facts b a{color:inherit}
+.spec-sec{margin-block-start:2rem}
+.spec-sec>.sec-head{border-block-end:1px solid var(--line-2);padding-block-end:.4rem}
+.outline{list-style:none}
+.outline li{border-block-end:1px solid var(--line)}
+.outline a{display:grid;grid-template-columns:3rem 1fr auto;gap:.6rem;align-items:baseline;padding:.5em .4rem;color:var(--fg);font-weight:500;font-size:.875rem}
+.outline a:hover{background:var(--bg-2);text-decoration:none}
+.outline .p{font-weight:600;color:var(--fg-3)}
+.outline .meta{font-size:.75rem;color:var(--fg-3);font-weight:500;white-space:nowrap}
+.outline .meta .sw-mode{margin-inline-start:.4rem}
+.outline .outline{margin-inline-start:0}
+.outline .outline li{border:0}
+.outline .outline a{padding-block:.3em;font-weight:400;color:var(--fg-2);grid-template-columns:3rem 1fr auto;padding-inline-start:1.4rem}
+.outline .outline .outline a{padding-inline-start:2.4rem}
+.sw-mode{display:inline-block;font-size:.625rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--accent-2);background:var(--accent-soft);padding:.1em .4em;border-radius:3px;vertical-align:.1em}
+.steps-nav{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-block-start:1.5rem}
+.steps-nav a{display:grid;gap:.1rem;border:1px solid var(--line);border-radius:var(--r2);padding:.7rem .9rem;color:var(--fg)}
+.steps-nav a:hover{text-decoration:none;background:var(--bg-2)}
+.steps-nav a b{font-weight:600}
+.steps-nav a:last-child{text-align:end}
+@media (max-width:480px){.steps-nav{grid-template-columns:1fr}.steps-nav a:last-child{text-align:start}}
+.note{border:1px solid var(--line);border-inline-start:3px solid var(--line-2);border-radius:var(--r);padding:.8rem 1rem;font-size:.875rem;color:var(--fg-2);background:var(--bg-2);line-height:1.55}
+.note .lbl{display:block;margin-block-end:.3rem}
+.note strong{color:var(--fg)}
+
+/* ---------- requirements ledger ---------- */
+.page-head{padding-block:.25rem 1rem}
+.page-head .kick{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;margin-block-end:.3rem}
+.page-head .kick a{font-size:.8125rem;font-weight:600;color:var(--fg-2)}
+.page-head p{color:var(--fg-2);margin-block-start:.3rem;max-width:68ch}
+.toolbar{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;padding:.5rem;border:1px solid var(--line);border-radius:var(--r2);background:var(--bg-2);margin-block-end:1rem;font-size:.8125rem}
+.toolbar .lbl{margin-inline-end:.2rem}
+.chip{appearance:none;border:1px solid var(--line-2);background:var(--bg);border-radius:var(--r);padding:.3em .7em;font-weight:500;font-size:.8125rem;cursor:pointer;color:var(--fg-2);display:inline-flex;align-items:center;gap:.3em}
+.chip:hover{border-color:var(--fg-3);color:var(--fg)}
+.chip[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-2);font-weight:600}
+.toolbar .cnt{margin-inline-start:auto;color:var(--fg-3);font-weight:500;white-space:nowrap}
+.toolbar .sep{width:1px;height:1.4em;background:var(--line-2);margin-inline:.3rem}
+.ledger{list-style:none;border-block-start:1px solid var(--line-2)}
+.ledger .row{display:grid;grid-template-columns:3.25rem minmax(0,1fr);gap:0 .75rem;padding-block:.9rem;border-block-end:1px solid var(--line);scroll-margin-block-start:4.5rem}
+.ledger .row:target{background:var(--sel)}
+.ledger .row .path{font-weight:600;color:var(--fg-3);font-variant-numeric:tabular-nums;padding-block-start:.1rem;font-size:.9375rem;letter-spacing:.01em}
+.ledger>.row>.path{color:var(--accent-2);font-size:1rem}
+.ledger .body{min-width:0;display:grid;gap:.45rem}
+.ledger .head{display:flex;align-items:baseline;gap:.6rem;flex-wrap:wrap}
+.ledger .title{font-weight:600;font-size:1rem;color:var(--fg)}
+.ledger>.row>.body>.head .title{font-size:1.0625rem}
+.ledger .glink{margin-inline-start:auto;font-size:.75rem;font-weight:600;white-space:nowrap;display:inline-flex;align-items:center;gap:.2em}
+.ledger .glink .ms{font-size:1rem}
+.verb{font-weight:400;font-size:.9375rem;line-height:1.6;color:var(--fg);border-inline-start:2px solid var(--line-2);padding-inline-start:.75rem;max-width:72ch;text-wrap:pretty}
+.verb strong{font-weight:600}
+.verb ul{list-style:none;margin-block-start:.4rem;display:grid;gap:.15rem}
+.verb ul li{display:grid;grid-template-columns:.9rem 1fr;gap:.3rem}
+.verb ul li::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--fg-3);margin-block-start:.6em}
+.mode{display:flex;align-items:center;gap:.6rem;font-size:.75rem;color:var(--fg-3);font-weight:500;max-width:72ch}
+.mode .sw-mode{font-size:.6875rem}
+.mode .mode__line{flex:1;height:1px;background:var(--line)}
+.mode .mode__n{font-weight:600;color:var(--fg-2);white-space:nowrap}
+.mode--select .sw-mode{background:var(--gold-soft);color:var(--gold)}
+.res{display:grid;grid-template-columns:auto 1fr;gap:.2rem .6rem;font-size:.8125rem;align-items:baseline;max-width:72ch}
+.res .lbl{padding-block-start:.15em}
+.res ul{list-style:none;display:flex;flex-wrap:wrap;gap:.25rem .9rem}
+.res a{font-weight:500}
+.ledger .ledger{border:0;margin-block-start:.4rem}
+.ledger .ledger .row{padding-block:.65rem;border-block-end:1px solid var(--line);grid-template-columns:3.25rem minmax(0,1fr)}
+.ledger .ledger .row:last-child{border-block-end:0}
+.ledger .ledger .ledger .row{grid-template-columns:3.5rem minmax(0,1fr)}
+.ledger .ledger .row .path{font-size:.875rem}
+.ledger .ledger .title{font-size:.9375rem}
+.ledger .ledger .verb{font-size:.9375rem}
+.ledger.f-choices .row:not(.has-select):not(.in-select){display:none}
+.ledger.f-guide .row:not(.has-guide):not(.has-guide-child){display:none}
+.ledger .row.sel-leaf .path::after{content:"";display:none}
+.ledger .row.sel-leaf>.path{color:var(--gold)}
+@media (max-width:480px){
+  .ledger .row{grid-template-columns:2.6rem minmax(0,1fr);gap:0 .5rem}
+  .ledger .ledger .row,.ledger .ledger .ledger .row{grid-template-columns:2.6rem minmax(0,1fr)}
+  .verb{max-width:none}
+}
+.ledger-foot{margin-block-start:1.5rem;display:grid;gap:1rem}
+
+/* ---------- guide docs page ---------- */
+.gd-kick{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;font-size:.8125rem;color:var(--fg-3);font-weight:600;margin-block-end:.3rem}
+.gd-kick .p{color:var(--accent-2)}
+.reqblock{margin-block:1.25rem;border:1px solid var(--line-2);border-radius:var(--r2);background:var(--bg-2);display:grid;grid-template-columns:auto 1fr;overflow:hidden}
+.reqblock .rb-l{padding:.8rem .9rem;border-inline-end:1px solid var(--line-2);display:grid;align-content:start;gap:.2rem;background:var(--bg)}
+.reqblock .rb-l .lbl{color:var(--fg-3)}
+.reqblock .rb-l b{font-size:1.25rem;font-weight:700;color:var(--accent-2)}
+.reqblock .rb-r{padding:.8rem 1rem}
+.reqblock .rb-r p{font-size:.9375rem;line-height:1.6;max-width:70ch;text-wrap:pretty}
+.reqblock .rb-r .lbl{display:block;margin-block-end:.25rem}
+@media (max-width:480px){.reqblock{grid-template-columns:1fr}.reqblock .rb-l{border-inline-end:0;border-block-end:1px solid var(--line-2);grid-auto-flow:column;justify-content:start;align-items:baseline;gap:.5rem}}
+.prose{max-width:72ch;font-size:.9375rem;line-height:1.65}
+.prose>*+*{margin-block-start:1rem}
+.prose h2{font-size:1.25rem;margin-block-start:2rem;padding-block-start:1.25rem;border-block-start:1px solid var(--line);scroll-margin-block-start:4rem}
+.prose h3{font-size:1.0625rem;margin-block-start:1.5rem;scroll-margin-block-start:4rem}
+.prose ul,.prose ol{padding-inline-start:1.4rem;display:grid;gap:.35rem}
+.prose ol li::marker{font-weight:600;color:var(--fg-3)}
+.prose ul li::marker{color:var(--fg-3)}
+.prose a{text-decoration:underline;text-underline-offset:.16em;text-decoration-color:var(--line-2)}
+.prose a.video,.prose a.extlink,.prose a.nextpage,.prose a.video:hover,.prose a.extlink:hover,.prose a.nextpage:hover{text-decoration:none}
+.callout{border:1px solid var(--line);border-radius:var(--r2);padding:.75rem .9rem .75rem 1rem;display:grid;grid-template-columns:auto 1fr;gap:.6rem;font-size:.9rem;background:var(--bg-2);border-inline-start-width:3px}
+.callout .ms{color:var(--fg-2);font-size:1.2rem;margin-block-start:.1em}
+.callout .lbl{display:block;margin-block-end:.15rem}
+.callout--tip{border-inline-start-color:var(--accent)}
+.callout--tip .ms,.callout--tip .lbl{color:var(--accent-2)}
+.callout--safety{border-inline-start-color:oklch(0.58 0.19 28)}
+.callout--safety .ms,.callout--safety .lbl{color:oklch(0.52 0.19 28)}
+:root[data-theme="dark"] .callout--safety .ms,:root[data-theme="dark"] .callout--safety .lbl{color:oklch(0.78 0.14 28)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .callout--safety .ms,:root:not([data-theme="light"]) .callout--safety .lbl{color:oklch(0.78 0.14 28)}}
+.callout ul{padding-inline-start:1.2rem;margin-block-start:.4rem;display:grid;gap:.25rem}
+.callout b.ct{display:block;font-weight:600;font-size:.9375rem}
+.checklist{border:1px solid var(--line);border-radius:var(--r2);overflow:hidden}
+.checklist header{padding:.6rem .9rem;background:var(--bg-2);border-block-end:1px solid var(--line);display:flex;align-items:baseline;gap:.6rem;flex-wrap:wrap}
+.checklist header b{font-weight:600}
+.checklist header span{font-size:.8125rem;color:var(--fg-3)}
+.checklist ol{list-style:none;padding:0}
+.checklist li{display:grid;grid-template-columns:2rem 1fr;gap:.6rem;padding:.55rem .9rem;border-block-end:1px solid var(--line);font-size:.875rem}
+.checklist li:last-child{border:0}
+.checklist li .n{font-weight:600;color:var(--fg-3)}
+figure{margin:0}
+figure img{border-radius:var(--r2);border:1px solid var(--line)}
+figcaption{font-size:.8125rem;color:var(--fg-3);margin-block-start:.4rem}
+.video{display:grid;grid-template-columns:7rem 1fr;border:1px solid var(--line-2);border-radius:var(--r2);overflow:hidden;color:var(--fg);background:var(--bg)}
+.video:hover{text-decoration:none;background:var(--bg-2)}
+.video .poster{background:oklch(0.25 0.02 130);display:grid;place-items:center;color:oklch(0.95 0.01 120);min-height:4.5rem}
+.video .poster .ms{font-size:2rem}
+.video .vt{padding:.7rem .9rem;display:grid;gap:.15rem;align-content:center}
+.video .vt b{font-weight:600;font-size:.9rem}
+.video .vt span{font-size:.75rem;color:var(--fg-3)}
+.extlink{display:grid;grid-template-columns:auto 1fr auto;gap:.7rem;align-items:center;border:1px solid var(--line);border-radius:var(--r2);padding:.7rem .9rem;color:var(--fg)}
+.extlink:hover{background:var(--bg-2);text-decoration:none}
+.extlink b{display:block;font-weight:600;font-size:.9rem}
+.extlink span{font-size:.8125rem;color:var(--fg-2)}
+.extlink .ms{color:var(--fg-3)}
+.nextpage{border:1px solid var(--accent);border-radius:var(--r2);padding:.9rem 1rem;display:grid;grid-template-columns:1fr auto;gap:.5rem 1rem;align-items:center;color:var(--fg);background:var(--accent-soft)}
+.nextpage:hover{text-decoration:none}
+.nextpage .lbl{color:var(--accent-2)}
+.nextpage b{display:block;font-weight:600}
+.nextpage span{font-size:.8125rem;color:var(--fg-2)}
+.nextpage .ms{color:var(--accent-2);font-size:1.4rem}
+.pager{margin-block-start:2rem;border-block-start:1px solid var(--line-2);display:grid}
+.pager a{display:grid;grid-template-columns:7rem 1fr auto;gap:1rem;align-items:center;padding:.75rem .4rem;border-block-end:1px solid var(--line);color:var(--fg)}
+.pager a:hover{background:var(--bg-2);text-decoration:none}
+.pager a b{font-weight:600}
+.pager .ms{color:var(--fg-3)}
+@media (max-width:480px){.pager a{grid-template-columns:1fr auto}.pager a .lbl{grid-column:1/-1}}
+
+/* ---------- search ---------- */
+.srch{display:grid;grid-template-columns:14rem minmax(0,1fr);gap:0 2.5rem;align-items:start}
+.facets{position:sticky;inset-block-start:calc(48px + 1rem);display:grid;gap:1.25rem}
+.facet>.lbl{display:block;margin-block-end:.4rem}
+.facet ul{list-style:none;display:grid;gap:1px}
+.facet li a,.facet li span.f{display:grid;grid-template-columns:1fr auto;gap:.5rem;align-items:center;padding:.3em .5rem;border-radius:var(--r);color:var(--fg-2);font-size:.8125rem;font-weight:500}
+.facet li a:hover{background:var(--bg-2);color:var(--fg);text-decoration:none}
+.facet li a[aria-current]{background:var(--accent-soft);color:var(--accent-2);font-weight:600}
+.facet .c{font-size:.75rem;font-weight:600;color:var(--fg-3)}
+.facet li a img{display:inline-block;width:18px;height:18px;border-radius:50%;vertical-align:-.3em;margin-inline-end:.3em}
+.srch-head{padding-block:.25rem 1rem}
+.srch-head form{position:relative;max-width:40rem;margin-block-start:.75rem}
+.srch-head form > .ms{position:absolute;inset-inline-start:.8rem;inset-block-start:50%;translate:0 -50%;color:var(--fg-3);font-size:1.3rem;pointer-events:none}
+.srch-head input{width:100%;height:44px;border:1px solid var(--line-2);border-radius:var(--r2);background:var(--bg);padding-inline:2.6rem 5rem;font:inherit;font-size:1rem;color:var(--fg)}
+.srch-head input:focus{outline:2px solid var(--accent);outline-offset:-1px}
+.srch-head form .btn{position:absolute;inset-inline-end:.35rem;inset-block-start:50%;translate:0 -50%}
+.res-bar{display:flex;align-items:center;gap:.6rem 1.25rem;flex-wrap:wrap;font-size:.8125rem;color:var(--fg-3);padding-block:.5rem;border-block-end:1px solid var(--line-2)}
+.res-bar b{color:var(--fg);font-weight:600}
+.res-bar .keys{margin-inline-start:auto;display:flex;gap:.4rem;align-items:center;white-space:nowrap}
+.hits{list-style:none}
+.hit{display:grid;grid-template-columns:12rem 3rem minmax(0,1fr) 1.6rem;gap:.2rem 1rem;align-items:baseline;padding:.65rem .5rem;border-block-end:1px solid var(--line);color:var(--fg);border-inline-start:2px solid transparent;margin-inline-start:-2px}
+.hit:hover{background:var(--bg-2);text-decoration:none}
+.hit[aria-current="true"]{background:var(--sel);border-inline-start-color:var(--accent)}
+.hit .aw{font-size:.8125rem;font-weight:600;color:var(--fg-2);display:flex;align-items:center;gap:.4rem;min-width:0}
+.hit .aw img{width:20px;height:20px;border-radius:50%;flex:none;align-self:start;margin-block-start:.1em}
+.hit .aw .lvl{width:20px;height:20px;font-size:.6875rem;border-width:1px}
+.hit .aw span{line-height:1.3}
+.hit .p{font-weight:600;color:var(--accent-2);font-variant-numeric:tabular-nums;font-size:.875rem}
+.hit .txt{display:grid;gap:.1rem;min-width:0}
+.hit .txt b{font-weight:600;font-size:.9rem}
+.hit .txt span{font-size:.875rem;color:var(--fg-2);line-height:1.5}
+.hit .k{visibility:hidden;justify-self:end;align-self:center}
+.hit[aria-current="true"] .k{visibility:visible}
+.hits-foot{padding-block:.9rem .5rem;font-size:.8125rem;color:var(--fg-3);display:flex;justify-content:space-between;flex-wrap:wrap;gap:.5rem}
+@media (max-width:900px){.srch{grid-template-columns:minmax(0,1fr)}.facets{position:static;display:flex;flex-wrap:wrap;gap:1.5rem;padding-block-end:1rem;border-block-end:1px solid var(--line);margin-block-end:1rem}.facet{min-width:12rem}}
+@media (max-width:640px){.hit{grid-template-columns:3rem minmax(0,1fr)}.hit .aw{grid-column:1/-1;order:-1}.hit .k{display:none}}
+
+/* ---------- motion ---------- */
+@media (prefers-reduced-motion:no-preference){
+  .docs-collapse summary .ms,.chip,.btn,.hit,.tree a,.side-nav a{transition:background-color .15s,border-color .15s,color .15s}
+}
+@media print{.tb,.docs__side,.docs__rail,.toolbar,.ft{display:none}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+(function(){
+'use strict';
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const ms = (name, cls='') => `<span class="ms ${cls}" aria-hidden="true">${name}</span>`;
+const isMBU = site => site.key === 'mbu';
+const plural = (n, one, many) => `${n} ${n===1?one:(many||one+'s')}`;
+const modeLabel = m => !m ? '' : m.type==='all' ? 'All required' : `Choose ${m.count} of `;
+const countLeaves = n => n.children.length ? n.children.reduce((a,c)=>a+countLeaves(c),0) : 1;
+const hasGuideDeep = n => !!n.guide || n.children.some(hasGuideDeep);
+const hasSelectDeep = n => (n.mode && n.mode.type==='select') || n.children.some(hasSelectDeep);
+const tag = site => site.tagline.replace(/\.$/,'');
+const awardTitle = (site, a) => `${a.title} ${site.awardLabel}`;
+
+/* ---------- chrome ---------- */
+function header(site, ctx){
+  const mbu = isMBU(site);
+  const links = [
+    ...site.nav.map(n => ({label:n.name, href:n.url})),
+    {label: site.cta.label.replace(/^Browse /,''), href: site.cta.href, current: ['award','requirements','guide'].includes(ctx.page)},
+    ...(mbu ? [{label:'Eagle-required', href:'/merit-badges/eagle-required/'}] : [{label:'Field Guides', href:'/scouts-bsa/field-guides/'},{label:'Leadership', href:'/scouts-bsa/leadership/'}]),
+    {label:'Search', href:'/search/', current: ctx.page==='search'},
+  ];
+  const navA = l => `<a href="${l.href}"${l.current?' aria-current="page"':''}>${esc(l.label)}</a>`;
+  return `<header class="tb"><div class="wrap tb__in">
+    <a class="tb__brand" href="/" aria-label="${esc(site.name)} home"><span class="tb__mark" aria-hidden="true">${esc(site.short.replace(/[^A-Z]/g,'').slice(0,3)||site.short.slice(0,2))}</span>${esc(site.name)}<small>${esc(site.domain)}</small></a>
+    <nav class="tb__nav" aria-label="Primary">${links.map(navA).join('')}</nav>
+    <form class="tb__search" role="search" action="/search/" data-search>${ms('search')}<label class="visually-hidden" for="tb-q" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Search requirements</label><input id="tb-q" type="search" name="q" placeholder="Search ${esc(site.awardPlural)} and requirements…" autocomplete="off"><kbd aria-hidden="true">⌘K</kbd></form>
+    <div class="tb__tools">
+      <a class="icon-btn tb__mobile-search" href="/search/" aria-label="Search">${ms('search')}</a>
+      <button class="icon-btn" type="button" data-toggle-theme aria-label="Switch to ${ctx.dark?'light':'dark'} theme" title="Theme">${ms(ctx.dark?'light_mode':'dark_mode')}</button>
+      <details class="tb__menu"><summary class="icon-btn" aria-label="Menu">${ms('menu')}</summary><nav class="menu" aria-label="Primary (mobile)">${links.map(navA).join('')}</nav></details>
+    </div>
+  </div></header>`;
+}
+function crumbs(site, page){
+  const a = site.award, list = site.breadcrumbs[page] || [];
+  const hrefFor = (label, i) => {
+    if (i===0) return '/';
+    if (label === 'Requirements') return a.requirementsUrl;
+    if (label === site.guideLabel) return a.guideUrl;
+    if (label.includes(a.title)) return a.url;
+    if (i===1 && page!=='search') return site.cta.href;
+    return null;
+  };
+  return `<nav class="crumbs" aria-label="Breadcrumb">${list.map((l,i)=>{
+    const last = i===list.length-1, href = hrefFor(l,i);
+    const el = last ? `<span aria-current="page">${esc(l)}</span>` : href ? `<a href="${href}">${esc(l)}</a>` : `<span>${esc(l)}</span>`;
+    return (i?ms('chevron_right'):'') + el;
+  }).join('')}</nav>`;
+}
+function footer(site){
+  return `<footer class="ft"><div class="wrap ft__in">
+    <div class="ft__brand">${esc(site.name)}<p>${esc(site.tagline)}</p></div>
+    ${site.footer.map(col=>`<nav aria-label="${esc(col.title)}"><h2>${esc(col.title)}</h2><ul>${col.links.map(l=>`<li><a href="${l.href}">${esc(l.label)}</a></li>`).join('')}</ul></nav>`).join('')}
+  </div><div class="wrap ft__base"><span>© 2026 ${esc(site.name)}</span><span>${esc(site.domain)}</span></div></footer>`;
+}
+function page(site, ctx, pageKey, inner, crumbPage){
+  return header(site, ctx) + `<main id="main" class="wrap">${crumbPage?crumbs(site,crumbPage):''}${inner}</main>` + footer(site);
+}
+
+/* ---------- HOME ---------- */
+function bigSearch(site, examples){
+  return `<form class="bigsearch" role="search" action="/search/" data-search>${ms('search')}<label for="home-q" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Search requirements</label><input id="home-q" type="search" name="q" placeholder="Search every requirement across ${esc(isMBU(site)?`all ${site.counts.badges} ${site.awardPlural}`:`all ${site.counts.ranks} ${site.awardPlural}`)}…" autocomplete="off"><button class="btn btn--primary" type="submit">Search ${ms('keyboard_return')}</button></form>
+  <p class="examples">Try: ${examples.map(q=>`<a href="/search/?q=${encodeURIComponent(q)}">${esc(q)}</a>`).join('')}</p>`;
+}
+function homeMBU(site){
+  const c = site.counts;
+  const cats = site.categories.map(k=>`<li><a href="${k.url}">${ms('folder')}<span>${esc(k.name)}</span><span class="cnt"><b>${k.count}</b> badges</span></a></li>`).join('');
+  const eagle = site.eagle.map(b=>`<tr><td><a class="row-link" href="${b.url}"><img src="${b.emblem}" alt="" loading="lazy">${esc(b.title)}</a></td><td class="muted hide-sm">${esc(b.category)}</td><td class="n">${b.reqCount}</td></tr>`).join('');
+  const feats = site.steps.map(s=>`<li>${ms(s.icon==='list-checks'?'checklist':s.icon==='book'?'menu_book':'picture_as_pdf')}<div><b>${esc(s.title)}</b><p>${esc(s.text)}</p></div></li>`).join('');
+  return `<section class="home-top"><span class="lbl">${esc(site.domain)}</span><h1>Every merit badge requirement, verbatim and searchable.</h1><p class="lede">${esc(tag(site))}: official requirement text for all ${c.badges} ${site.awardPlural}, a ${esc(site.guideLabel)} for each, and a search that goes across all of them.</p>
+    ${bigSearch(site, ['knots','first aid','Leave No Trace','compass','campout'])}
+    <div class="stats"><div><b>${c.badges}</b><span>${esc(site.awardPlural)}</span></div><div><b>${c.eagleBadges}</b><span>Eagle-required badges</span></div><div><b>${c.categories}</b><span>categories</span></div></div>
+  </section>
+  <div class="dir">
+    <section aria-labelledby="h-cats"><div class="sec-head"><h2 id="h-cats">Categories</h2><a href="${site.cta.href}">All ${c.badges} badges ${ms('arrow_forward')}</a></div><ul class="dirlist">${cats}</ul>
+      <div class="sec-head" style="margin-block-start:2rem"><h2>What is on a badge page</h2></div><ul class="features">${feats}</ul></section>
+    <section aria-labelledby="h-eagle"><div class="sec-head"><h2 id="h-eagle">${ms('verified')} Eagle-required merit badges <span class="muted" style="font-weight:500">· ${site.eagle.length}</span></h2><a href="/merit-badges/eagle-required/strategy/">Eagle badge strategy ${ms('arrow_forward')}</a></div>
+      <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Badge</th><th class="hide-sm">Category</th><th class="n">Requirements</th></tr></thead><tbody>${eagle}</tbody></table></div>
+      <p class="muted" style="font-size:.8125rem;margin-block-start:.6rem">${c.eagleBadges} badges across ${c.eagle} Eagle-required categories; some categories offer a choice of badge. See the <a href="/merit-badges/eagle-required/">Eagle-required list</a>.</p>
+    </section>
+  </div>`;
+}
+function homeSU(site){
+  const c = site.counts;
+  const inPhase = (ph) => { const [lo,hi] = ph.ranks.split('–').map(Number); return site.ranks.filter(r=>r.level>=lo && r.level<=hi); };
+  const rows = ph => inPhase(ph).map(r=>`<tr><td><a class="row-link" href="${r.url}"><span class="lvl" aria-hidden="true">${r.level}</span>${esc(r.title)}</a></td><td class="muted hide-sm">${esc(r.samples.slice(0,2).join(', '))}…</td><td class="n">${r.groups}</td><td class="n">${r.leafCount}</td><td class="hide-sm">${r.hasGuide?`<span class="yes">${ms('check')} Yes</span>`:'<span class="muted">—</span>'}</td></tr>`).join('');
+  const groups = site.phases.map(ph=>`<tr class="grp"><td colspan="5"><b>${esc(ph.title)}</b><small>Ranks ${esc(ph.ranks)}</small><span>${esc(ph.text)}</span></td></tr>${rows(ph)}`).join('');
+  const lead = site.footer.find(f=>f.title==='Leadership');
+  return `<section class="home-top"><span class="lbl">${esc(site.domain)} · ${esc(site.nav[0]?.name||'')}</span><h1>Every rank requirement, verbatim and searchable.</h1><p class="lede">${esc(tag(site))}: the official text for all ${c.ranks} Scouts BSA ${site.awardPlural}, a ${esc(site.guideLabel)} for each, plus field guides and leadership resources.</p>
+    ${bigSearch(site, ['knot','first aid','map and compass','Scout spirit','service project'])}
+    <div class="stats"><div><b>${c.ranks}</b><span>${esc(site.awardPlural)}, earned in sequence</span></div><div><b>${site.phases.length}</b><span>phases</span></div><div><b>${site.fieldGuides.length}</b><span>field guides</span></div></div>
+  </section>
+  <section class="spec-sec" aria-labelledby="h-ranks" style="margin-block-start:2rem"><div class="sec-head"><h2 id="h-ranks">Scouts BSA ranks</h2><a href="${site.cta.href}">${esc(site.cta.label)} ${ms('arrow_forward')}</a></div>
+    <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Rank</th><th class="hide-sm">Requirement groups include</th><th class="n">Groups</th><th class="n">Requirements</th><th class="hide-sm">Guide</th></tr></thead><tbody>${groups}</tbody></table></div>
+  </section>
+  <div class="dir" style="padding-block-start:1.5rem"><section aria-labelledby="h-fg"><div class="sec-head"><h2 id="h-fg">Field Guides</h2><a href="/scouts-bsa/field-guides/">All field guides ${ms('arrow_forward')}</a></div><ul class="linklist">${site.fieldGuides.map(g=>`<li><a href="${g.url}">${ms('menu_book')}${esc(g.title)}${ms('chevron_right')}</a></li>`).join('')}</ul></section>
+  <section aria-labelledby="h-lead"><div class="sec-head"><h2 id="h-lead">Leadership</h2></div><ul class="linklist">${(lead?lead.links:[]).map(l=>`<li><a href="${l.href}">${ms('groups')}${esc(l.label)}${ms('chevron_right')}</a></li>`).join('')}</ul></section></div>`;
+}
+function home(site, ctx){ return page(site, ctx, 'home', isMBU(site) ? homeMBU(site) : homeSU(site)); }
+
+/* ---------- shared docs-layout pieces ---------- */
+function identityMark(site, a, big){
+  if (a.emblem) return `<img src="${a.emblem}" alt="${esc(a.title)} ${esc(site.awardLabel)} emblem">`;
+  return big ? `<span class="lvl lvl--big" role="img" aria-label="Rank ${a.level} of ${a.totalLevels}"><b>${a.level}</b><small>of ${a.totalLevels}</small></span>` : `<span class="lvl" aria-hidden="true">${a.level}</span>`;
+}
+function sideNav(site, ctx){
+  const a = site.award, mbu = isMBU(site);
+  const items = [
+    ['award', a.url, 'Overview', 'info'],
+    ['requirements', a.requirementsUrl, 'Requirements', 'checklist'],
+    ['guide', a.guideUrl, site.guideLabel, 'menu_book'],
+    [null, a.guidePrintUrl, 'Print the guide', 'print'],
+    ...(mbu ? [[null, a.worksheetUrl, 'Worksheet (PDF)', 'picture_as_pdf']] : []),
+  ];
+  return `<div class="side-sec"><span class="lbl">${esc(awardTitle(site,a))}</span><ul class="side-nav">${items.map(([k,href,label,icon])=>`<li><a href="${href}"${k===ctx.page?' aria-current="page"':''}>${ms(icon)}${esc(label)}</a></li>`).join('')}</ul></div>`;
+}
+function reqTree(site, ctx, nodes, depth=0){
+  const a = site.award;
+  const onReq = ctx.page==='requirements';
+  return `<ul class="tree">${nodes.map(n=>`<li><a href="${onReq?'#':a.requirementsUrl+'#'}req-${n.path.replace(/\./g,'-')}"><span class="p">${esc(n.path)}</span><span>${esc(n.title || n.text.replace(/<[^>]+>/g,'').slice(0,46) + (n.text.length>46?'…':''))}</span></a>${n.children.length && depth<1 ? reqTree(site, ctx, n.children, depth+1) : ''}</li>`).join('')}</ul>`;
+}
+function guideTree(site, ctx){
+  const g = site.guide;
+  return site.award.guideNav.map(grp=>`<div class="tree-grp"><span class="lbl">${esc(grp.title)}</span><ul class="tree">${grp.items.map(it=>`<li><a href="${it.url}"${it.url===g.url && ctx.page==='guide'?' aria-current="page"':''}><span class="p">${esc(it.path||'')}</span><span>${esc(it.title)}</span></a></li>`).join('')}</ul></div>`).join('');
+}
+function docsLayout(site, ctx, {sideTree, sideTreeLabel, main, rail}){
+  const side = sideNav(site, ctx) + `<div class="side-sec"><span class="lbl">${esc(sideTreeLabel)}</span>${sideTree}</div>`;
+  return `<div class="docs">
+    <aside class="docs__side" aria-label="Section navigation">${side}</aside>
+    <div class="docs__main">
+      <details class="docs-collapse"><summary>${ms('menu_open')} <span class="dc-side">${esc(sideTreeLabel)} · </span>On this page ${ms('expand_more')}</summary><div class="docs-collapse__body"><div class="dc-side">${side}</div>${rail}</div></details>
+      ${main}
+    </div>
+    <aside class="docs__rail" aria-label="On this page">${rail}</aside>
+  </div>`;
+}
+function metaKV(site){
+  const a = site.award, mbu = isMBU(site);
+  const rows = mbu
+    ? [['Category', a.category],['Eagle-required', a.eagle?'Yes':'No'],['Requirements', a.reqCount],['Guide pages', a.guidePages],['Updated', a.updated]]
+    : [['Program', a.program],['Rank', `${a.level} of ${a.totalLevels}`],['Groups', a.groupCount],['Requirements', a.reqCount],['Guide pages', a.guidePages],['Updated', a.updated]];
+  return `<dl class="kv">${rows.map(([k,v])=>`<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join('')}</dl>`;
+}
+const legend = `<div class="legend"><span class="sw-title">Bold row headers are our short labels</span><span class="sw-verb">Text hung on a rule is Scouting America’s official wording, verbatim</span><span><span class="sw-mode">Choose 1 of 3</span> &nbsp;how the items below a stem must be completed</span></div>`;
+
+/* ---------- AWARD (spec sheet) ---------- */
+function outline(site, nodes, depth=0){
+  const a = site.award;
+  return `<ul class="outline">${nodes.map(n=>{
+    const kids = n.children.length;
+    const meta = kids ? `${plural(kids,'item')}${n.mode?`<span class="sw-mode">${esc(modeLabel(n.mode))}${n.mode.type==='select'?kids:''}</span>`:''}` : (n.guide ? 'guide' : '');
+    const raw = n.text.replace(/<[^>]+>/g,''); const label = n.title || (raw.length>64 ? raw.slice(0,64).replace(/\s+\S*$/,'')+'…' : raw);
+    return `<li><a href="${a.requirementsUrl}#req-${n.path.replace(/\./g,'-')}"><span class="p">${esc(n.path)}</span><span>${esc(label)}</span><span class="meta">${meta}</span></a>${kids && depth<1 ? outline(site, n.children, depth+1) : ''}</li>`;
+  }).join('')}</ul>`;
+}
+function award(site, ctx){
+  const a = site.award, mbu = isMBU(site);
+  const pills = mbu
+    ? `<span class="pill">${esc(a.category)}</span>${a.eagle?`<span class="pill pill--eagle">${ms('verified')} Eagle-required</span>`:''}<span class="pill">${plural(a.reqCount,'requirement')}</span>`
+    : `<span class="pill pill--accent">${esc(a.program)}</span><span class="pill">Rank ${a.level} of ${a.totalLevels}</span><span class="pill">${plural(a.reqCount,'requirement')} in ${plural(a.groupCount,'group')}</span>`;
+  const facts = mbu
+    ? [['Category', a.category],['Eagle-required', a.eagle?'Yes':'No'],['Requirements', a.reqCount],['Guide pages', a.guidePages],['Requirements updated', a.updated],['Official page', `<a class="ext" href="${a.officialUrl}">scouting.org</a>`]]
+    : [['Program', a.program],['Rank', `${a.level} of ${a.totalLevels}`],['Requirement groups', a.groupCount],['Requirements', a.reqCount],['Guide pages', a.guidePages],['Version effective', a.updated]];
+  const resources = mbu
+    ? [[a.officialUrl,'Official requirements at scouting.org','open_in_new'],[a.pamphletUrl,'Merit badge pamphlet (PDF)','picture_as_pdf'],[a.worksheetUrl,'Printable worksheet (PDF)','picture_as_pdf'],[a.guideUrl,`${site.guideLabel} (${a.guidePages} pages)`,'menu_book'],[a.guidePrintUrl,'Print the complete guide','print']]
+    : [[a.requirementsUrl,'Full requirements','checklist'],[a.guideUrl,`${site.guideLabel} (${a.guidePages} pages)`,'menu_book'],[a.guidePrintUrl,'Print the complete guide','print'],['/scouts-bsa/ranks/','All Scouts BSA ranks','list']];
+  const seq = mbu ? '' : `<nav class="steps-nav" aria-label="Rank sequence">${a.prev?`<a href="${a.prev.url}"><span class="lbl">${ms('arrow_back')} Previous rank · ${a.level-1} of ${a.totalLevels}</span><b>${esc(a.prev.title)}</b></a>`:'<span></span>'}${a.next?`<a href="${a.next.url}"><span class="lbl">Next rank · ${a.level+1} of ${a.totalLevels} ${ms('arrow_forward')}</span><b>${esc(a.next.title)}</b></a>`:''}</nav>`;
+  const note = !mbu && a.footerNote ? `<div class="note" style="margin-block-start:1.5rem"><span class="lbl">Official notes</span>${a.footerNote}</div>` : '';
+  const main = `<article>
+    <div class="spec-title">${identityMark(site,a,true)}<div class="t"><div class="pills">${pills}</div><h1>${esc(awardTitle(site,a))}</h1></div>
+      <div class="acts"><a class="btn btn--primary" href="${a.requirementsUrl}">${ms('checklist')} Requirements</a><a class="btn" href="${a.guideUrl}">${ms('menu_book')} Guide</a></div></div>
+    <p class="spec-desc">${esc(a.description)}</p>
+    <dl class="facts">${facts.map(([k,v])=>`<div><dt class="lbl">${esc(k)}</dt><dd style="margin:0"><b>${typeof v==='string'&&v.startsWith('<')?v:esc(v)}</b></dd></div>`).join('')}</dl>
+    ${seq}
+    <section class="spec-sec" aria-labelledby="h-outline"><div class="sec-head"><h2 id="h-outline">Requirement outline</h2><a href="${a.requirementsUrl}">Full text ${ms('arrow_forward')}</a></div>${outline(site, a.requirements)}</section>
+    <section class="spec-sec" aria-labelledby="h-res"><div class="sec-head"><h2 id="h-res">Resources</h2></div><ul class="linklist">${resources.map(([href,label,icon])=>`<li><a href="${href}">${ms(icon)}${esc(label)}${ms(/^https?:/.test(href)||/\.pdf$/.test(href)?'open_in_new':'chevron_right')}</a></li>`).join('')}</ul></section>
+    ${note}
+  </article>`;
+  const rail = `<div class="rail-sec"><span class="lbl">At a glance</span>${metaKV(site)}</div><div class="rail-sec"><span class="lbl">On this page</span><ul class="toc"><li><a href="#h-outline">Requirement outline</a></li><li><a href="#h-res">Resources</a></li></ul></div>`;
+  return page(site, ctx, 'award', docsLayout(site, ctx, {sideTree: reqTree(site, ctx, a.requirements), sideTreeLabel:'Requirements', main, rail}), 'award');
+}
+
+/* ---------- REQUIREMENTS (ledger) ---------- */
+function reqRow(site, n, depth, parentSelect){
+  const kids = n.children.length;
+  const cls = ['row', kids && n.mode && n.mode.type==='select' ? 'has-select' : '', parentSelect ? 'in-select sel-leaf' : '', n.guide ? 'has-guide' : '', hasGuideDeep(n) ? 'has-guide-child' : '', hasSelectDeep(n)?'has-select':''].filter(Boolean).join(' ');
+  const text = n.textFormat==='html' ? n.text : esc(n.text);
+  const list = n.list ? `<ul>${n.list.items.map(i=>`<li>${esc(i)}</li>`).join('')}</ul>` : '';
+  const verb = (n.text || list) ? `<div class="verb">${text}${list}</div>` : '';
+  const mode = kids ? `<div class="mode${n.mode&&n.mode.type==='select'?' mode--select':''}">${n.mode?`<span class="sw-mode">${esc(modeLabel(n.mode))}${n.mode.type==='select'?kids:''}</span>`:`<span class="lbl">${esc(site.awardLabel==='Rank'?'Group':'Items')}</span>`}<span class="mode__line"></span><span class="mode__n">${plural(kids,'item')}${n.mode&&n.mode.type==='select'?` · do ${n.mode.count}`:''}</span></div>` : '';
+  const res = n.resources.length ? `<div class="res"><span class="lbl">Resources</span><ul>${n.resources.map(r=>`<li><a class="ext" href="${r.url}">${esc(r.title)}</a></li>`).join('')}</ul></div>` : '';
+  const glink = n.guide ? `<a class="glink" href="${n.guide}">Guide ${ms('arrow_forward')}</a>` : '';
+  const head = (n.title || glink) ? `<div class="head">${n.title?`<span class="title">${esc(n.title)}</span>`:''}${glink}</div>` : '';
+  const children = kids ? `<ol class="ledger">${n.children.map(c=>reqRow(site, c, depth+1, n.mode && n.mode.type==='select')).join('')}</ol>` : '';
+  return `<li class="${cls}" id="req-${n.path.replace(/\./g,'-')}"><span class="path" aria-label="Requirement ${esc(n.path)}">${esc(n.path)}</span><div class="body">${head}${verb}${mode}${res}${children}</div></li>`;
+}
+function requirements(site, ctx){
+  const a = site.award, mbu = isMBU(site);
+  const leaves = a.requirements.reduce((s,n)=>s+countLeaves(n),0);
+  const guides = (function c(ns){ return ns.reduce((s,n)=>s+(n.guide?1:0)+c(n.children),0); })(a.requirements);
+  const toolbar = `<div class="toolbar" role="group" aria-label="Filter the outline"><span class="lbl">Show</span>
+    <button class="chip" type="button" data-filter="" aria-pressed="true">All</button>
+    <button class="chip" type="button" data-filter="f-choices" aria-pressed="false">${ms('alt_route')} Choice groups</button>
+    <button class="chip" type="button" data-filter="f-guide" aria-pressed="false">${ms('menu_book')} With guide pages <span class="muted">${guides}</span></button>
+    <span class="sep" aria-hidden="true"></span>${mbu && a.eagle?`<span class="pill pill--eagle">${ms('verified')} Eagle-required</span>`:`<span class="pill">Rank ${a.level} of ${a.totalLevels}</span>`}
+    <span class="cnt">${a.requirements.length} top-level · ${leaves} items</span></div>`;
+  const note = !mbu && a.footerNote ? `<div class="note"><span class="lbl">Official notes</span>${a.footerNote}</div>` : '';
+  const main = `<article>
+    <div class="page-head"><div class="kick"><a href="${a.url}">${esc(awardTitle(site,a))}</a>${ms('chevron_right')}<span class="lbl">Requirements · updated ${esc(a.updated)}</span></div><h1>${esc(a.title)} requirements</h1><p>${esc(a.description)}</p></div>
+    ${toolbar}
+    <ol class="ledger" data-ledger>${a.requirements.map(n=>reqRow(site, n, 0, false)).join('')}</ol>
+    <div class="ledger-foot">${note}<p class="muted" style="font-size:.8125rem">Official requirement text © Scouting America${mbu?`, from the <a class="ext" href="${a.officialUrl}">${esc(a.title)} merit badge page</a>`:''}. Short labels, guide pages and resource links are ${esc(site.name)}’s.</p></div>
+  </article>`;
+  const rail = `<div class="rail-sec"><span class="lbl">On this page</span><ul class="toc">${a.requirements.map(n=>`<li><a href="#req-${n.path}"><span class="p">${esc(n.path)}</span>${esc(n.title||n.text.replace(/<[^>]+>/g,'').slice(0,36))}</a></li>`).join('')}</ul></div>
+    <div class="rail-sec"><span class="lbl">Reading this page</span>${legend}</div>
+    <div class="rail-sec"><span class="lbl">Details</span>${metaKV(site)}</div>`;
+  return page(site, ctx, 'requirements', docsLayout(site, ctx, {sideTree: reqTree(site, ctx, a.requirements), sideTreeLabel:'Requirements', main, rail}), 'requirements');
+}
+
+/* ---------- GUIDE (docs page) ---------- */
+const slug = s => String(s).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+function block(b, i){
+  switch(b.type){
+    case 'p': return `<p>${b.html}</p>`;
+    case 'h2': return `<h2 id="s-${slug(b.text)}">${esc(b.text)}</h2>`;
+    case 'h3': return `<h3 id="s-${slug(b.text)}">${esc(b.text)}</h3>`;
+    case 'ul': return `<ul>${b.items.map(x=>`<li>${x}</li>`).join('')}</ul>`;
+    case 'ol': return `<ol>${b.items.map(x=>`<li>${x}</li>`).join('')}</ol>`;
+    case 'tip': return `<aside class="callout callout--tip">${ms('lightbulb')}<div><span class="lbl">Tip</span>${b.html}</div></aside>`;
+    case 'safety': return `<aside class="callout callout--safety">${ms('warning')}<div><span class="lbl">Safety</span>${b.html}</div></aside>`;
+    case 'be-prepared': return `<aside class="callout ${b.safety?'callout--safety':'callout--tip'}">${ms(b.safety?'emergency':'flag')}<div><span class="lbl">Be prepared</span><b class="ct">${esc(b.title)}</b><ul>${b.items.map(x=>`<li>${x}</li>`).join('')}</ul></div></aside>`;
+    case 'checklist': return `<section class="checklist" aria-label="${esc(b.title)}"><header><b>${esc(b.title)}</b>${b.subtitle?`<span>${esc(b.subtitle)}</span>`:''}</header><ol>${b.items.map((x,n)=>`<li><span class="n">${n+1}.</span><span>${x}</span></li>`).join('')}</ol></section>`;
+    case 'image': return `<figure><img src="${b.src}" width="${b.width}" height="${b.height}" alt="${esc(b.alt)}">${b.caption?`<figcaption>${esc(b.caption)}</figcaption>`:''}</figure>`;
+    case 'video': return `<a class="video" href="${b.url}"><span class="poster">${ms('play_circle')}</span><span class="vt"><span class="lbl">Video · opens ${esc(b.channel)}</span><b>${esc(b.title)}</b><span>Watch in a new tab ${ms('open_in_new')}</span></span></a>`;
+    case 'external-link': return `<a class="extlink" href="${b.url}">${ms('link')}<span><b>${esc(b.title)}</b><span>${esc(b.description)}</span></span>${ms('open_in_new')}</a>`;
+    case 'next-page': return `<a class="nextpage" href="${b.url}"><span><span class="lbl">${esc(b.text)}</span><b>Next: ${esc(b.title)}</b><span>${esc(b.teaser)}</span></span>${ms('arrow_forward')}</a>`;
+    default: return '';
+  }
+}
+function guide(site, ctx){
+  const a = site.award, g = site.guide;
+  const toc = g.blocks.filter(b=>b.type==='h2'||b.type==='h3').map(b=>`<li class="toc--${b.type}"><a href="#s-${slug(b.text)}">${esc(b.text)}</a></li>`).join('');
+  const main = `<article>
+    <div class="gd-kick"><a href="${a.guideUrl}">${esc(site.guideLabel)}</a>${ms('chevron_right')}<span>${esc(g.kicker)}</span><span class="p">${esc(g.path)}</span></div>
+    <h1>${esc(g.title)}</h1>
+    <blockquote class="reqblock" cite="${a.requirementsUrl}#req-${g.path.replace(/\./g,'-')}"><div class="rb-l"><span class="lbl">Requirement</span><b>${esc(g.requirement.number)}</b></div><div class="rb-r"><span class="lbl">${esc(a.title)} · official text</span><p>${esc(g.requirement.text)}</p></div></blockquote>
+    <div class="prose">${g.blocks.map(block).join('')}</div>
+    <nav class="pager" aria-label="Guide pages">
+      <a href="${g.prev.url}"><span class="lbl">${ms('arrow_back')} Previous</span><b>${esc(g.prev.title)}</b>${ms('chevron_left')}</a>
+      <a href="${g.next.url}"><span class="lbl">Next ${ms('arrow_forward')}</span><b>${esc(g.next.title)}</b>${ms('chevron_right')}</a>
+      <a href="${a.requirementsUrl}#req-${g.path.replace(/\./g,'-')}"><span class="lbl">Requirement</span><b>${esc(g.path)} in the full requirements</b>${ms('chevron_right')}</a>
+    </nav>
+  </article>`;
+  const rail = `<div class="rail-sec"><span class="lbl">On this page</span><ul class="toc">${toc}</ul></div>
+    <div class="rail-sec"><span class="lbl">This guide</span><dl class="kv"><dt>Pages</dt><dd>${a.guidePages}</dd><dt>Requirement</dt><dd>${esc(g.path)}</dd><dt>Print</dt><dd><a href="${a.guidePrintUrl}">Whole guide</a></dd></dl></div>`;
+  return page(site, ctx, 'guide', docsLayout(site, ctx, {sideTree: guideTree(site, ctx), sideTreeLabel: site.guideLabel, main, rail}), 'guide');
+}
+
+/* ---------- SEARCH (flat ranked rows) ---------- */
+function search(site, ctx){
+  const s = site.search, q = s.query, mbu = isMBU(site);
+  const re = new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}s?)`,'ig');
+  const hl = t => esc(t).replace(re,'<mark>$1</mark>');
+  const rows = []; s.results.forEach(r => r.hits.forEach(h => rows.push({r,h})));
+  const totalHits = rows.length;
+  const rowHtml = ({r,h}, i) => `<li><a class="hit" href="${r.url}requirements/#req-${h.path.replace(/\./g,'-')}" aria-current="${i===0?"true":"false"}">
+      <span class="aw">${r.emblem?`<img src="${r.emblem}" alt="">`:`<span class="lvl" aria-hidden="true">${r.level}</span>`}<span>${esc(awardTitle(site,r))}</span></span>
+      <span class="p">${esc(h.path)}</span>
+      <span class="txt">${h.title?`<b>${hl(h.title)}</b>`:''}<span>${hl(h.excerpt)}</span></span>
+      <kbd class="k">↵</kbd></a></li>`;
+  const facetAwards = s.results.map(r=>`<li><a href="/search/?q=${encodeURIComponent(q)}&in=${r.slug}"><span>${r.emblem?`<img src="${r.emblem}" alt="">`:''}${esc(r.title)}</span><span class="c">${r.hits.length}</span></a></li>`).join('');
+  const facet2 = mbu
+    ? (()=>{ const cats = {}; s.results.forEach(r=>{ cats[r.category]=(cats[r.category]||0)+r.hits.length; }); const eagle = s.results.filter(r=>r.eagle).reduce((n,r)=>n+r.hits.length,0);
+        return `<div class="facet"><span class="lbl">Eagle</span><ul><li><a href="/search/?q=${encodeURIComponent(q)}&eagle=1"><span>Eagle-required</span><span class="c">${eagle}</span></a></li></ul></div>
+        <div class="facet"><span class="lbl">Category</span><ul>${Object.entries(cats).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<li><a href="/search/?q=${encodeURIComponent(q)}&cat=${slug(k)}"><span>${esc(k)}</span><span class="c">${v}</span></a></li>`).join('')}</ul></div>`; })()
+    : `<div class="facet"><span class="lbl">Phase</span><ul>${site.phases.map(ph=>{ const [lo,hi]=ph.ranks.split('–').map(Number); const n=s.results.filter(r=>r.level>=lo&&r.level<=hi).reduce((a,r)=>a+r.hits.length,0); return `<li><a href="/search/?q=${encodeURIComponent(q)}&ranks=${lo}-${hi}"><span>Ranks ${esc(ph.ranks)} · ${esc(ph.title.split(' & ')[0])}</span><span class="c">${n}</span></a></li>`; }).join('')}</ul></div>`;
+  const inner = `<div class="srch-head"><span class="lbl">Search</span><h1>Requirements matching “${esc(q)}”</h1>
+      <form role="search" action="/search/" data-search>${ms('search')}<label for="s-q" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Search requirements</label><input id="s-q" type="search" name="q" value="${esc(q)}" autocomplete="off"><button class="btn btn--primary" type="submit">Search</button></form>
+      <p class="muted" style="font-size:.8125rem;margin-block-start:.5rem">${esc(s.description)}</p></div>
+    <div class="srch">
+      <aside class="facets" aria-label="Narrow results">
+        <div class="facet"><span class="lbl">${esc(site.awardLabel)}</span><ul><li><a href="/search/?q=${encodeURIComponent(q)}" aria-current="true"><span>All ${esc(site.awardPlural)}</span><span class="c">${totalHits}</span></a></li>${facetAwards}</ul></div>
+        ${facet2}
+      </aside>
+      <section aria-label="Results">
+        <div class="res-bar"><span><b>${totalHits}</b> matching requirements in <b>${s.total}</b> ${esc(site.awardPlural)}</span><span>ranked by relevance</span><span class="keys"><kbd>↑</kbd><kbd>↓</kbd> move <kbd>↵</kbd> open</span></div>
+        <ol class="hits">${rows.map(rowHtml).join('')}</ol>
+        <div class="hits-foot"><span>End of results for “${esc(q)}”.</span><a href="/search/">Clear search</a></div>
+      </section>
+    </div>`;
+  return page(site, ctx, 'search', inner, 'search');
+}
+
+window.OPTION = {
+  key:'C', name:'Ledger', thesis:'A dense, keyboard-first reference tool: toolbar, outline tree, two-column requirement ledger, flat search rows.',
+  render:{ home, award, requirements, guide, search },
+  mount(ctx, app){
+    app.querySelector('[data-toggle-theme]')?.addEventListener('click', ()=> window.PROTO.go({ theme: ctx.dark ? 'light' : 'dark' }));
+    app.querySelectorAll('form[data-search]').forEach(f=>f.addEventListener('submit', e=>{ e.preventDefault(); window.PROTO.go({page:'search'}); }));
+    const ledger = app.querySelector('[data-ledger]');
+    app.querySelectorAll('.toolbar [data-filter]').forEach(b=>b.addEventListener('click', ()=>{
+      app.querySelectorAll('.toolbar [data-filter]').forEach(x=>x.setAttribute('aria-pressed', String(x===b)));
+      ledger.classList.remove('f-choices','f-guide'); if (b.dataset.filter) ledger.classList.add(b.dataset.filter);
+    }));
+    app.querySelectorAll('.hit').forEach(h=>h.addEventListener('mouseenter', ()=>{ app.querySelectorAll('.hit').forEach(x=>x.setAttribute('aria-current','false')); h.setAttribute('aria-current','true'); }));
+    if (!window.__ledgerKeys){ window.__ledgerKeys = true; document.addEventListener('keydown', e=>{ if ((e.metaKey||e.ctrlKey) && e.key.toLowerCase()==='k'){ const i = document.querySelector('.tb__search input, .bigsearch input, .srch-head input'); if(i){ e.preventDefault(); i.focus(); } } }); }
+  }
+};
+})();
+</script>
+<script src="proto.js"></script>
+</body>
+</html>
