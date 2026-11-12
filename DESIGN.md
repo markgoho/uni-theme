@@ -396,7 +396,7 @@ One ring everywhere: 2px olive, offset 2px. On the masthead the ring is gold.
 - **Do** put page-specific facts in the body or the left rail.
 - **Do** cap reading content at `--read-max` and page content at `--page-max`.
 - **Do** keep olive for the site's own labels, links and current state, and near-black for official wording.
-- **Do** give each numbered requirement one visible Guide link. Nested requirements reach theirs from the dock, not a link at rest.
+- **Don't** add a Guide link at rest on a requirement. The dock's Guide button, shown for the selected requirement, is the one route.
 - **Do** build home and index pages from a search field plus sections of link tiles, with at most one photo beside the title on wide screens.
 - **Do** keep the sticky current-requirement panel on the guide at wide widths.
 - **Do** make controls, tabs, rows and tiles at least 2.75rem tall, and show the 2px focus ring.

@@ -163,10 +163,6 @@ text_format   - "markdown" | "html", default "markdown". "html"
                 (optional)
 pill          - {type: "select"|"all", count: N} or nil         (optional)
 guide_href    - resolved study-guide URL, "" if none             (optional)
-own_guide     - bool: guide_href is this node's OWN guide page, not an
-                ancestor's section; a numbered requirement shows one
-                visible "Guide" link (req-guide-link.html) to its
-                own page or its first nested one                 (optional)
 resources     - [{title, url}]                                  (optional)
 list          - {type: "ul"|"ol", items: [string, ...]}, renders
                 after this node's own text, inside the same text
@@ -271,11 +267,6 @@ must match it exactly:
 - **`data-guide`** (optional) is the study-guide URL; omitted entirely
   when there is none — the dock's guide button hides itself on
   `href=""`.
-- **`.req-guide-link`** (numbered requirements only, when it or a nested
-  requirement has `own_guide`) is the last child of the card's body
-  scope, outside the title, text and `.resources` selectors below, so
-  copy text never reads it. It is a real `<a>`, so click-to-copy skips
-  it and it navigates. `data-pagefind-ignore`; hidden in print.
 - **Body scope**: `:scope > .req-card__panel` (depth 1) or `:scope >
   .req-child__body` (nested). **Chips have neither** — `deep-link.ts`
   falls back to reading `:scope > .req-child__text` directly off the
