@@ -63,22 +63,16 @@ pulls both in. `assets/css/components/` holds classed, opt-in UI pieces:
   **not loaded** and should be deleted.
 - `drg-blocks.css` — the guide page's content blocks, all under the
   `req-` prefix despite the filename (see `## Page CSS`): `.req-callout`
-  (`--safety`/`--fact`/`--tip`), `.req-be-prepared`, `.req-checklist`
+  (`--safety`/`--fact`/`--tip`/`--prepared`; markup from
+  `layouts/partials/drg/callout.html`: `__header` holding `__icon` and one
+  `h3.__title`, then `__body`; a "Be Prepared!" label is an inline
+  `span.__label` leading the title text on the same line, never a
+  separate label above it), `.req-checklist`
   (`--print` for the print variant), `.req-requirement` (`--lead`/`--sub`),
   `.req-rail__inner` (the sticky in-page echo of the current requirement,
   paired with `.req-rail` in `drg.css` and behavior in `req-rail.ts`),
   `.req-external-link`/`.req-download`, `.req-video`, `.req-next-page`,
   `.req-experience-card`, `.req-org-card`, `.req-tabs`.
-
-- `badge-hero.css` — `.badge-hero` and its `__backdrop`/`__glow`/`__grid`/
-  `__content`/`__eyebrow-row`/`__eyebrow`/`__eagle-chip`/`__pill`/
-  `__title`/`__lead`/`__ctas`/`__cta`/`__emblem-col`/`__emblem` parts,
-  plus the `--hero-on`/`--hero-on-muted` pair it defines for its own
-  light/dark text split. "Badge" here is the hero's own name, not a
-  merit-badge dependency. Paired with `layouts/partials/hero.html` (#26),
-  which owns the `.badge-hero-wrap`/`.badge-hero` markup shape; callers
-  supply pre-rendered eyebrow/backdrop/emblem HTML and own their own
-  domain derivation (icons, category links, view-transition-name values).
 
 `callout.css`, `nav-card.css`, and `forms.css` currently have no markup
 in `mbu` using their classes — they came from mbu unused, not vetted
@@ -94,36 +88,17 @@ uses a matching template or gets unused rules, not a broken page.
 
 Content-page shells (#152):
 
-- `home.css` — homepage shell: `.home-main` (full-bleed `main-class`),
-  the shared section measure on `.home-steps`/`.home-categories`/
-  `.home-featured`, `.home-hero`, `.home-search*`, `.home-steps*`,
-  `.home-categories*`, `.category-tile*`, `.home-featured*`, and the
-  cinematic `.hero-d*` hero.
-- `merit-badges.css` — browse-grid shell: `.badge-count`, `.badges-grid`
-  (including its `content-visibility` deferral past the sixth card),
-  the `.badge-card` family (`__band`, `__category*`, `__eagle*`,
-  `__image`, `__content`, `--with-image`), and `.req-count`. Generic
-  card-grid CSS despite the filename; the Scouting reading of "badge"
-  lives in the markup, not here.
-- `merit-badge-landing.css` — landing-page bento shell:
-  `.badge-overview`, `.badge-preview*`, `.badge-glance*`,
-  `.badge-resources*`, `.badge-start-cta*`. `.badge-preview*` and
-  `.badge-start-cta*` stay filled by each consumer's own template (it
-  reads merit-badge/rank front matter). `.badge-glance*`/
-  `.badge-resources*` markup is filled by
-  `layouts/partials/glance-card.html`/`resources-card.html` (#29),
-  which take a generic rows slice ({icon, label, value} / {icon, label,
-  url}) — callers own
-  which facts/links exist and pre-compute row data from their own
-  domain (mbu's badge rows differ from scouting-u's rank rows), but not
-  the row markup itself.
+- `merit-badge-landing.css` — award overview page: `.badge-preview*`
+  (the "What you'll do" card, markup from `layouts/partials/req-preview-list.html`,
+  rows built by each consumer from its own data) and `.badge-resources*`
+  (markup from `layouts/partials/resources-card.html`, which takes a
+  generic rows slice of {icon, label, url}; callers own which links
+  exist).
 
-Sections a consumer keeps for itself, because they are Scouting-specific
-rather than shell: `mbu` styles `.home-eagle*` and `.eagle-group*` in its
-own `css/eagle-required.css`, re-declaring the shared section measure for
-`.home-eagle` since the theme's grouped selector no longer names it. The
-`.discontinued-notice` styling stays with mbu's merit-badge-specific
-partial of the same name, in `css/components/discontinued-notice.css`.
+A section a consumer keeps for itself, because it is Scouting-specific
+rather than shell: the `.discontinued-notice` styling stays with mbu's
+merit-badge-specific partial of the same name, in
+`css/components/discontinued-notice.css`.
 
 Requirement-rendering shells, extracted from mbu's `drg-` (Digital
 Resource Guide) pages per #150. The `drg-` class prefix was renamed to
@@ -135,14 +110,14 @@ say `drg`/`merit-badge` (renaming the files themselves would break
 - `drg.css` — the guide page shell: `.req-page-main`/`.req-page`/
   `.req-page-body`/`.req-body-grid`/`.req-content`, the desktop `.req-nav`
   and mobile `.req-mobile-nav` navs, `.req-rail` (paired with
-  `.req-rail__inner` in `drg-blocks.css` and `req-rail.ts`), `.req-header`,
+  `.req-rail__inner` in `drg-blocks.css` and `req-rail.ts`),
   `.req-footer-nav`, `.req-illustration`, `.req-table-scroll`.
   `.req-sidebar`(`-wrap`) is defined once, in
   `merit-badge-requirements.css` below, since `drg.css` always loads
   alongside it (see #3 — two divergent definitions of the same selector
   silently cascade-fought each other).
 - `drg-print.css` — the guide's print stylesheet: `.req-worksheet` and its
-  parts, `.req-print-header`/`.req-print-btn`/`.req-print-divider`/
+  parts, `.req-print-btn`/`.req-print-divider`/
   `.req-print-section`, plus `@media print` rules hiding `drg.css`'s and
   `drg-blocks.css`'s interactive chrome.
 - `merit-badge-requirements.css` — the plain requirements-page shell:
@@ -151,16 +126,7 @@ say `drg`/`merit-badge` (renaming the files themselves would break
   `--rail` variants), `.req-dock`, `.req-pill`, `.req-timeline`,
   `.req-toast`, `.req-guide-lookup`, `.req-text-list` (a node's structured
   `list`, see "Text utilities"), `.req-footnotes`(`__heading`/`__list`/
-  `__item`/`__marker`/`__text`) (see "Footnotes"). `.badge-identity`/
-  `.badge-description` are a deliberate exception to the `req-` rename:
-  Scouting rank badges are themselves badges, so "badge" reads as generic
-  vocabulary here, unlike "drg" which is merit-badge-specific by
-  definition. Paired with `layouts/partials/identity.html` (#27), which
-  owns the `.badge-identity` markup shape (icon glow-ring, eyebrow,
-  title, micro-tag); callers supply plain data (icon name, eyebrow text
-  and optional URL, title, micro-tag text) and own their own domain
-  derivation (icon lookup by slug, category URL, rank level text) via a
-  local `badge-identity.html`/`rank-identity.html` that calls it.
+  `__item`/`__marker`/`__text`) (see "Footnotes").
 
 ## Requirement-rendering behavior
 
@@ -197,6 +163,9 @@ text_format   - "markdown" | "html", default "markdown". "html"
                 (optional)
 pill          - {type: "select"|"all", count: N} or nil         (optional)
 guide_href    - resolved study-guide URL, "" if none             (optional)
+own_guide     - bool: guide_href is this node's OWN guide page, not an
+                ancestor's section; renders a visible "Guide" link
+                (req-guide-link.html) at the end of the node     (optional)
 resources     - [{title, url}]                                  (optional)
 list          - {type: "ul"|"ol", items: [string, ...]}, renders
                 after this node's own text, inside the same text
@@ -301,6 +270,10 @@ must match it exactly:
 - **`data-guide`** (optional) is the study-guide URL; omitted entirely
   when there is none — the dock's guide button hides itself on
   `href=""`.
+- **`.req-guide-link`** (when `own_guide`) is the last child of the body
+  scope, outside the title, text and `.resources` selectors below, so
+  copy text never reads it. It is a real `<a>`, so click-to-copy skips
+  it and it navigates. `data-pagefind-ignore`; hidden in print.
 - **Body scope**: `:scope > .req-card__panel` (depth 1) or `:scope >
   .req-child__body` (nested). **Chips have neither** — `deep-link.ts`
   falls back to reading `:scope > .req-child__text` directly off the
@@ -311,14 +284,17 @@ must match it exactly:
 - **Resources**: `:scope > .resources li a`.
 - **Recursion**: `:scope > .req-children > [data-anchor]`.
 
-`deep-link.ts`'s copy-text paste (`requirementText()`) reads title then
-body: when title is present it emits `"{path}. {title}"` then the body
-on the next line; when title is empty it emits `"{path}. {body}"`. A
-`visually-hidden` title element still has real `textContent`, so
-`requirementText()` treats a title as "present" only when its element
-does **not** carry `.visually-hidden` — a curated title (shown normally)
-or a promoted one (`--verbatim`, shown as the heading) counts; a hidden-
-derived heading does not, and is read as if title were empty. This is
+`deep-link.ts`'s copy-text paste (`requirementText()`) is Scouting
+America's wording only. A promoted title (`--verbatim`, shown as the
+heading) is official text, so it emits `"{path}. {title}"` then the body
+on the next line. A curated title is our label and is not pasted: the
+node emits `"{path}. {body}"`, or, with no body, nothing of its own
+before its children (a lone node with neither body nor children pastes
+its curated title so the paste is never a bare number). When `req-text.html`
+strips a lead sentence that echoes the heading, it keeps that sentence
+in `data-lead` on the text element, and the paste puts it back in front
+of the body. A
+`visually-hidden` heading is derived and never pasted. This is
 why a hidden-derived node's body renders the **full**, unstripped text
 (including the sentence the derived heading was built from) rather than
 having it echo-stripped: the same sentence would otherwise exist nowhere
@@ -449,18 +425,19 @@ whose guide content sits under a type-specific section (mbu's own
 `layouts/merit-badges/guide.html`, more specific, always wins there and
 never resolves to this file) is expected to keep its own copy; this
 file is for a consumer selecting the layout purely by front-matter
-`layout:`. No `hugo.Data` lookup: `guide_nav` and `identity` are read
-off `.Params`/`.CurrentSection.Params`/`.Parent.Params`, both pre-
-resolved by the calling content or its scaffold. `.Page.Store.Get
-"leadRequirement"` (set by the `requirement` shortcode) feeds `.req-
-rail`. `guide.html` does not render a hero — no hero markup exists in
-`drg.css`/`drg-blocks.css`; a consumer wanting one renders it via its
-own hero partial elsewhere (e.g. the badge/rank landing page's own
-hero, which already links *to* the guide — see `guide_href` above).
+`layout:`. `guide-print.html` serves every consumer; mbu keeps no
+copy. Both read the guide's page list (`guide_nav`) through
+`drg/resolve-nav.html`, which takes front matter first and derives the
+list otherwise; `identity` is read off
+`.Params`/`.CurrentSection.Params`/`.Parent.Params`, and its `title`
+names the award in the page head. The head's tab row comes from
+`award-tabs.html` with the guide section's parent as the award.
+`.Page.Store.Get "leadRequirement"` (set by the `requirement` shortcode)
+feeds `.req-rail`.
 
 The requirement card no longer carries a group-label eyebrow: a group
-label now appears only on guide pages (the kicker above the `<h1>`) and
-in the sidebar/print nav, both routed through `text/group-label.html`
+label now appears only in the guide sidebar/print nav and a guide
+page's `.md` twin, all routed through `text/group-label.html`
 so a label numbered for only its first member (e.g. `"4. Saving &
 Investing"` over requirements 4-6) drops that leading number instead of
 misattributing it to every member.
@@ -472,13 +449,6 @@ Params:
 ```
 page       - the current guide Page (resolves the "active" nav item)
 guide_nav  - [{group_title, items: [{title, url}]}, ...]
-identity   - dict, passed straight to `identity.html` unmodified
-             (icon, eyebrow, eyebrow_url, title, demote_heading,
-             micro_tag) -- resolved by the calling site exactly like
-             mbu's `badge-identity.html`/scouting-u's `rank-identity.html`
-             already do for their landing pages, never inside this
-             partial
-req_url    - URL of the requirements page, "" renders no Reference item
 print_page - the "print complete guide" Page, nil renders no item
 ```
 
@@ -518,6 +488,11 @@ The full icon set (Phosphor regular + duotone) is theme-owned; consumers
 do not maintain their own copies.
 
 ## Header/footer parameters
+
+The theme also owns `layouts/404.html`: a page head with a search field
+and two link tiles, Home and the masthead call to action
+(`params.theme.cta`). Optional `[params.theme.notFound]` `title` / `text`
+replace its copy. A site's own `layouts/404.html` would shadow it.
 
 `partials/header.html` and `partials/footer.html` render site chrome from
 `[params.theme]` in the consumer's `hugo.toml`:
@@ -602,6 +577,10 @@ override:
 
 - `site.html`, `theme-init.html` (sets `.dark` pre-paint, see
   `## Dark mode`), `resource-hints.html`, `meta.html` — head boilerplate.
+  `theme-init.html` also writes the `theme-color` metas (the masthead
+  olive per theme) and points them at the site's chosen theme;
+  `theme-toggle.ts` keeps them in step. A consumer's own `meta.html`
+  must not add `theme-color`.
   `llms-links.html` (called right after `meta.html`) emits the Markdown
   and `llms.txt` alternate links. It is a separate partial so a consumer
   that overrides `meta.html` keeps them (see
@@ -618,14 +597,16 @@ override:
 - `critical-css.html`, `non-critical-css.html` — concatenate a **fixed,
   mbu-specific manifest** of asset paths, in that exact order. Many
   entries resolve to theme-owned files (the `css/components/` and
-  `css/pages/` files documented above); every path the theme does *not*
-  own, the consumer must supply — even as an empty file — or
-  `resources.Concat` fails on a nil resource. Read the manifest itself
-  for the current split rather than trusting a list here.
+  `css/pages/` files documented above). The consumer-owned paths
+  (`css/badge-view-transitions.css`,
+  `css/components/discontinued-notice.css`) are optional: a site that
+  has the file gets it concatenated in place, a site without it skips
+  it. A missing theme-owned path fails the build via `errorf`. Read the
+  manifest itself for the current split rather than trusting a list
+  here. A consumer does not need its own `critical-css.html` override.
 
   Order matters as much as presence: where a theme file was split so the
-  consumer could keep the non-generic part (`css/eagle-required.css`
-  after `css/pages/merit-badges.css`, `css/badge-view-transitions.css`
+  consumer could keep the non-generic part (`css/badge-view-transitions.css`
   after `css/view-transitions.css`), the consumer-owned file is
   concatenated immediately after its parent, which is what keeps the
   cascade identical to before the split.
@@ -861,9 +842,12 @@ partial "req-footnotes.html" (dict "footnotes" (slice
 
 ## Search page
 
-`partials/search/page.html` renders the whole search page: breadcrumb,
-`<h1>`/description header, the search form, and the `#search-results`
-region. `partials/search/scripts.html` is the paired `footer-scripts`
+`partials/search/page.html` renders the whole search page: a
+`partials/page-head.html` band (breadcrumb, `<h1>`, description, and the
+one search field, `.search__form.page-search`) inside
+`<header class="search-header">`, then the `#search-results` region in
+`.search-page__body`. All of it sits inside `#search`, which `search.ts`
+reads. `partials/search/scripts.html` is the paired `footer-scripts`
 partial that loads the built `assets/ts/search.ts`. A consumer's own
 build step must produce `/pagefind/` (e.g. `bunx pagefind --site public`)
 — that indexing step is not theme-owned.
@@ -890,7 +874,9 @@ shown in an award's emblem rail when Pagefind has no `image` meta for
 that page; omit it and the rail renders an empty tinted ground rather
 than a broken image. `placeholder`, `zeroResults`, and `minQueryHint` are
 optional UI copy, defaulting to `"Search..."` / `"No results found"` /
-`"Type at least 3 characters to search."`. `minQueryHint` replaces
+`"Type at least 3 characters to search."`. `unavailable` (optional UI
+copy) is shown when `/pagefind/pagefind.js` cannot load (no index, or
+offline). `title` (optional) replaces `$page.Title` as the `<h1>`. `minQueryHint` replaces
 `zeroResults` while the field holds 1-2 characters, since Pagefind's
 index isn't queried below `search.ts`'s own `MIN_QUERY_LENGTH` of 3 — an
 empty field shows neither message.
@@ -951,7 +937,14 @@ Three things the renderer reads from a consumer's index, all governed by
 the indexing conventions above:
 
 - **`meta.title`** is the bare award name, with no label suffix. Adding
-  the suffix in content would double-stamp it.
+  the suffix in content would double-stamp it. Pagefind defaults it to
+  the page's first `<h1>`, and a requirements page's `page-head.html`
+  title reads "Camping Requirements", so set it explicitly outside the
+  `data-pagefind-body` wrapper:
+  `<span data-pagefind-meta="title" hidden>Camping</span>`. The element
+  form takes the name as text, so a name with commas ("Signs, Signals,
+  and Codes") needs no escaping, as it would in the comma-separated
+  attribute form `data-pagefind-meta="title:…"`.
 - **`sub_result.anchor.id` is the requirement path** (`2`, `2.a`,
   `4.option2`), shown as the tile's path prefix. An id that doesn't match
   that shape still renders its tile, just without a path.
@@ -990,8 +983,8 @@ When a theme-owned asset path (e.g. `assets/css/button.css`) and a
 same-path file in the consuming site both exist, **the theme's file wins
 silently** — there is no override mechanism. A consumer that needs
 badge/site-specific variants must use a **different filename**
-(e.g. `button-eagle.css` in `mbu`, concatenated after `button.css` in the
-site's own critical-CSS pipeline) rather than shadowing the theme's path.
+(e.g. `badge-view-transitions.css` in `mbu`, concatenated after
+`view-transitions.css` in the critical-CSS pipeline) rather than shadowing the theme's path.
 
 This is the opposite of `layouts/`: for templates and partials, the
 **site wins over the theme** (standard Hugo precedence), which is what
@@ -999,8 +992,8 @@ makes the `theme/logo.html` override above possible.
 
 `view-transitions.css` follows the same pattern: the theme's copy carries
 the shared `@view-transition` opt-in and the requirement-preview↔guide
-pairing (`req-num`/`req-eyebrow`/`req-title`/`req-text` transition
-classes); `mbu`'s own badge-card↔badge-hero pairing lives in its local
+pairing (`req-num`/`req-title`/`req-text` transition
+classes); `mbu`'s own badge-tile↔badge-page title pairing lives in its local
 `badge-view-transitions.css`, concatenated after the theme's file in
 `critical-css.html`.
 

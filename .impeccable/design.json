@@ -1,0 +1,1136 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-12T00:41:04Z",
+  "title": "Design System: uni-theme",
+  "extensions": {
+    "colorMeta": {
+      "accent": {
+        "role": "primary",
+        "displayName": "Scout Olive",
+        "canonical": "#45653a",
+        "cssVariable": "--accent",
+        "theme": "light",
+        "tonalRamp": [
+          "oklch(15% 0.040 138)",
+          "oklch(27% 0.051 138)",
+          "oklch(38% 0.061 138)",
+          "oklch(50% 0.072 138)",
+          "oklch(62% 0.070 138)",
+          "oklch(74% 0.059 138)",
+          "oklch(85% 0.049 138)",
+          "oklch(95% 0.040 138)"
+        ]
+      },
+      "on-accent": {
+        "role": "primary",
+        "displayName": "On Olive",
+        "canonical": "#ffffff",
+        "cssVariable": "--on-accent",
+        "theme": "light",
+        "tonalRamp": [
+          "oklch(15% 0.000 90)",
+          "oklch(27% 0.000 90)",
+          "oklch(38% 0.000 90)",
+          "oklch(50% 0.000 90)",
+          "oklch(62% 0.000 90)",
+          "oklch(74% 0.000 90)",
+          "oklch(85% 0.000 90)",
+          "oklch(95% 0.000 90)"
+        ]
+      },
+      "accent-container": {
+        "role": "primary",
+        "displayName": "Olive Tint",
+        "canonical": "#e9f0e3",
+        "cssVariable": "--accent-container",
+        "theme": "light",
+        "tonalRamp": [
+          "oklch(15% 0.010 130)",
+          "oklch(27% 0.013 130)",
+          "oklch(38% 0.015 130)",
+          "oklch(50% 0.018 130)",
+          "oklch(62% 0.017 130)",
+          "oklch(74% 0.015 130)",
+          "oklch(85% 0.012 130)",
+          "oklch(95% 0.010 130)"
+        ]
+      },
+      "on-accent-container": {
+        "role": "primary",
+        "displayName": "Deep Olive",
+        "canonical": "#36502d",
+        "cssVariable": "--on-accent-container",
+        "theme": "light",
+        "tonalRamp": [
+          "oklch(15% 0.034 138)",
+          "oklch(27% 0.043 138)",
+          "oklch(38% 0.052 138)",
+          "oklch(50% 0.061 138)",
+          "oklch(62% 0.059 138)",
+          "oklch(74% 0.050 138)",
+          "oklch(85% 0.042 138)",
+          "oklch(95% 0.034 138)"
+        ]
+      },
+      "accent-wash-strong": {
+        "role": "primary",
+        "displayName": "Olive Highlight",
+        "canonical": "#dbe7d2",
+        "cssVariable": "--accent-wash-strong",
+        "theme": "light",
+        "tonalRamp": [
+          "oklch(15% 0.016 132)",
+          "oklch(27% 0.021 132)",
+          "oklch(38% 0.025 132)",
+          "oklch(50% 0.029 132)",
+          "oklch(62% 0.028 132)",
+          "oklch(74% 0.024 132)",
+          "oklch(85% 0.020 132)",
+          "oklch(95% 0.016 132)"
+        ]
+      },
+      "mast": {
+        "role": "primary",
+        "displayName": "Masthead Olive",
+        "canonical": "#45653a",
+        "cssVariable": "--mast",
+        "theme": "light",
+        "tonalRamp": [
+          "oklch(15% 0.040 138)",
+          "oklch(27% 0.051 138)",
+          "oklch(38% 0.061 138)",
+          "oklch(50% 0.072 138)",
+          "oklch(62% 0.070 138)",
+          "oklch(74% 0.059 138)",
+          "oklch(85% 0.049 138)",
+          "oklch(95% 0.040 138)"
+        ]
+      },
+      "mast-ink": {
+        "role": "primary",
+        "displayName": "Masthead Ink",
+        "canonical": "#ffffff",
+        "cssVariable": "--mast-ink",
+        "theme": "light",
+        "tonalRamp": [
+          "oklch(15% 0.000 90)",
+          "oklch(27% 0.000 90)",
+          "oklch(38% 0.000 90)",
+          "oklch(50% 0.000 90)",
+          "oklch(62% 0.000 90)",
+          "oklch(74% 0.000 90)",
+          "oklch(85% 0.000 90)",
+          "oklch(95% 0.000 90)"
+        ]
+      },
+      "gold": {
+        "role": "secondary",
+        "displayName": "Trail Gold",
+        "canonical": "#c9a227",
+        "cssVariable": "--gold",
+        "theme": "light",
+        "tonalRamp": [
+          "oklch(15% 0.073 90)",
+          "oklch(27% 0.092 90)",
+          "oklch(38% 0.110 90)",
+          "oklch(50% 0.130 90)",
+          "oklch(62% 0.127 90)",
+          "oklch(74% 0.107 90)",
+          "oklch(85% 0.089 90)",
+          "oklch(95% 0.073 90)"
+        ]
+      },
+      "amber": {
+        "role": "secondary",
+        "displayName": "Amber",
+        "canonical": "#7a5f00",
+        "cssVariable": "--amber",
+        "theme": "light",
+        "tonalRamp": [
+          "oklch(15% 0.054 89)",
+          "oklch(27% 0.068 89)",
+          "oklch(38% 0.081 89)",
+          "oklch(50% 0.096 89)",
+          "oklch(62% 0.093 89)",
+          "oklch(74% 0.079 89)",
+          "oklch(85% 0.066 89)",
+          "oklch(95% 0.054 89)"
+        ]
+      },
+      "amber-container": {
+        "role": "secondary",
+        "displayName": "Gold Tint",
+        "canonical": "#f6ecc4",
+        "cssVariable": "--amber-container",
+        "theme": "light",
+        "tonalRamp": [
+          "oklch(15% 0.028 96)",
+          "oklch(27% 0.036 96)",
+          "oklch(38% 0.042 96)",
+          "oklch(50% 0.050 96)",
+          "oklch(62% 0.049 96)",
+          "oklch(74% 0.041 96)",
+          "oklch(85% 0.034 96)",
+          "oklch(95% 0.028 96)"
+        ]
+      },
+      "on-amber-container": {
+        "role": "secondary",
+        "displayName": "Gold Ink",
+        "canonical": "#4f3d00",
+        "cssVariable": "--on-amber-container",
+        "theme": "light",
+        "tonalRamp": [
+          "oklch(15% 0.040 90)",
+          "oklch(27% 0.050 90)",
+          "oklch(38% 0.060 90)",
+          "oklch(50% 0.071 90)",
+          "oklch(62% 0.069 90)",
+          "oklch(74% 0.058 90)",
+          "oklch(85% 0.049 90)",
+          "oklch(95% 0.040 90)"
+        ]
+      },
+      "error": {
+        "role": "tertiary",
+        "displayName": "Safety Red",
+        "canonical": "#a3271f",
+        "cssVariable": "--error",
+        "theme": "light",
+        "tonalRamp": [
+          "oklch(15% 0.084 29)",
+          "oklch(27% 0.107 29)",
+          "oklch(38% 0.128 29)",
+          "oklch(50% 0.151 29)",
+          "oklch(62% 0.147 29)",
+          "oklch(74% 0.124 29)",
+          "oklch(85% 0.103 29)",
+          "oklch(95% 0.084 29)"
+        ]
+      },
+      "error-container": {
+        "role": "tertiary",
+        "displayName": "Safety Tint",
+        "canonical": "#fbecea",
+        "cssVariable": "--error-container",
+        "theme": "light",
+        "tonalRamp": [
+          "oklch(15% 0.009 27)",
+          "oklch(27% 0.011 27)",
+          "oklch(38% 0.013 27)",
+          "oklch(50% 0.016 27)",
+          "oklch(62% 0.015 27)",
+          "oklch(74% 0.013 27)",
+          "oklch(85% 0.011 27)",
+          "oklch(95% 0.009 27)"
+        ]
+      },
+      "on-error-container": {
+        "role": "tertiary",
+        "displayName": "Safety Ink",
+        "canonical": "#1d2420",
+        "cssVariable": "--on-error-container",
+        "theme": "light",
+        "tonalRamp": [
+          "oklch(15% 0.007 160)",
+          "oklch(27% 0.008 160)",
+          "oklch(38% 0.010 160)",
+          "oklch(50% 0.012 160)",
+          "oklch(62% 0.012 160)",
+          "oklch(74% 0.010 160)",
+          "oklch(85% 0.008 160)",
+          "oklch(95% 0.007 160)"
+        ]
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Gray Ground",
+        "canonical": "#f3f4f1",
+        "cssVariable": "--surface",
+        "theme": "light",
+        "tonalRamp": [
+          "oklch(15% 0.002 122)",
+          "oklch(27% 0.003 122)",
+          "oklch(38% 0.003 122)",
+          "oklch(50% 0.004 122)",
+          "oklch(62% 0.004 122)",
+          "oklch(74% 0.003 122)",
+          "oklch(85% 0.003 122)",
+          "oklch(95% 0.002 122)"
+        ]
+      },
+      "surface-raised": {
+        "role": "neutral",
+        "displayName": "Tile White",
+        "canonical": "#ffffff",
+        "cssVariable": "--surface-raised",
+        "theme": "light",
+        "tonalRamp": [
+          "oklch(15% 0.000 90)",
+          "oklch(27% 0.000 90)",
+          "oklch(38% 0.000 90)",
+          "oklch(50% 0.000 90)",
+          "oklch(62% 0.000 90)",
+          "oklch(74% 0.000 90)",
+          "oklch(85% 0.000 90)",
+          "oklch(95% 0.000 90)"
+        ]
+      },
+      "surface-sunken": {
+        "role": "neutral",
+        "displayName": "Sunken Gray",
+        "canonical": "#e9ece6",
+        "cssVariable": "--surface-sunken",
+        "theme": "light",
+        "tonalRamp": [
+          "oklch(15% 0.005 129)",
+          "oklch(27% 0.006 129)",
+          "oklch(38% 0.007 129)",
+          "oklch(50% 0.008 129)",
+          "oklch(62% 0.008 129)",
+          "oklch(74% 0.007 129)",
+          "oklch(85% 0.006 129)",
+          "oklch(95% 0.005 129)"
+        ]
+      },
+      "surface-inverse": {
+        "role": "neutral",
+        "displayName": "Inverse Ground",
+        "canonical": "#1d2420",
+        "cssVariable": "--surface-inverse",
+        "theme": "light",
+        "tonalRamp": [
+          "oklch(15% 0.007 160)",
+          "oklch(27% 0.008 160)",
+          "oklch(38% 0.010 160)",
+          "oklch(50% 0.012 160)",
+          "oklch(62% 0.012 160)",
+          "oklch(74% 0.010 160)",
+          "oklch(85% 0.008 160)",
+          "oklch(95% 0.007 160)"
+        ]
+      },
+      "on-surface": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "#1d2420",
+        "cssVariable": "--on-surface",
+        "theme": "light",
+        "tonalRamp": [
+          "oklch(15% 0.007 160)",
+          "oklch(27% 0.008 160)",
+          "oklch(38% 0.010 160)",
+          "oklch(50% 0.012 160)",
+          "oklch(62% 0.012 160)",
+          "oklch(74% 0.010 160)",
+          "oklch(85% 0.008 160)",
+          "oklch(95% 0.007 160)"
+        ]
+      },
+      "on-surface-muted": {
+        "role": "neutral",
+        "displayName": "Muted Ink",
+        "canonical": "#4d564f",
+        "cssVariable": "--on-surface-muted",
+        "theme": "light",
+        "tonalRamp": [
+          "oklch(15% 0.008 152)",
+          "oklch(27% 0.011 152)",
+          "oklch(38% 0.013 152)",
+          "oklch(50% 0.015 152)",
+          "oklch(62% 0.015 152)",
+          "oklch(74% 0.012 152)",
+          "oklch(85% 0.010 152)",
+          "oklch(95% 0.008 152)"
+        ]
+      },
+      "on-surface-inverse": {
+        "role": "neutral",
+        "displayName": "Inverse Ink",
+        "canonical": "#ffffff",
+        "cssVariable": "--on-surface-inverse",
+        "theme": "light",
+        "tonalRamp": [
+          "oklch(15% 0.000 90)",
+          "oklch(27% 0.000 90)",
+          "oklch(38% 0.000 90)",
+          "oklch(50% 0.000 90)",
+          "oklch(62% 0.000 90)",
+          "oklch(74% 0.000 90)",
+          "oklch(85% 0.000 90)",
+          "oklch(95% 0.000 90)"
+        ]
+      },
+      "outline": {
+        "role": "neutral",
+        "displayName": "Strong Hairline",
+        "canonical": "#c9cec5",
+        "cssVariable": "--outline",
+        "theme": "light",
+        "tonalRamp": [
+          "oklch(15% 0.007 131)",
+          "oklch(27% 0.009 131)",
+          "oklch(38% 0.011 131)",
+          "oklch(50% 0.013 131)",
+          "oklch(62% 0.012 131)",
+          "oklch(74% 0.010 131)",
+          "oklch(85% 0.009 131)",
+          "oklch(95% 0.007 131)"
+        ]
+      },
+      "outline-variant": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "canonical": "#e2e5df",
+        "cssVariable": "--outline-variant",
+        "theme": "light",
+        "tonalRamp": [
+          "oklch(15% 0.005 129)",
+          "oklch(27% 0.006 129)",
+          "oklch(38% 0.007 129)",
+          "oklch(50% 0.008 129)",
+          "oklch(62% 0.008 129)",
+          "oklch(74% 0.007 129)",
+          "oklch(85% 0.006 129)",
+          "oklch(95% 0.005 129)"
+        ]
+      },
+      "accent-dark": {
+        "role": "primary",
+        "displayName": "Scout Olive (dark theme)",
+        "canonical": "#a9cc97",
+        "cssVariable": "--accent",
+        "theme": "dark",
+        "tonalRamp": [
+          "oklch(15% 0.043 135)",
+          "oklch(27% 0.055 135)",
+          "oklch(38% 0.065 135)",
+          "oklch(50% 0.077 135)",
+          "oklch(62% 0.075 135)",
+          "oklch(74% 0.063 135)",
+          "oklch(85% 0.053 135)",
+          "oklch(95% 0.043 135)"
+        ]
+      },
+      "on-accent-dark": {
+        "role": "primary",
+        "displayName": "On Olive (dark theme)",
+        "canonical": "#10160f",
+        "cssVariable": "--on-accent",
+        "theme": "dark",
+        "tonalRamp": [
+          "oklch(15% 0.009 141)",
+          "oklch(27% 0.011 141)",
+          "oklch(38% 0.013 141)",
+          "oklch(50% 0.016 141)",
+          "oklch(62% 0.015 141)",
+          "oklch(74% 0.013 141)",
+          "oklch(85% 0.011 141)",
+          "oklch(95% 0.009 141)"
+        ]
+      },
+      "accent-container-dark": {
+        "role": "primary",
+        "displayName": "Olive Tint (dark theme)",
+        "canonical": "#2a3a26",
+        "cssVariable": "--accent-container",
+        "theme": "dark",
+        "tonalRamp": [
+          "oklch(15% 0.021 139)",
+          "oklch(27% 0.027 139)",
+          "oklch(38% 0.032 139)",
+          "oklch(50% 0.038 139)",
+          "oklch(62% 0.037 139)",
+          "oklch(74% 0.031 139)",
+          "oklch(85% 0.026 139)",
+          "oklch(95% 0.021 139)"
+        ]
+      },
+      "on-accent-container-dark": {
+        "role": "primary",
+        "displayName": "Deep Olive (dark theme)",
+        "canonical": "#cfe5c3",
+        "cssVariable": "--on-accent-container",
+        "theme": "dark",
+        "tonalRamp": [
+          "oklch(15% 0.027 134)",
+          "oklch(27% 0.034 134)",
+          "oklch(38% 0.041 134)",
+          "oklch(50% 0.048 134)",
+          "oklch(62% 0.047 134)",
+          "oklch(74% 0.040 134)",
+          "oklch(85% 0.033 134)",
+          "oklch(95% 0.027 134)"
+        ]
+      },
+      "accent-wash-strong-dark": {
+        "role": "primary",
+        "displayName": "Olive Highlight (dark theme)",
+        "canonical": "#344a2e",
+        "cssVariable": "--accent-wash-strong",
+        "theme": "dark",
+        "tonalRamp": [
+          "oklch(15% 0.028 139)",
+          "oklch(27% 0.036 139)",
+          "oklch(38% 0.043 139)",
+          "oklch(50% 0.050 139)",
+          "oklch(62% 0.049 139)",
+          "oklch(74% 0.042 139)",
+          "oklch(85% 0.035 139)",
+          "oklch(95% 0.028 139)"
+        ]
+      },
+      "mast-dark": {
+        "role": "primary",
+        "displayName": "Masthead Olive (dark theme)",
+        "canonical": "#263a20",
+        "cssVariable": "--mast",
+        "theme": "dark",
+        "tonalRamp": [
+          "oklch(15% 0.027 139)",
+          "oklch(27% 0.034 139)",
+          "oklch(38% 0.041 139)",
+          "oklch(50% 0.048 139)",
+          "oklch(62% 0.047 139)",
+          "oklch(74% 0.040 139)",
+          "oklch(85% 0.033 139)",
+          "oklch(95% 0.027 139)"
+        ]
+      },
+      "mast-ink-dark": {
+        "role": "primary",
+        "displayName": "Masthead Ink (dark theme)",
+        "canonical": "#ffffff",
+        "cssVariable": "--mast-ink",
+        "theme": "dark",
+        "tonalRamp": [
+          "oklch(15% 0.000 90)",
+          "oklch(27% 0.000 90)",
+          "oklch(38% 0.000 90)",
+          "oklch(50% 0.000 90)",
+          "oklch(62% 0.000 90)",
+          "oklch(74% 0.000 90)",
+          "oklch(85% 0.000 90)",
+          "oklch(95% 0.000 90)"
+        ]
+      },
+      "gold-dark": {
+        "role": "secondary",
+        "displayName": "Trail Gold (dark theme)",
+        "canonical": "#c9a227",
+        "cssVariable": "--gold",
+        "theme": "dark",
+        "tonalRamp": [
+          "oklch(15% 0.073 90)",
+          "oklch(27% 0.092 90)",
+          "oklch(38% 0.110 90)",
+          "oklch(50% 0.130 90)",
+          "oklch(62% 0.127 90)",
+          "oklch(74% 0.107 90)",
+          "oklch(85% 0.089 90)",
+          "oklch(95% 0.073 90)"
+        ]
+      },
+      "amber-dark": {
+        "role": "secondary",
+        "displayName": "Amber (dark theme)",
+        "canonical": "#a9cc97",
+        "cssVariable": "--amber",
+        "theme": "dark",
+        "tonalRamp": [
+          "oklch(15% 0.043 135)",
+          "oklch(27% 0.055 135)",
+          "oklch(38% 0.065 135)",
+          "oklch(50% 0.077 135)",
+          "oklch(62% 0.075 135)",
+          "oklch(74% 0.063 135)",
+          "oklch(85% 0.053 135)",
+          "oklch(95% 0.043 135)"
+        ]
+      },
+      "amber-container-dark": {
+        "role": "secondary",
+        "displayName": "Gold Tint (dark theme)",
+        "canonical": "#3a3420",
+        "cssVariable": "--amber-container",
+        "theme": "dark",
+        "tonalRamp": [
+          "oklch(15% 0.018 93)",
+          "oklch(27% 0.023 93)",
+          "oklch(38% 0.027 93)",
+          "oklch(50% 0.032 93)",
+          "oklch(62% 0.031 93)",
+          "oklch(74% 0.026 93)",
+          "oklch(85% 0.022 93)",
+          "oklch(95% 0.018 93)"
+        ]
+      },
+      "on-amber-container-dark": {
+        "role": "secondary",
+        "displayName": "Gold Ink (dark theme)",
+        "canonical": "#ecd98a",
+        "cssVariable": "--on-amber-container",
+        "theme": "dark",
+        "tonalRamp": [
+          "oklch(15% 0.053 96)",
+          "oklch(27% 0.068 96)",
+          "oklch(38% 0.081 96)",
+          "oklch(50% 0.095 96)",
+          "oklch(62% 0.093 96)",
+          "oklch(74% 0.078 96)",
+          "oklch(85% 0.065 96)",
+          "oklch(95% 0.053 96)"
+        ]
+      },
+      "error-dark": {
+        "role": "tertiary",
+        "displayName": "Safety Red (dark theme)",
+        "canonical": "#f0a39c",
+        "cssVariable": "--error",
+        "theme": "dark",
+        "tonalRamp": [
+          "oklch(15% 0.049 25)",
+          "oklch(27% 0.062 25)",
+          "oklch(38% 0.074 25)",
+          "oklch(50% 0.087 25)",
+          "oklch(62% 0.085 25)",
+          "oklch(74% 0.072 25)",
+          "oklch(85% 0.060 25)",
+          "oklch(95% 0.049 25)"
+        ]
+      },
+      "error-container-dark": {
+        "role": "tertiary",
+        "displayName": "Safety Tint (dark theme)",
+        "canonical": "#3a211f",
+        "cssVariable": "--error-container",
+        "theme": "dark",
+        "tonalRamp": [
+          "oklch(15% 0.021 25)",
+          "oklch(27% 0.026 25)",
+          "oklch(38% 0.031 25)",
+          "oklch(50% 0.037 25)",
+          "oklch(62% 0.036 25)",
+          "oklch(74% 0.030 25)",
+          "oklch(85% 0.025 25)",
+          "oklch(95% 0.021 25)"
+        ]
+      },
+      "on-error-container-dark": {
+        "role": "tertiary",
+        "displayName": "Safety Ink (dark theme)",
+        "canonical": "#f1ebe9",
+        "cssVariable": "--on-error-container",
+        "theme": "dark",
+        "tonalRamp": [
+          "oklch(15% 0.004 39)",
+          "oklch(27% 0.005 39)",
+          "oklch(38% 0.006 39)",
+          "oklch(50% 0.007 39)",
+          "oklch(62% 0.006 39)",
+          "oklch(74% 0.005 39)",
+          "oklch(85% 0.005 39)",
+          "oklch(95% 0.004 39)"
+        ]
+      },
+      "surface-dark": {
+        "role": "neutral",
+        "displayName": "Gray Ground (dark theme)",
+        "canonical": "#151915",
+        "cssVariable": "--surface",
+        "theme": "dark",
+        "tonalRamp": [
+          "oklch(15% 0.005 145)",
+          "oklch(27% 0.007 145)",
+          "oklch(38% 0.008 145)",
+          "oklch(50% 0.009 145)",
+          "oklch(62% 0.009 145)",
+          "oklch(74% 0.008 145)",
+          "oklch(85% 0.006 145)",
+          "oklch(95% 0.005 145)"
+        ]
+      },
+      "surface-raised-dark": {
+        "role": "neutral",
+        "displayName": "Tile White (dark theme)",
+        "canonical": "#1f2520",
+        "cssVariable": "--surface-raised",
+        "theme": "dark",
+        "tonalRamp": [
+          "oklch(15% 0.007 150)",
+          "oklch(27% 0.008 150)",
+          "oklch(38% 0.010 150)",
+          "oklch(50% 0.012 150)",
+          "oklch(62% 0.012 150)",
+          "oklch(74% 0.010 150)",
+          "oklch(85% 0.008 150)",
+          "oklch(95% 0.007 150)"
+        ]
+      },
+      "surface-sunken-dark": {
+        "role": "neutral",
+        "displayName": "Sunken Gray (dark theme)",
+        "canonical": "#262d27",
+        "cssVariable": "--surface-sunken",
+        "theme": "dark",
+        "tonalRamp": [
+          "oklch(15% 0.008 149)",
+          "oklch(27% 0.010 149)",
+          "oklch(38% 0.012 149)",
+          "oklch(50% 0.014 149)",
+          "oklch(62% 0.013 149)",
+          "oklch(74% 0.011 149)",
+          "oklch(85% 0.009 149)",
+          "oklch(95% 0.008 149)"
+        ]
+      },
+      "surface-inverse-dark": {
+        "role": "neutral",
+        "displayName": "Inverse Ground (dark theme)",
+        "canonical": "#e7ebe4",
+        "cssVariable": "--surface-inverse",
+        "theme": "dark",
+        "tonalRamp": [
+          "oklch(15% 0.005 131)",
+          "oklch(27% 0.007 131)",
+          "oklch(38% 0.008 131)",
+          "oklch(50% 0.010 131)",
+          "oklch(62% 0.009 131)",
+          "oklch(74% 0.008 131)",
+          "oklch(85% 0.007 131)",
+          "oklch(95% 0.005 131)"
+        ]
+      },
+      "on-surface-dark": {
+        "role": "neutral",
+        "displayName": "Ink (dark theme)",
+        "canonical": "#e7ebe4",
+        "cssVariable": "--on-surface",
+        "theme": "dark",
+        "tonalRamp": [
+          "oklch(15% 0.005 131)",
+          "oklch(27% 0.007 131)",
+          "oklch(38% 0.008 131)",
+          "oklch(50% 0.010 131)",
+          "oklch(62% 0.009 131)",
+          "oklch(74% 0.008 131)",
+          "oklch(85% 0.007 131)",
+          "oklch(95% 0.005 131)"
+        ]
+      },
+      "on-surface-muted-dark": {
+        "role": "neutral",
+        "displayName": "Muted Ink (dark theme)",
+        "canonical": "#a8b0a6",
+        "cssVariable": "--on-surface-muted",
+        "theme": "dark",
+        "tonalRamp": [
+          "oklch(15% 0.009 139)",
+          "oklch(27% 0.011 139)",
+          "oklch(38% 0.013 139)",
+          "oklch(50% 0.016 139)",
+          "oklch(62% 0.015 139)",
+          "oklch(74% 0.013 139)",
+          "oklch(85% 0.011 139)",
+          "oklch(95% 0.009 139)"
+        ]
+      },
+      "on-surface-inverse-dark": {
+        "role": "neutral",
+        "displayName": "Inverse Ink (dark theme)",
+        "canonical": "#151915",
+        "cssVariable": "--on-surface-inverse",
+        "theme": "dark",
+        "tonalRamp": [
+          "oklch(15% 0.005 145)",
+          "oklch(27% 0.007 145)",
+          "oklch(38% 0.008 145)",
+          "oklch(50% 0.009 145)",
+          "oklch(62% 0.009 145)",
+          "oklch(74% 0.008 145)",
+          "oklch(85% 0.006 145)",
+          "oklch(95% 0.005 145)"
+        ]
+      },
+      "outline-dark": {
+        "role": "neutral",
+        "displayName": "Strong Hairline (dark theme)",
+        "canonical": "#465047",
+        "cssVariable": "--outline",
+        "theme": "dark",
+        "tonalRamp": [
+          "oklch(15% 0.010 148)",
+          "oklch(27% 0.013 148)",
+          "oklch(38% 0.016 148)",
+          "oklch(50% 0.018 148)",
+          "oklch(62% 0.018 148)",
+          "oklch(74% 0.015 148)",
+          "oklch(85% 0.013 148)",
+          "oklch(95% 0.010 148)"
+        ]
+      },
+      "outline-variant-dark": {
+        "role": "neutral",
+        "displayName": "Hairline (dark theme)",
+        "canonical": "#2f372f",
+        "cssVariable": "--outline-variant",
+        "theme": "dark",
+        "tonalRamp": [
+          "oklch(15% 0.009 145)",
+          "oklch(27% 0.012 145)",
+          "oklch(38% 0.014 145)",
+          "oklch(50% 0.017 145)",
+          "oklch(62% 0.016 145)",
+          "oklch(74% 0.014 145)",
+          "oklch(85% 0.011 145)",
+          "oklch(95% 0.009 145)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "The page title in the page head; the accent word is olive."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Section titles on index pages; guide article section headings at weight 700."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "A requirement's number and its short label, in olive."
+      },
+      "subtitle": {
+        "displayName": "Subtitle",
+        "purpose": "Rows in the overview list and sub-headings in an article."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Official wording and guide prose."
+      },
+      "body-small": {
+        "displayName": "Body small",
+        "purpose": "The sticky requirement panel, excerpts and card descriptions."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Controls, rail items, tabs and link-tile names."
+      },
+      "caption": {
+        "displayName": "Caption",
+        "purpose": "Breadcrumb, tile meta lines, the key and figure captions."
+      }
+    },
+    "shadows": [
+      {
+        "name": "sticky-control",
+        "value": "0 -0.5rem 0 var(--surface), 0 6px 14px -8px rgb(0 0 0 / 0.35)",
+        "purpose": "The sticky phone jump control and guide page list: a ground-colored band above and a soft shadow below."
+      },
+      {
+        "name": "dock-fallback",
+        "value": "0 8px 24px -8px rgb(0 0 0 / 0.35)",
+        "purpose": "The requirement action bar when the browser cannot tether it and it floats at the bottom of the screen."
+      },
+      {
+        "name": "selected-outline",
+        "value": "0 0 0 2px var(--accent-container)",
+        "purpose": "A flat outline around the selected requirement tile, with an accent border. Not elevation."
+      },
+      {
+        "name": "current-item-hairline",
+        "value": "inset 0 0 0 1px var(--outline-variant)",
+        "purpose": "An inset hairline on the current rail item. Not elevation."
+      },
+      {
+        "name": "elevation-tokens",
+        "value": "none",
+        "purpose": "--shadow-card, --shadow-raised, --shadow-elevated and --shadow-elevated-hover are all none in both themes."
+      }
+    ],
+    "motion": [
+      {
+        "name": "tile-border",
+        "value": "border-color 0.15s ease",
+        "purpose": "Requirement tile hover."
+      },
+      {
+        "name": "row-fill",
+        "value": "background-color 0.15s ease",
+        "purpose": "Sub-requirement row hover and selection."
+      },
+      {
+        "name": "chevron-turn",
+        "value": "rotate 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "The chevron on the phone jump control."
+      },
+      {
+        "name": "dock-fade",
+        "value": "opacity 0.15s ease-out",
+        "purpose": "The tethered requirement action bar."
+      },
+      {
+        "name": "view-transition",
+        "value": "@view-transition { navigation: auto }",
+        "purpose": "Cross-document transitions between an award's pages; off under prefers-reduced-motion (assets/css/view-transitions.css)."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "phone-narrow",
+        "value": "30rem"
+      },
+      {
+        "name": "tile-padding",
+        "value": "40rem"
+      },
+      {
+        "name": "two-column",
+        "value": "60rem"
+      },
+      {
+        "name": "wide",
+        "value": "87.5rem"
+      },
+      {
+        "name": "req-main container",
+        "value": "500px"
+      }
+    ],
+    "layout": [
+      {
+        "name": "--page-max",
+        "value": "77.5rem; 92rem from 87.5rem viewport width",
+        "purpose": "The page width on every page."
+      },
+      {
+        "name": "--read-max",
+        "value": "46rem",
+        "purpose": "The reading-column width on every page."
+      },
+      {
+        "name": "--page-gutter",
+        "value": "1.5rem",
+        "purpose": "Inline padding of the page wrap."
+      },
+      {
+        "name": "rail",
+        "value": "18rem",
+        "purpose": "The left rail on award pages; the overview aside is 20rem; the guide's requirement panel is 15rem to 21rem."
+      },
+      {
+        "name": "target-min",
+        "value": "2.75rem",
+        "purpose": "Minimum block size of every interactive target."
+      }
+    ],
+    "print": {
+      "note": "Print re-values the tokens. Verified by forcing print styles on screen, not on paper.",
+      "colors": {
+        "surface": "#ffffff",
+        "on-surface": "#000000",
+        "on-surface-muted": "#3d443f",
+        "accent": "#36502d",
+        "on-accent-container": "#36502d",
+        "outline": "#9aa197",
+        "outline-variant": "#c9cec5",
+        "error": "#a3271f",
+        "amber": "#4f3d00"
+      }
+    },
+    "focus": {
+      "default": "outline: 2px solid var(--accent); outline-offset: 2px",
+      "masthead": "outline: 2px solid var(--gold); outline-offset: 2px"
+    },
+    "sources": {
+      "stylesheet": "assets/css/standard.css",
+      "contract": "CONTRACT.md",
+      "partials": "layouts/partials/"
+    },
+    "openItems": [
+      "`standard.css` is an override layer. `assets/css/standard.css` loads last and wins over `tokens-v2.css`, `header.css`, `footer.css`, `components/*` and `pages/*`. Folding each section into the file it overrides, and deleting the rules it replaced, is pending.",
+      "Print was checked on screen only, by forcing the print styles. It has not been checked on paper.",
+      "No accessibility conformance standard is recorded (see `PRODUCT.md`)."
+    ]
+  },
+  "components": [
+    {
+      "name": "Masthead",
+      "kind": "nav",
+      "refersTo": "masthead",
+      "description": "Olive bar with the one gold line; wordmark and one outlined call to action.",
+      "html": "<div class=\"ds-mast\"><strong class=\"ds-mast__name\">Merit Badge University</strong><a class=\"ds-mast__btn\" href=\"#\">Browse badges</a></div>",
+      "css": ".ds-mast { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; min-block-size: 3.75rem; padding-block: 0.5rem; padding-inline: 1.5rem; background: var(--mast, #45653a); border-block-end: 3px solid var(--gold, #c9a227); color: var(--mast-ink, #fff); font-family: var(--font-body, 'Figtree', system-ui, sans-serif); } .ds-mast__name { font-size: 1.25rem; line-height: 1.75rem; font-weight: 800; letter-spacing: -0.01em; } .ds-mast__btn { display: inline-flex; align-items: center; min-block-size: 2.75rem; padding-inline: 1rem; border: 1px solid rgb(255 255 255 / 0.35); border-radius: 0.5rem; color: var(--mast-ink, #fff); font-size: 1rem; font-weight: 600; text-decoration: none; } .ds-mast__btn:hover { background: rgb(255 255 255 / 0.14); border-color: rgb(255 255 255 / 0.6); } .ds-mast__btn:focus-visible { outline: 2px solid var(--gold, #c9a227); outline-offset: 2px; }"
+    },
+    {
+      "name": "Page head with tabs",
+      "kind": "nav",
+      "refersTo": "page-head",
+      "description": "The compact white head on every award page: breadcrumb, title with accent word, optional flag, tabs.",
+      "html": "<div class=\"ds-head\"><p class=\"ds-head__crumb\"><a href=\"#\">Home</a> <svg class=\"ds-head__sep\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><polyline points=\"9 18 15 12 9 6\"/></svg> <a href=\"#\">Merit Badges</a></p><div class=\"ds-head__row\"><h1 class=\"ds-head__title\">Camping <span>Merit Badge</span></h1><span class=\"ds-head__flag\">Eagle required</span></div><nav class=\"ds-head__tabs\" aria-label=\"Sections\"><a href=\"#\">Overview</a><a href=\"#\" aria-current=\"page\">Requirements</a><a href=\"#\">Guide</a></nav></div>",
+      "css": ".ds-head { padding-block: 0.875rem 0; padding-inline: 1.5rem; background: var(--surface-raised, #fff); border-block-end: 1px solid var(--outline-variant, #e2e5df); color: var(--on-surface, #1d2420); font-family: var(--font-body, 'Figtree', system-ui, sans-serif); } .ds-head__crumb { margin: 0; font-size: 0.9375rem; } .ds-head__sep { inline-size: 0.75em; block-size: 0.75em; } .ds-head__crumb a { color: var(--on-accent-container, #36502d); } .ds-head__row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.375rem 0.875rem; margin-block: 0.375rem 0; } .ds-head__title { margin: 0; font-size: clamp(1.875rem, 1.25rem + 2.2vw, 2.75rem); line-height: 1.1; font-weight: 800; letter-spacing: -0.025em; } .ds-head__title span { color: var(--accent, #45653a); } .ds-head__flag { padding-block: 0.125rem; padding-inline: 0.625rem; border-radius: 9999px; background: var(--amber-container, #f6ecc4); color: var(--on-amber-container, #4f3d00); font-size: 0.875rem; font-weight: 700; } .ds-head__tabs { display: flex; gap: 0.25rem; margin-block-start: 0.5rem; margin-inline-start: -0.75rem; } .ds-head__tabs a { display: inline-flex; align-items: center; min-block-size: 2.75rem; padding-inline: 0.75rem; border-block-end: 3px solid transparent; color: var(--on-surface-muted, #4d564f); font-size: 1.0625rem; font-weight: 600; text-decoration: none; } .ds-head__tabs a:hover { color: var(--on-surface, #1d2420); } .ds-head__tabs a[aria-current='page'] { border-block-end-color: var(--accent, #45653a); color: var(--on-accent-container, #36502d); font-weight: 700; } .ds-head a:focus-visible { outline: 2px solid var(--accent, #45653a); outline-offset: 2px; }"
+    },
+    {
+      "name": "Link tile",
+      "kind": "card",
+      "refersTo": "link-tile",
+      "description": "One row of an index: a whole-tile link with an icon box, a name, one muted line and a chevron.",
+      "html": "<a class=\"ds-tile\" href=\"#\"><span class=\"ds-tile__icon\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 4 3 20h18L12 4Z\"/><path d=\"M12 12l-3 8h6l-3-8Z\"/></svg></span><span class=\"ds-tile__text\"><strong class=\"ds-tile__title\">Camping</strong><small class=\"ds-tile__meta\">10 requirements</small></span><svg class=\"ds-chev\" viewBox=\"0 0 16 16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m6 4 4 4-4 4\"/></svg></a>",
+      "css": ".ds-tile { display: flex; align-items: center; gap: 0.75rem; max-inline-size: 20rem; min-block-size: 4rem; padding-block: 0.625rem; padding-inline: 0.75rem 0.625rem; border: 1px solid var(--outline-variant, #e2e5df); border-radius: 0.75rem; background: var(--surface-raised, #fff); color: var(--on-surface, #1d2420); text-decoration: none; font-family: var(--font-body, 'Figtree', system-ui, sans-serif); } .ds-tile:hover { border-color: var(--accent, #45653a); } .ds-tile:focus-visible { outline: 2px solid var(--accent, #45653a); outline-offset: 2px; } .ds-tile__icon { flex: none; display: grid; place-items: center; inline-size: 2.5rem; block-size: 2.5rem; border-radius: 0.5rem; background: var(--accent-container, #e9f0e3); color: var(--on-accent-container, #36502d); } .ds-tile__icon svg { inline-size: 1.375rem; block-size: 1.375rem; } .ds-tile__text { flex: 1; min-inline-size: 0; display: grid; } .ds-tile__title { font-size: 1.0625rem; line-height: 1.375rem; font-weight: 700; } .ds-tile__meta { color: var(--on-surface-muted, #4d564f); font-size: 0.9375rem; line-height: 1.375rem; } .ds-tile .ds-chev { flex: none; inline-size: 1rem; block-size: 1rem; color: var(--on-surface-muted, #4d564f); } .ds-tile:hover .ds-chev { color: var(--accent, #45653a); }"
+    },
+    {
+      "name": "Search field",
+      "kind": "input",
+      "refersTo": "search-field",
+      "description": "The search field in an index page head, with the primary Search button inside it.",
+      "html": "<form class=\"ds-search\" role=\"search\" onsubmit=\"return false\"><svg class=\"ds-search__icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" aria-hidden=\"true\"><circle cx=\"11\" cy=\"11\" r=\"7\"/><path d=\"m20 20-3.5-3.5\"/></svg><input class=\"ds-search__input\" type=\"search\" placeholder=\"Badge or requirement\" aria-label=\"Search\" /><button class=\"ds-search__submit\" type=\"submit\">Search</button></form>",
+      "css": ".ds-search { display: flex; align-items: center; gap: 0.5rem; max-inline-size: 40rem; padding-block: 0.375rem; padding-inline: 1rem 0.375rem; border: 1.5px solid var(--outline, #c9cec5); border-radius: 0.75rem; background: var(--surface-raised, #fff); font-family: var(--font-body, 'Figtree', system-ui, sans-serif); } .ds-search:focus-within { border-color: var(--accent, #45653a); outline: 2px solid var(--accent, #45653a); outline-offset: 2px; } .ds-search__icon { flex: none; inline-size: 1.25rem; block-size: 1.25rem; color: var(--on-surface-muted, #4d564f); } .ds-search__input { flex: 1; min-inline-size: 0; min-block-size: 2.75rem; border: 0; background: none; color: var(--on-surface, #1d2420); font: inherit; font-size: 1.125rem; } .ds-search__input:focus { outline: none; } .ds-search__input::placeholder { color: var(--on-surface-muted, #4d564f); opacity: 1; } .ds-search__submit { flex: none; min-block-size: 2.75rem; padding-inline: 1.25rem; border: 0; border-radius: 0.5rem; background: var(--accent, #45653a); color: var(--on-accent, #fff); font: inherit; font-weight: 700; cursor: pointer; } .ds-search__submit:hover { background: var(--on-accent-container, #36502d); } .ds-search__submit:focus-visible { outline: 2px solid var(--accent, #45653a); outline-offset: 2px; }"
+    },
+    {
+      "name": "Primary button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Olive fill, white text. Used for Search and Print.",
+      "html": "<button class=\"ds-btn\" type=\"button\">Print</button>",
+      "css": ".ds-btn { display: inline-flex; align-items: center; min-block-size: 2.75rem; padding-inline: 1.25rem; border: 0; border-radius: 0.5rem; background: var(--accent, #45653a); color: var(--on-accent, #fff); font-family: var(--font-body, 'Figtree', system-ui, sans-serif); font-size: 1rem; font-weight: 700; cursor: pointer; } .ds-btn:hover { background: var(--on-accent-container, #36502d); } .ds-btn:focus-visible { outline: 2px solid var(--accent, #45653a); outline-offset: 2px; }"
+    },
+    {
+      "name": "Requirement tile",
+      "kind": "card",
+      "refersTo": "requirement-tile",
+      "description": "One requirement: olive number and label (ours), near-black official text, lettered rows, and a visible Guide link.",
+      "html": "<article class=\"ds-req\"><span class=\"ds-req__num\">1.</span><h2 class=\"ds-req__title\">Safety and first aid</h2><p class=\"ds-req__text\">Do the following:</p><div class=\"ds-req__row\"><b>a.</b><span>Explain to your counselor the most likely hazards you may encounter while camping.</span></div><div class=\"ds-req__row ds-req__row--selected\"><b>b.</b><span>Discuss with your counselor why it is important to be aware of weather conditions.</span></div><a class=\"ds-req__guide\" href=\"#\">Guide<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M5 12h14\"/><path d=\"m13 6 6 6-6 6\"/></svg></a></article>",
+      "css": ".ds-req { position: relative; max-inline-size: 46rem; padding-block: 1.375rem 1.5rem; padding-inline: 3.875rem 1.75rem; border: 1px solid var(--outline-variant, #e2e5df); border-radius: 0.75rem; background: var(--surface-raised, #fff); color: var(--on-surface, #1d2420); transition: border-color 0.15s ease; font-family: var(--font-body, 'Figtree', system-ui, sans-serif); } .ds-req:hover { border-color: var(--outline, #c9cec5); } .ds-req__num { position: absolute; inset-block-start: 1.375rem; inset-inline-start: 1.75rem; color: var(--accent, #45653a); font-size: 1.625rem; line-height: 2rem; font-weight: 700; } .ds-req__title { margin: 0; color: var(--accent, #45653a); font-size: 1.625rem; line-height: 2rem; font-weight: 700; letter-spacing: -0.015em; } .ds-req__text { max-inline-size: 62ch; margin-block: 0.375rem 0.875rem; font-size: 1.125rem; line-height: 1.75rem; } .ds-req__row { display: grid; grid-template-columns: 1.75rem minmax(0, 1fr); align-items: baseline; gap: 0.375rem; margin-inline: -0.625rem; padding: 0.625rem; border-radius: 0.5rem; font-size: 1.125rem; line-height: 1.75rem; transition: background-color 0.15s ease; } .ds-req__row b { color: var(--accent, #45653a); } .ds-req__row:hover { background: var(--surface, #f3f4f1); } .ds-req__row--selected, .ds-req__row--selected:hover { background: var(--accent-container, #e9f0e3); } .ds-req__guide { display: inline-flex; align-items: center; gap: 0.25rem; margin-block-start: 0.5rem; color: var(--accent, #45653a); font-size: 1rem; font-weight: 600; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.2em; } .ds-req__guide:hover { text-decoration-thickness: 2px; } .ds-req__guide:focus-visible { outline: 2px solid var(--accent, #45653a); outline-offset: 2px; border-radius: 0.25rem; } .ds-req__guide svg { inline-size: 1em; block-size: 1em; }"
+    },
+    {
+      "name": "Jump list",
+      "kind": "nav",
+      "refersTo": "jump-item",
+      "description": "The numbered list in the left rail of a requirements page, with the current item marked.",
+      "html": "<nav class=\"ds-jump\" aria-label=\"Requirements\"><ol><li><a href=\"#\"><span>1</span>Safety and first aid</a></li><li><a href=\"#\" aria-current=\"true\"><span>2</span>Leave No Trace</a></li><li><a href=\"#\"><span>3</span>Trip planning</a></li></ol></nav>",
+      "css": ".ds-jump { max-inline-size: 18rem; font-family: var(--font-body, 'Figtree', system-ui, sans-serif); } .ds-jump ol { list-style: none; margin: 0; padding: 0; } .ds-jump a { display: flex; align-items: center; gap: 0.625rem; min-block-size: 2.75rem; padding-block: 0.375rem; padding-inline: 0.5rem; border-radius: 0.5rem; color: var(--on-surface, #1d2420); font-size: 1rem; line-height: 1.25rem; font-weight: 500; text-decoration: none; } .ds-jump a span { display: grid; place-items: center; flex: none; inline-size: 1.75rem; block-size: 1.75rem; border: 1px solid var(--outline, #c9cec5); border-radius: 50%; font-size: 0.8125rem; font-weight: 600; font-variant-numeric: tabular-nums; } .ds-jump a:hover { background: var(--surface-sunken, #e9ece6); } .ds-jump a[aria-current='true'] { background: var(--surface-raised, #fff); box-shadow: inset 0 0 0 1px var(--outline-variant, #e2e5df); color: var(--on-accent-container, #36502d); font-weight: 700; } .ds-jump a[aria-current='true'] span { background: var(--accent, #45653a); border-color: var(--accent, #45653a); color: var(--on-accent, #fff); } .ds-jump a:focus-visible { outline: 2px solid var(--accent, #45653a); outline-offset: 2px; }"
+    },
+    {
+      "name": "Official requirement box",
+      "kind": "custom",
+      "refersTo": "official-box",
+      "description": "Inside the guide article tile: the one gray box, holding Scouting America's wording. The recorded exception to the no-nested-cards rule.",
+      "html": "<div class=\"ds-article\"><div class=\"ds-official\"><b>10.</b><span>Discuss how the things you did to earn this badge have taught you about personal health and safety, survival, public health, conservation, and good citizenship.</span></div><p>This final requirement asks you to look back at everything you have accomplished.</p></div>",
+      "css": ".ds-article { max-inline-size: 46rem; padding: 2.25rem 2.5rem; border: 1px solid var(--outline-variant, #e2e5df); border-radius: 0.75rem; background: var(--surface-raised, #fff); color: var(--on-surface, #1d2420); font-size: 1.125rem; line-height: 1.75rem; font-family: var(--font-body, 'Figtree', system-ui, sans-serif); } .ds-article p { margin-block: 0; } .ds-official { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 0.625rem; margin-block: 0 1.5rem; padding: 1rem 1.25rem; border: 1px solid var(--outline-variant, #e2e5df); border-radius: 0.5rem; background: var(--surface, #f3f4f1); } .ds-official b { color: var(--on-accent-container, #36502d); font-weight: 700; }"
+    },
+    {
+      "name": "Callout",
+      "kind": "custom",
+      "refersTo": "callout-tip",
+      "description": "A tinted block in the guide; color is in the icon and title only. Safety uses the error pair, 'be prepared' the amber pair.",
+      "html": "<aside class=\"ds-callout\"><div class=\"ds-callout__head\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M9 18h6\"/><path d=\"M10 21h4\"/><path d=\"M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.800 1-2.5A6 6 0 0 0 12 3Z\"/></svg><h3>Pack the night before</h3></div><p>Lay everything out and check it against your list.</p></aside>",
+      "css": ".ds-callout { max-inline-size: 40rem; padding: 1.125rem 1.25rem; border-radius: 0.5rem; background: var(--accent-container, #e9f0e3); color: var(--on-surface, #1d2420); font-size: 1.125rem; line-height: 1.75rem; font-family: var(--font-body, 'Figtree', system-ui, sans-serif); } .ds-callout__head { display: flex; align-items: start; gap: 0.625rem; color: var(--on-accent-container, #36502d); } .ds-callout__head svg { flex: none; inline-size: 1.5rem; block-size: 1.5rem; } .ds-callout h3 { margin: 0; font-size: 1.125rem; line-height: 1.5rem; font-weight: 700; } .ds-callout p { margin-block: 0.5rem 0; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Category Standard, Played Straight",
+    "overview": "This is the plain reference page a Scout already knows how to use. An olive masthead with one gold line sits over a white page head, and the content follows on a light gray ground in flat white tiles with a hairline border. There is no metaphor and no ornament, and a Scout has nothing to learn before reading. The craft bar is BBC Bitesize and Khan Academy: conventional structure, built carefully.\n\nThe system does one job beyond layout. It keeps Scouting America's official wording visibly apart from the site's own words. On a requirements page, green headings are the site's short labels and the near-black text under them is the official text, word for word. In the guide, the official requirement sits in the one gray box inside the article tile. Olive always means \"ours\": labels, links, and the current item.\n\nThe sites are independent of Scouting America and must not look official. The palette is the olive and gold of the Scouts BSA program, never Scouting America's corporate red, white and blue. Light and dark themes share one structure; dark lightens the olive on a dark neutral ground.",
+    "keyCharacteristics": [
+      "One sans family (Figtree) in weights 400 to 800, on a fixed size scale.",
+      "One accent (olive). Gold appears as a single 3px line under the masthead.",
+      "Flat tiles with a 1px hairline and 12px corners, and no shadow.",
+      "One page width and one reading-column width on every page.",
+      "Controls, tabs, rows and tiles are at least 2.75rem (44px) tall.",
+      "The same page head on every page, compact on award pages."
+    ],
+    "rules": [
+      {
+        "name": "The Olive Is Ours Rule",
+        "body": "Olive text is the site's own voice: labels, links, and the current item. Scouting America's wording is never olive.",
+        "section": "colors"
+      },
+      {
+        "name": "The One Gold Line Rule",
+        "body": "Gold is one 3px line under the masthead, plus the focus ring and active underline on that same bar. It is never a heading color or a border on content, and its only fill is the text selection highlight in dark.",
+        "section": "colors"
+      },
+      {
+        "name": "The Not Official Rule",
+        "body": "Never Scouting America's red, white and blue as a color scheme. There is no blue anywhere, and red appears only as the status color on safety callouts, never as a brand color.",
+        "section": "colors"
+      },
+      {
+        "name": "The Amber Follows Olive Rule",
+        "body": "In dark, the `amber` token takes the accent value, because the standard look has one accent. Only the amber container pair stays gold.",
+        "section": "colors"
+      },
+      {
+        "name": "The Fixed Scale Rule",
+        "body": "Sizes are fixed rem values. The older fluid scale grew body text to 24px on wide screens and was replaced. Only the page title is fluid.",
+        "section": "typography"
+      },
+      {
+        "name": "The Sentence Case Rule",
+        "body": "No uppercase and no letter-spaced labels. The breadcrumb, rail group titles, footer column titles, block labels and the guide's Previous and Next labels are sentence case with normal tracking.",
+        "section": "typography"
+      },
+      {
+        "name": "The Verbatim Title Rule",
+        "body": "When a requirement has no short label, its official sentence takes the heading slot in body style (400, near-black), so it reads as official text and not as a label.",
+        "section": "typography"
+      },
+      {
+        "name": "The Same Head Rule",
+        "body": "The page head on every award page is compact and identical in shape: breadcrumb, title with an accent word, an optional flag beside the title, and tabs. Page-specific facts (count, date, official links, the description) go in the body or the left rail, never in the head.",
+        "section": "layout"
+      },
+      {
+        "name": "The One Measure Rule",
+        "body": "One reading-column width (`--read-max`) on every page and one page width (`--page-max`) across tabs. Nothing sets its own measure.",
+        "section": "layout"
+      },
+      {
+        "name": "The One Photo Rule",
+        "body": "An index page may put one photo beside its title, from 60rem up. Below that the photo is dropped, not stacked, so the search field and the list stay near the top.",
+        "section": "layout"
+      },
+      {
+        "name": "The Logical Properties Rule",
+        "body": "CSS uses logical properties only: `padding-inline-start`, `margin-block-end`, `inline-size`, `inset-block-start`.",
+        "section": "layout"
+      },
+      {
+        "name": "The Flat Tile Rule",
+        "body": "A tile never carries a shadow, at rest or on hover. Only a control floating over scrolling content may.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Border Hover Rule",
+        "body": "Hover never lifts and never adds a shadow. A tile changes its border color (hairline to strong hairline on requirement tiles, hairline to olive on link tiles and link-out blocks). A row inside a tile takes a gray fill, a primary button darkens, and a text link gains or thickens its underline.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do start every page with `page-head.html`, and keep the award page head to breadcrumb, title, optional flag, and tabs.",
+      "Do put page-specific facts in the body or the left rail.",
+      "Do cap reading content at `--read-max` and page content at `--page-max`.",
+      "Do keep olive for the site's own labels, links and current state, and near-black for official wording.",
+      "Do give each requirement that has a guide page a visible Guide link.",
+      "Do build home and index pages from a search field plus sections of link tiles, with at most one photo beside the title on wide screens.",
+      "Do keep the sticky current-requirement panel on the guide at wide widths.",
+      "Do make controls, tabs, rows and tiles at least 2.75rem tall, and show the 2px focus ring.",
+      "Do use the public tokens and classes in `CONTRACT.md`; renaming one is a breaking change for both sites.",
+      "Do check every change on both sites, in both themes, at phone and desktop widths.",
+      "Do write American English, and \"Scouting America\", never \"BSA\", for the organization."
+    ],
+    "donts": [
+      "Don't put a kicker or eyebrow label above a heading.",
+      "Don't use a colored side-stripe border on a tile, callout or row.",
+      "Don't nest cards as page structure. The official requirement box inside the guide article tile is the one recorded exception, approved by the owner.",
+      "Don't use gradient text.",
+      "Don't use emoji as icons.",
+      "Don't lift a tile or add a shadow on hover.",
+      "Don't add a second accent color, or use gold as a fill on content.",
+      "Don't use Scouting America's red, white and blue scheme (no blue; red only on safety callouts), or anything that implies endorsement.",
+      "Don't add a second font family.",
+      "Don't set labels in uppercase or with letter-spacing.",
+      "Don't use physical properties (`padding-left`, `margin-right`, `width`) where a logical one exists.",
+      "Don't build a landing-page arrangement on the home page: no carousel, featured cards, \"how it works\" steps, or category icon cards."
+    ]
+  }
+}

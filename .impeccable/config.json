@@ -1,0 +1,44 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "cream-palette",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/challenger-zine.html"
+        ],
+        "createdAt": "2026-11-11T16:03:47.645Z",
+        "reason": "agent decided: decision-round sketch of catalog world hand-drawn-zine-explainer, whose system grammar specifies a cream paper ground; not shipping code"
+      },
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/canon.html"
+        ],
+        "createdAt": "2026-11-11T16:05:17.931Z",
+        "reason": "agent decided: false positive; .card has padding-block 24px / padding-inline 28px and .pagehead has padding-block 24px 30px with an inset .wrap; detector appears not to read logical padding properties"
+      },
+      {
+        "rule": "cream-palette",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/challenger-campmap.html"
+        ],
+        "createdAt": "2026-11-11T16:05:30.898Z",
+        "reason": "agent decided: decision-round sketch of catalog world aww2-zoo-gardens-guide-map, whose system grammar specifies the #F5F1E4 ground; not shipping code"
+      },
+      {
+        "rule": "ai-color-palette",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/model-pick.html"
+        ],
+        "createdAt": "2026-11-11T16:05:42.967Z",
+        "reason": "agent decided: flat revision-purple ink #8e2c8a is the Quad Sheet direction's mechanism (our words overprinted in purple, official in black); no gradient; decision sketch"
+      }
+    ]
+  }
+}
